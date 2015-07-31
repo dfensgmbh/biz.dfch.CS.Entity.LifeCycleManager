@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    class AClass
+    public class AClass
     {
     }
 }
