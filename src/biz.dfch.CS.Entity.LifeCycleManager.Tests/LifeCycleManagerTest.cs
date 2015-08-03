@@ -51,19 +51,43 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         // Next, Continue, Cancel, ChangeState
 
         [TestMethod]
-        public void LifeCycleManagerConstructorCreatesDefaultStateMachineInstance()
-        {
-            
-        }
-
-        [TestMethod]
-        public void LifeCycleManagerConstructorLoadsStateMachineConfigurationAccordingEntityType()
+        public void LifeCycleManagerConstructorCallsStateMachineLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
             // DFCHECK Where to load configuration of state machine from
         }
 
         [TestMethod]
-        public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfiguration()
+        public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
+        {
+
+        }
+
+        [TestMethod]
+        public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
+        {
+
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadCalloutDefinition()
+        {
+            
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityAndPreCalloutDefinitionDoesPreCallout()
+        {
+
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityWithoutCalloutDefinitionChangesState()
+        {
+
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityWithoutCalloutDefinitionDoesPostCallout()
         {
 
         }

@@ -46,8 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseEntity.cs" />
+    <Compile Include="Loader\CalloutDefinitionLoader.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Loader\StateMachineLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
