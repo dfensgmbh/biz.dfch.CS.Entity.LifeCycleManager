@@ -33,6 +33,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // [AFTER STATE CHANGE] Execute post hook/callout
             // [ON/AFTER POST CALLBACK] Unlock
 
+        // DFCHECK Where to load configuration of state machine from
+        // DFCHECK Where to load hook/callout definition from
+        // DFCHECK if it makes sense to have a generic class
+        // DFCHECK what's the payload of a callout (tenantId, entity, entity type, targetState)
+
         [TestMethod]
         public void Test()
         {
