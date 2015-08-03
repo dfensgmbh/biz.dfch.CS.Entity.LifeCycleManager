@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
 {
-    public class CalloutConfigurationLoader
+    public class CalloutDefinitionLoader
     {
 
     }
