@@ -33,9 +33,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // [AFTER STATE CHANGE] Execute post hook/callout
             // [ON/AFTER POST CALLBACK] Unlock
 
-        // DFCHECK Where to load hook/callout definition from
-        // DFCHECK what's the payload of a callout (tenantId, entity, entity type, targetState)
+        // DFTODO Check what's the payload of a callout (tenantId, entity, entity type, targetState)
 
+        // DFTODO Transactional? Why? What to revert?
+
+        // DFTODO Check the possibility of integrating the following code snippet
         /**
          * fsm.StateChange()
          * fsm.TryStateChange()
@@ -48,18 +50,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
          * }
          **/
 
-        // Next, Continue, Cancel, ChangeState
+        
 
         [TestMethod]
         public void LifeCycleManagerConstructorCallsStateMachineLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
-            // DFCHECK Where to load configuration of state machine from
+            // DFTODO Check where to load configuration of state machine from (App.config?)
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
-
+            // DFTODO Check where to load configuration of state machine from (App.config?)
         }
 
         [TestMethod]
@@ -69,9 +71,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadCalloutDefinition()
+        public void ChangeStateForLockedEntityThrowsException()
+        {
+            // DFTODO Define which exception should be thrown (Adjust test method name)
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityLocksEntity()
         {
             
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadPreCalloutDefinition()
+        {
+            // DFTODO Check where to load hook/callout definition from
         }
 
         [TestMethod]
@@ -81,13 +95,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        public void ChangeStateForNonLockedEntityWithoutCalloutDefinitionChangesState()
+        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionChangesState()
         {
 
         }
 
         [TestMethod]
-        public void ChangeStateForNonLockedEntityWithoutCalloutDefinitionDoesPostCallout()
+        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionCallsCalloutDefinitionLoaderToLoadPostCalloutDefinition()
+        {
+
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionDoesPostCallout()
         {
 
         }

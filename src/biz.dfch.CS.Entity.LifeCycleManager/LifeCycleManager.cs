@@ -22,8 +22,12 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    public class LifeCycleManager
+    public class LifeCycleManager<T>
     {
 
+
+        // DFTODO implement methods 'Next', 'Continue', 'Cancel', 'ChangeState'
+
+        // DFTODO implement preCallback() and postCallback() methods
     }
 }
