@@ -22,7 +22,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     [TestClass]
     public class LifeCycleManagerTest
     {
-        // DFTODO Loading Entity (Maybe all entities have to inherit a BaseEntity or implement a BaseEntityInterface)
+        // DFTODO Loading Entity (Maybe all entities have to inherit a BaseEntity or implement a BaseEntityInterface) or get as param
         // DFTODO Loading configuration of StateMachine for the given entity Type
         // DFTODO Loading Hook/Callout definitions based on entity type, entity state and tenant information
         // DFTODO Handle state change transaction
@@ -33,15 +33,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // [AFTER STATE CHANGE] Execute post hook/callout
             // [ON/AFTER POST CALLBACK] Unlock
 
-        // DFCHECK Where to load configuration of state machine from
         // DFCHECK Where to load hook/callout definition from
-        // DFCHECK if it makes sense to have a generic class
         // DFCHECK what's the payload of a callout (tenantId, entity, entity type, targetState)
 
+        // Next, Continue, Cancel, ChangeState
+
         [TestMethod]
-        public void Test()
+        public void LifeCycleManagerConstructorCreatesDefaultStateMachineInstance()
         {
             
+        }
+
+        [TestMethod]
+        public void LifeCycleManagerConstructorLoadsStateMachineConfigurationAccordingEntityType()
+        {
+            // DFCHECK Where to load configuration of state machine from
+        }
+
+        [TestMethod]
+        public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfiguration()
+        {
+
         }
     }
 }
