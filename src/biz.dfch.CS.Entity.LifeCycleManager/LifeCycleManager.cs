@@ -22,7 +22,17 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    public class AClass
+    public class LifeCycleManager
     {
+        // DFTODO Loading Entity (Maybe all entities have to inherit a BaseEntity or implement a BaseEntityInterface)
+        // DFTODO Loading configuration of StateMachine for the given entity Type
+        // DFTODO Loading Hook/Callout definitions based on entity type, entity state and tenant information
+        // DFTODO Handle state change transaction
+            // [IF STATE LOCKED] Wait or Abort depending on flag
+            // [IF STATE NOT LOCKED] Lock state change (Set property/Call method)
+            // [IF STATE NOT LOCKED] Execute pre hook/callout
+            // [ON/AFTER PRE CALLBACK] Execute stateChange
+            // [AFTER STATE CHANGE] Execute post hook/callout
+            // [ON/AFTER POST CALLBACK] Unlock
     }
 }
