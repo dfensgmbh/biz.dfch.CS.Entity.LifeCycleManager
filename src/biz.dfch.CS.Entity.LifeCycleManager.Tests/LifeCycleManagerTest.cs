@@ -24,11 +24,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     public class LifeCycleManagerTest
     {
         // DFTODO Pass entity as parameter?
-        // DFTODO Loading configuration of StateMachine for the given entity Type
 
         // DFTODO Loading Hook/Callout executor based on entity type, entity state and tenant information in plugin or in lifecycle management system?
         // DFTODO HOWTO access entity to change/revert state?
-        // DFTODO implement methods 'Next', 'Continue', 'Cancel', 'ChangeState'
         
         private static LifeCycleManager<BaseEntity> _lifeCycleManager;
             
