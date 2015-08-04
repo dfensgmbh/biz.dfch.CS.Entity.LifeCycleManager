@@ -25,8 +25,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager<T>
     {
         // DFTODO job repo pluggable
-        // DFTODO controllers for callbacks
-        // DFTODO 
+        // DFTODO job repo holds all running jobs
+        // DFTODO expose controllers for callbacks
 
         // DFTODO implement methods 'Next', 'Continue', 'Cancel', 'ChangeState'
 

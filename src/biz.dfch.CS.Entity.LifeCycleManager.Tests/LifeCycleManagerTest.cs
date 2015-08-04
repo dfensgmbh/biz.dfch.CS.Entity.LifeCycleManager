@@ -33,15 +33,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // [AFTER STATE CHANGE] Execute post hook/callout
             // [ON/AFTER POST CALLBACK] Unlock
 
-
-        // DFTODO Pluggable callouts
-        // 
-
         // DFTODO Check what's the payload of a callout (tenantId, entity, entity type, targetState)
 
-        // DFTODO Transactional? Why? What to revert?
-
         // DFTODO Check the possibility of integrating the following code snippet
+
         /**
          * fsm.StateChange()
          * fsm.TryStateChange()
