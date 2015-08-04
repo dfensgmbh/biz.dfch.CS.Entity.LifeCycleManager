@@ -15,18 +15,18 @@
  */
 
 ﻿using System;
+﻿using System.ComponentModel.Composition;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
+namespace LifeCycleManager.Extensions.Default.Loaders
 {
-    public class Job
+    [Export(typeof(IStateMachineConfigLoader))]
+    public class DefaultStateMachineConfigLoader : IStateMachineConfigLoader
     {
-        public String Id { get; set; }
-        public String State { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Updated { get; set; }
-        public String EntityId { get; set; }
-        public String SourceState { get; set; }
-        public String Condition { get; set; }
-        public String TargetState { get; set; }
+        public String LoadConfiguration(Type type)
+        {
+            // DFTODO implement default loader (in memory list or something similiar)
+            throw new NotImplementedException();
+        }
     }
 }

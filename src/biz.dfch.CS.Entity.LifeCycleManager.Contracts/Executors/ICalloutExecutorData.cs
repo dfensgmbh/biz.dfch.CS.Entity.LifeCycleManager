@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-﻿using System;
-
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executor
 {
-    public abstract class BaseEntity
+    interface ICalloutExecutorData
     {
-        public String State { get; set; }
-        public Boolean StateChangeLock { get; set; }
     }
 }

@@ -39,12 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entity\BaseEntity.cs" />
-    <Compile Include="Entity\Job.cs" />
-    <Compile Include="Executor\ICalloutExecutor.cs" />
-    <Compile Include="Executor\ICalloutExecutorData.cs" />
-    <Compile Include="Loader\IStateMachineConfigLoader.cs" />
-    <Compile Include="Loader\IStateMachineConfigLoaderData.cs" />
+    <Compile Include="Entities\BaseEntity.cs" />
+    <Compile Include="Entities\Job.cs" />
+    <Compile Include="Executors\ICalloutExecutor.cs" />
+    <Compile Include="Executors\ICalloutExecutorData.cs" />
+    <Compile Include="Loaders\IStateMachineConfigLoader.cs" />
+    <Compile Include="Loaders\IStateMachineConfigLoaderData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

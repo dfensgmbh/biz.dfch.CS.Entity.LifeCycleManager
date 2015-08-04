@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loader
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders
 {
-    public interface IStateMachineConfigLoader
+    public interface IStateMachineConfigLoaderData
     {
     }
 }

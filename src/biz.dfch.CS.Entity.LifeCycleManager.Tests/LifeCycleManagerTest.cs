@@ -15,19 +15,18 @@
  */
 
 using System;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entities;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 {
     [TestClass]
     public class LifeCycleManagerTest
     {
-        // DFTODO Pass entity as parameter?
-
-        // DFTODO Loading Hook/Callout executor based on entity type, entity state and tenant information in plugin or in lifecycle management system?
-        // DFTODO HOWTO access entity to change/revert state?
-        
         private static LifeCycleManager<BaseEntity> _lifeCycleManager;
             
         [ClassInitialize]

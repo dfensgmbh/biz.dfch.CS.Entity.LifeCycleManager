@@ -16,15 +16,23 @@
 
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+﻿using System.ComponentModel.Composition;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
     public class LifeCycleManager<T>
     {
+        // DFTODO Pass entity as parameter?
+        // DFTODO HOWTO access entity to change/revert state?
+
         private StateMachine.StateMachine _stateMachine;
+
+        [Import(typeof(IStateMachineConfigLoader))]
+        private IStateMachineConfigLoader _stateMachineConfigLoader;
 
         public LifeCycleManager()
         {

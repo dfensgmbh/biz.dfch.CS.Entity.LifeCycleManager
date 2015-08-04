@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FE6AECE0-E978-4095-9664-4B4642A57221}</ProjectGuid>
+    <ProjectGuid>{95FD6F72-C923-4417-9C36-E2D6431D5E62}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>biz.dfch.CS.Entity.LifeCycleManager.Tests</RootNamespace>
-    <AssemblyName>biz.dfch.CS.Entity.LifeCycleManager.Tests</AssemblyName>
+    <RootNamespace>LifeCycleManager.Extensions.Default.Tests</RootNamespace>
+    <AssemblyName>LifeCycleManager.Extensions.Default.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,21 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="biz.dfch.CS.StateMachine">
-      <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.1\biz.dfch.CS.StateMachine\bin\Release\biz.dfch.CS.StateMachine.dll</HintPath>
-    </Reference>
-    <Reference Include="MSTestExtensions">
-      <HintPath>..\packages\MSTestExtensions.4.0.0\lib\MSTestExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Telerik.JustMock">
-      <HintPath>../JustMock/Telerik.JustMock.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -64,21 +50,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="LifeCycleManagerTest.cs" />
+    <Compile Include="Loaders\DefaultStateMachineConfigLoaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\biz.dfch.CS.Entity.LifeCycleManager.Contracts\biz.dfch.CS.Entity.LifeCycleManager.Contracts.csproj">
-      <Project>{6d273c7a-2de0-4493-9bde-d06bf517c887}</Project>
-      <Name>biz.dfch.CS.Entity.LifeCycleManager.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\biz.dfch.CS.Entity.LifeCycleManager\biz.dfch.CS.Entity.LifeCycleManager.csproj">
-      <Project>{669d4224-17cc-4fb2-868d-665c9edce858}</Project>
-      <Name>biz.dfch.CS.Entity.LifeCycleManager</Name>
-    </ProjectReference>
+    <Folder Include="Executors\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

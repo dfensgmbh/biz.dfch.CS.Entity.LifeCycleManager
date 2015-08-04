@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biz.dfch.CS.Entity.LifeCycl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biz.dfch.CS.Entity.LifeCycleManager.Contracts", "biz.dfch.CS.Entity.LifeCycleManager.Contracts\biz.dfch.CS.Entity.LifeCycleManager.Contracts.csproj", "{6D273C7A-2DE0-4493-9BDE-D06BF517C887}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifecycleManager.Extensions.Default", "LifecycleManager.Extensions.Default\LifecycleManager.Extensions.Default.csproj", "{D5FAE7E2-50E4-43E1-B194-E28FC8CBA22F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCycleManager.Extensions.Default.Tests", "LifeCycleManager.Extensions.Default.Tests\LifeCycleManager.Extensions.Default.Tests.csproj", "{95FD6F72-C923-4417-9C36-E2D6431D5E62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{6D273C7A-2DE0-4493-9BDE-D06BF517C887}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D273C7A-2DE0-4493-9BDE-D06BF517C887}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D273C7A-2DE0-4493-9BDE-D06BF517C887}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5FAE7E2-50E4-43E1-B194-E28FC8CBA22F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5FAE7E2-50E4-43E1-B194-E28FC8CBA22F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5FAE7E2-50E4-43E1-B194-E28FC8CBA22F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5FAE7E2-50E4-43E1-B194-E28FC8CBA22F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

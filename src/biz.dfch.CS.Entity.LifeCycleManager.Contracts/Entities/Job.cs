@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executor
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entities
 {
-    interface ICalloutExecutor
+    public class Job
     {
+        public String Id { get; set; }
+        public String State { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Updated { get; set; }
+        public String EntityId { get; set; }
+        public String SourceState { get; set; }
+        public String Condition { get; set; }
+        public String TargetState { get; set; }
     }
 }

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executor
+namespace LifeCycleManager.Extensions.Default.Tests.Loaders
 {
-    interface ICalloutExecutorData
+    [TestClass]
+    public class DefaultStateMachineConfigLoaderTest
     {
+        [TestMethod]
+        public void TestMethod1()
+        {
+        }
     }
 }
