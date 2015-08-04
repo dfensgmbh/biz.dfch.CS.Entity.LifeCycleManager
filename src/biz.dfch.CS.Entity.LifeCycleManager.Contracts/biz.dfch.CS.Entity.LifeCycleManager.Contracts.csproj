@@ -39,7 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseEntity.cs" />
+    <Compile Include="Entity\BaseEntity.cs" />
+    <Compile Include="Entity\Job.cs" />
     <Compile Include="Executor\ICalloutExecutor.cs" />
     <Compile Include="Executor\ICalloutExecutorData.cs" />
     <Compile Include="Loader\IStateMachineConfigLoader.cs" />

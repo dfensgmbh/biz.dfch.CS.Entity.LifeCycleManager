@@ -21,6 +21,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
     public class Job
     {
         public String Id { get; set; }
+        public String State { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
         public String EntityId { get; set; }

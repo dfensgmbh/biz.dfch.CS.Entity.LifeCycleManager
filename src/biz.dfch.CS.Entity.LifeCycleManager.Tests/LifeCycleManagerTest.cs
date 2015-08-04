@@ -33,28 +33,30 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private static LifeCycleManager<BaseEntity> _lifeCycleManager;
             
         [ClassInitialize]
-        public static void ClassInitialize()
+        public static void ClassInitialize(TestContext testContext)
         {
             _lifeCycleManager = new LifeCycleManager<BaseEntity>();
         }
 
         [TestMethod]
+        public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
+        {
+            PrivateObject lifecycleManager = new PrivateObject(_lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField("_stateMachine");
+            Assert.IsNotNull(stateMachine);
+            Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
+        }
+
+        [TestMethod]
         public void LifeCycleManagerConstructorCallsStateMachineConfigLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
-            
-            
+
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
             
-        }
-
-        [TestMethod]
-        public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
-        {
-
         }
 
         [TestMethod]
