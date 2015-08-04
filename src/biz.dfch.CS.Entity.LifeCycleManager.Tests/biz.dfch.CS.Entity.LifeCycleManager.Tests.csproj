@@ -60,6 +60,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\biz.dfch.CS.Entity.LifeCycleManager.Contracts\biz.dfch.CS.Entity.LifeCycleManager.Contracts.csproj">
+      <Project>{6d273c7a-2de0-4493-9bde-d06bf517c887}</Project>
+      <Name>biz.dfch.CS.Entity.LifeCycleManager.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\biz.dfch.CS.Entity.LifeCycleManager\biz.dfch.CS.Entity.LifeCycleManager.csproj">
       <Project>{669d4224-17cc-4fb2-868d-665c9edce858}</Project>
       <Name>biz.dfch.CS.Entity.LifeCycleManager</Name>

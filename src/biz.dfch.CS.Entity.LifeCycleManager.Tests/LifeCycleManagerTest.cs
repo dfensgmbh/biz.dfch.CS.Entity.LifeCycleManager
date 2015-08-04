@@ -23,7 +23,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     [TestClass]
     public class LifeCycleManagerTest
     {
-        // DFTODO Pass entity as parameter (Maybe all entities have to inherit a BaseEntity or implement a BaseEntityInterface)
+        // DFTODO Pass entity as parameter
         // DFTODO Loading configuration of StateMachine for the given entity Type
         // DFTODO Handle state change transaction
             // [IF STATE LOCKED] Wait or Abort depending on flag
