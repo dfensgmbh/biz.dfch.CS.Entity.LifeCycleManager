@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts
 {
-    public class CalloutDefinitionLoader
+    public abstract class BaseEntity
     {
-
+        public String State { get; set; }
+        public Boolean StateChangeLock { get; set; }
     }
 }

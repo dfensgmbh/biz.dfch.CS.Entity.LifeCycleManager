@@ -15,6 +15,7 @@
  */
 
 using System;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
@@ -24,7 +25,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     {
         // DFTODO Pass entity as parameter (Maybe all entities have to inherit a BaseEntity or implement a BaseEntityInterface)
         // DFTODO Loading configuration of StateMachine for the given entity Type
-        // DFTODO Loading Hook/Callout definitions based on entity type, entity state and tenant information
         // DFTODO Handle state change transaction
             // [IF STATE LOCKED] Wait or Abort depending on flag
             // [IF STATE NOT LOCKED] Lock state change (Set property/Call method)
@@ -33,10 +33,24 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // [AFTER STATE CHANGE] Execute post hook/callout
             // [ON/AFTER POST CALLBACK] Unlock
 
+        // DFTODO job repo pluggable
+        // DFTODO callout definition loader pluggable
+        // DFTODO state machine config loader pluggable
+        // DFTODO callback executors pluggable
+        // DFTODO Loading Hook/Callout executor based on entity type, entity state and tenant information
+
+        // DFTODO HOWTO access entity to change/revert state?
+
+        // DFTODO job repo holds all running jobs
+        // DFTODO expose controllers for callbacks
+        // DFTODO implement methods 'Next', 'Continue', 'Cancel', 'ChangeState'
+        
+        // DFTODO Check where to load hook/callout definition from
         // DFTODO Check what's the payload of a callout (tenantId, entity, entity type, targetState)
+        
+        // DFTODO Transaction aware (Possibility to revert, if declined)
 
         // DFTODO Check the possibility of integrating the following code snippet
-
         /**
          * fsm.StateChange()
          * fsm.TryStateChange()
@@ -49,18 +63,25 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
          * }
          **/
 
-        
+        private static LifeCycleManager<BaseEntity> _lifeCycleManager;
+            
+        [ClassInitialize]
+        public static void ClassInitialize()
+        {
+            _lifeCycleManager = new LifeCycleManager<BaseEntity>();
+        }
 
         [TestMethod]
-        public void LifeCycleManagerConstructorCallsStateMachineLoaderToLoadStateMachineConfigurationAccordingEntityType()
+        public void LifeCycleManagerConstructorCallsStateMachineConfigLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
-            // DFTODO Check where to load configuration of state machine from (App.config?)
+            
+            
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
-            // DFTODO Check where to load configuration of state machine from (App.config?)
+            
         }
 
         [TestMethod]
@@ -84,7 +105,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadPreCalloutDefinition()
         {
-            // DFTODO Check where to load hook/callout definition from
+            
         }
 
         [TestMethod]

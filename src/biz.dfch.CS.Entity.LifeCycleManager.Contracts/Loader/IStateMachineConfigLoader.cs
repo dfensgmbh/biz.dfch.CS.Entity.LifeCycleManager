@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loader
 {
-    public class LifeCycleManager<T>
+    public interface IStateMachineConfigLoader
     {
-
     }
 }

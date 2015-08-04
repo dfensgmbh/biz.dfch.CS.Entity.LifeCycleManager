@@ -20,9 +20,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager
+namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
 {
-    public class LifeCycleManager<T>
+    public class DefaultCalloutDefinitionLoader
     {
 
     }
