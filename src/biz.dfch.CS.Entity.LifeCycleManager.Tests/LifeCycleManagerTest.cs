@@ -23,46 +23,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     [TestClass]
     public class LifeCycleManagerTest
     {
-        // DFTODO Pass entity as parameter
+        // DFTODO Pass entity as parameter?
         // DFTODO Loading configuration of StateMachine for the given entity Type
-        // DFTODO Handle state change transaction
-            // [IF STATE LOCKED] Wait or Abort depending on flag
-            // [IF STATE NOT LOCKED] Lock state change (Set property/Call method)
-            // [IF STATE NOT LOCKED] Execute pre hook/callout
-            // [ON/AFTER PRE CALLBACK] Execute stateChange
-            // [AFTER STATE CHANGE] Execute post hook/callout
-            // [ON/AFTER POST CALLBACK] Unlock
 
-        // DFTODO job repo pluggable
-        // DFTODO callout definition loader pluggable
-        // DFTODO state machine config loader pluggable
-        // DFTODO callback executors pluggable
-        // DFTODO Loading Hook/Callout executor based on entity type, entity state and tenant information
-
+        // DFTODO Loading Hook/Callout executor based on entity type, entity state and tenant information in plugin or in lifecycle management system?
         // DFTODO HOWTO access entity to change/revert state?
-
-        // DFTODO job repo holds all running jobs
-        // DFTODO expose controllers for callbacks
         // DFTODO implement methods 'Next', 'Continue', 'Cancel', 'ChangeState'
         
-        // DFTODO Check where to load hook/callout definition from
-        // DFTODO Check what's the payload of a callout (tenantId, entity, entity type, targetState)
-        
-        // DFTODO Transaction aware (Possibility to revert, if declined)
-
-        // DFTODO Check the possibility of integrating the following code snippet
-        /**
-         * fsm.StateChange()
-         * fsm.TryStateChange()
-         * 
-         * bool StateChange(bool WaitOnLockedState = true) { }
-         * 
-         * bool TryStateChange() 
-         * {
-         *     return this.StateChange(false);
-         * }
-         **/
-
         private static LifeCycleManager<BaseEntity> _lifeCycleManager;
             
         [ClassInitialize]
