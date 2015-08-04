@@ -41,10 +41,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
-            PrivateObject lifecycleManager = new PrivateObject(_lifeCycleManager);
-            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField("_stateMachine");
-            Assert.IsNotNull(stateMachine);
-            Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
+
         }
 
         [TestMethod]
