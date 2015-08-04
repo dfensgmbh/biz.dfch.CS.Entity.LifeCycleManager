@@ -16,7 +16,7 @@
 
 ﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
 {
     public abstract class BaseEntity
     {

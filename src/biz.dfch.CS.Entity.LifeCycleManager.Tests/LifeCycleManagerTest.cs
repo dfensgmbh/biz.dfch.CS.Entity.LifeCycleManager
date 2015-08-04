@@ -15,7 +15,7 @@
  */
 
 using System;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
