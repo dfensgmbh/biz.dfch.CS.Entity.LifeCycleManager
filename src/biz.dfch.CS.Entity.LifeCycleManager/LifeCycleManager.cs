@@ -28,7 +28,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public LifeCycleManager()
         {
-            _stateMachine = new StateMachine.StateMachine();
+            
         }
     }
 }
