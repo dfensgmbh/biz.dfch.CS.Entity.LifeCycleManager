@@ -16,7 +16,9 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Linq.Expressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+using Newtonsoft.Json;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
@@ -24,17 +26,24 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
 
-        [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager(String entityType)
+        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, String entityType)
         {
             _stateMachine = new StateMachine.StateMachine();
-
-            // DFTODO Move MEF initialization section to something similar like DLLMain
-            
-            
-            //_stateMachineConfigLoader.LoadConfiguration(entityType);
+            _stateMachineConfigLoader = stateMachineConfigLoader;
+            var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
+            if (null != config)
+            {
+                try
+                {
+                    _stateMachine.SetupStateMachine(config);
+                }
+                catch (JsonReaderException)
+                {
+                    throw new ArgumentException("Invalid state machine configuration");
+                }
+            }
         }
     }
 }
