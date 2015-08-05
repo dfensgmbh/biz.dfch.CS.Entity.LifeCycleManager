@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-﻿using System.ComponentModel.Composition;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -23,7 +22,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
 
-        [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
         // DFTODO Access entity to change/revert state over an URI passed to the constructor
@@ -31,7 +29,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         {
             _stateMachine = new StateMachine.StateMachine();
             _stateMachineConfigLoader = stateMachineConfigLoader;
-            _stateMachineConfigLoader.LoadConfiguration(typeof(T));
+            //_stateMachineConfigLoader.LoadConfiguration(typeof(T));
         }
     }
 }

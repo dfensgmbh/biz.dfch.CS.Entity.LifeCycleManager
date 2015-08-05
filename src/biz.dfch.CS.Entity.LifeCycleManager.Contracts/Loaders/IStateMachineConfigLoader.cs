@@ -20,6 +20,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders
 {
     public interface IStateMachineConfigLoader
     {
-        String LoadConfiguration(Type type);
+        String LoadConfiguration(String type);
     }
 }

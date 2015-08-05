@@ -16,6 +16,7 @@
 
 ﻿using System;
 ﻿using System.ComponentModel.Composition;
+﻿using System.Configuration;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
 namespace LifeCycleManager.Extensions.Default.Loaders
@@ -23,10 +24,9 @@ namespace LifeCycleManager.Extensions.Default.Loaders
     [Export(typeof(IStateMachineConfigLoader))]
     public class DefaultStateMachineConfigLoader : IStateMachineConfigLoader
     {
-        public String LoadConfiguration(Type type)
+        public String LoadConfiguration(String entityType)
         {
-            // DFTODO implement default loader (in memory list or something similiar)
-            throw new NotImplementedException();
+            return ConfigurationManager.AppSettings[entityType];
         }
     }
 }
