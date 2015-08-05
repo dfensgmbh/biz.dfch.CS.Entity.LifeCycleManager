@@ -23,15 +23,15 @@ namespace LifeCycleManager.Extensions.Default.Tests.Loaders
     public class DefaultStateMachineConfigLoaderTest
     {
         [TestMethod]
-        public void LoadConfigurationForPredefinedConfigReturnsConfigurationLoadedConfigurationFromAppConfig()
+        public void LoadConfigurationForEntityTypeWithDefinedConfigurationReturnsCorrespondingConfigurationLoadedFromAppConfig()
         {
             var stateMachineConfigLoader = new DefaultStateMachineConfigLoader();
-            Assert.AreEqual("{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\",\"Running-Cancel\":\"Cancelled\",\"Completed-Continue\":\"Disposed\",\"Completed-Cancel\":\"InternalErrorState\",\"Cancelled-Continue\":\"Disposed\",\"Cancelled-Cancel\":\"InternalErrorState\",\"InternalErrorState-Continue\":\"Disposed\"}",
+            Assert.AreEqual("{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}",
                 stateMachineConfigLoader.LoadConfiguration("EntityType"));
         }
 
         [TestMethod]
-        public void LoadConfigurationForNotDefinedConfigReturnsNull()
+        public void LoadConfigurationForEntityTypeWithoutDefinedConfigurationReturnsNull()
         {
             var stateMachineConfigLoader = new DefaultStateMachineConfigLoader();
             Assert.AreEqual(null,
