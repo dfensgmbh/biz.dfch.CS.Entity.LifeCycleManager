@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
+using System;
+using System.Runtime.CompilerServices;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 {
     [TestClass]
     public class LifeCycleManagerTest
     {
-        private static LifeCycleManager _lifeCycleManager;
-            
+        private const String CUSTOM_STATE_MACHINE_CONFIG = "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";
+        private const String ENTITY_TYPE = "EntityType";
+        private const String STATE_MACHINE_FIELD = "_stateMachine";
+
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            _lifeCycleManager = new LifeCycleManager("EntityType");
+            
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
-            PrivateObject lifecycleManager = new PrivateObject(_lifeCycleManager);
-            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField("_stateMachine");
+            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
+            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(Arg.AnyString)).Returns((String)null);
+            var lifeCycleManager = new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
+            PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
+            
             Assert.IsNotNull(stateMachine);
             Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
         }
