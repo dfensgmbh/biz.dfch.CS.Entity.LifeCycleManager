@@ -51,13 +51,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void LifeCycleManagerConstructorCallsStateMachineConfigLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
-
+            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
+            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).MustBeCalled();
+            new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
+            
+            Mock.Assert(stateMachineConfigLoader);
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
-            
+
         }
 
         [TestMethod]
