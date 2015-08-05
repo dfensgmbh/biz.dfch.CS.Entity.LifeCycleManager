@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-using System;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 {
@@ -31,16 +26,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            //_lifeCycleManager = new LifeCycleManager();
+            _lifeCycleManager = new LifeCycleManager("EntityType");
         }
 
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
-            //PrivateObject lifecycleManager = new PrivateObject(_lifeCycleManager);
-            //var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField("_stateMachine");
-            //Assert.IsNotNull(stateMachine);
-            //Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
+            PrivateObject lifecycleManager = new PrivateObject(_lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField("_stateMachine");
+            Assert.IsNotNull(stateMachine);
+            Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
         }
 
         [TestMethod]
