@@ -18,6 +18,8 @@ using System;
 using System.Runtime.CompilerServices;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MSTestExtensions;
+using Newtonsoft.Json;
 using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
@@ -61,7 +63,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
+            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
+            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns(CUSTOM_STATE_MACHINE_CONFIG);
+            var lifeCycleManager = new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
+            PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
 
+            Assert.IsNotNull(stateMachine);
+            Assert.AreEqual(CUSTOM_STATE_MACHINE_CONFIG, stateMachine.GetStringRepresentation());
+        }
+
+        [TestMethod]
+        public void LifeCycleManagerConstructorLoadedInvalidStateMachineConfigurationThrowsException()
+        {
+            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
+            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns("Invalid state machine configuration");
+            ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE), "Invalid state machine configuration");
         }
 
         [TestMethod]
