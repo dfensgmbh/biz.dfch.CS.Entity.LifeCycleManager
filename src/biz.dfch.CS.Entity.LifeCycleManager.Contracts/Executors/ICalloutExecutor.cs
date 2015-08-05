@@ -16,7 +16,7 @@
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
 {
-    interface ICalloutExecutor
+    public interface ICalloutExecutor
     {
     }
 }
