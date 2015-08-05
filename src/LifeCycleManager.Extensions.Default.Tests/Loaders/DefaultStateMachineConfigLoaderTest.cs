@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using LifeCycleManager.Extensions.Default.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LifeCycleManager.Extensions.Default.Tests.Loaders
@@ -22,8 +23,19 @@ namespace LifeCycleManager.Extensions.Default.Tests.Loaders
     public class DefaultStateMachineConfigLoaderTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void LoadConfigurationForPredefinedConfigReturnsConfigurationLoadedConfigurationFromAppConfig()
         {
+            var stateMachineConfigLoader = new DefaultStateMachineConfigLoader();
+            Assert.AreEqual("{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\",\"Running-Cancel\":\"Cancelled\",\"Completed-Continue\":\"Disposed\",\"Completed-Cancel\":\"InternalErrorState\",\"Cancelled-Continue\":\"Disposed\",\"Cancelled-Cancel\":\"InternalErrorState\",\"InternalErrorState-Continue\":\"Disposed\"}",
+                stateMachineConfigLoader.LoadConfiguration("AnEntity"));
+        }
+
+        [TestMethod]
+        public void LoadConfigurationForNotDefinedConfigReturnsNull()
+        {
+            var stateMachineConfigLoader = new DefaultStateMachineConfigLoader();
+            Assert.AreEqual(null,
+                stateMachineConfigLoader.LoadConfiguration("AnotherEntity"));
         }
     }
 }
