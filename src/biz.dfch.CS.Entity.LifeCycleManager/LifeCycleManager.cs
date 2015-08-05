@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+using System;
+using System.ComponentModel.Composition;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
@@ -22,12 +24,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
 
+        [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager()
+        public LifeCycleManager(String entityType)
         {
             _stateMachine = new StateMachine.StateMachine();
-            //_stateMachineConfigLoader.LoadConfiguration(typeof(T));
+
+            // DFTODO Move MEF initialization section to something similar like DLLMain
+            
+            
+            //_stateMachineConfigLoader.LoadConfiguration(entityType);
         }
     }
 }
