@@ -56,6 +56,19 @@
   <ItemGroup>
     <Folder Include="Executors\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\biz.dfch.CS.Entity.LifeCycleManager.Contracts\biz.dfch.CS.Entity.LifeCycleManager.Contracts.csproj">
+      <Project>{6d273c7a-2de0-4493-9bde-d06bf517c887}</Project>
+      <Name>biz.dfch.CS.Entity.LifeCycleManager.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LifecycleManager.Extensions.Default\LifeCycleManager.Extensions.Default.csproj">
+      <Project>{d5fae7e2-50e4-43e1-b194-e28fc8cba22f}</Project>
+      <Name>LifeCycleManager.Extensions.Default</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
