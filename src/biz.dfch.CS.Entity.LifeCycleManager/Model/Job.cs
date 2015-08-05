@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
     public class Job
     {
+        [Key]
         public String Id { get; set; }
+        [Required]
         public String State { get; set; }
+        [Required]
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
-        public String EntityId { get; set; }
+
+        public String ReferenceId { get; set; }
+        public String ReferenceType { get; set; }
         public String SourceState { get; set; }
         public String Condition { get; set; }
         public String TargetState { get; set; }
