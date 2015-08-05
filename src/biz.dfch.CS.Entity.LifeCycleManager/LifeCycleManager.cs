@@ -24,11 +24,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        // DFTODO Access entity to change/revert state over an URI passed to the constructor
-        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader)
+        public LifeCycleManager()
         {
             _stateMachine = new StateMachine.StateMachine();
-            _stateMachineConfigLoader = stateMachineConfigLoader;
             //_stateMachineConfigLoader.LoadConfiguration(typeof(T));
         }
     }
