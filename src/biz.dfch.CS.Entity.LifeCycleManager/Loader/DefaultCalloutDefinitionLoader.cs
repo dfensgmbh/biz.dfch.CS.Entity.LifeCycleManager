@@ -24,6 +24,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
 {
     public class DefaultCalloutDefinitionLoader
     {
-
+        // DFTODO implement an Entity Framework Controller that allows persisting and loading callout definitions
     }
 }

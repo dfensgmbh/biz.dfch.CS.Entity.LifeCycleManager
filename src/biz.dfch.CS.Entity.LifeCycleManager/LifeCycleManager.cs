@@ -24,19 +24,19 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    public class LifeCycleManager<T>
+    public class LifeCycleManager
     {
-        // DFTODO Pass entity as parameter?
-        // DFTODO HOWTO access entity to change/revert state?
-
         private StateMachine.StateMachine _stateMachine;
 
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager()
+        // DFTODO Access entity to change/revert state over an URI passed to the constructor
+        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader)
         {
             _stateMachine = new StateMachine.StateMachine();
+            _stateMachineConfigLoader = stateMachineConfigLoader;
+            _stateMachineConfigLoader.LoadConfiguration(typeof(T));
         }
     }
 }
