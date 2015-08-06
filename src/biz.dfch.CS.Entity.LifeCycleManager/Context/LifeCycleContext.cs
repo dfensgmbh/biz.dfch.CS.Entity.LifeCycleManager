@@ -19,8 +19,9 @@
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Context
 {
-    public class JobContext : DbContext
+    public class LifeCycleContext : DbContext
     {
         public DbSet<Job> Jobs { get; set; }
+        public DbSet<CalloutDefinition> CalloutDefinitions { get; set; }
     }
 }
