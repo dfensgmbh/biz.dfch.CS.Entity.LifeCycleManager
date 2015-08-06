@@ -17,6 +17,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Loader;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
@@ -29,23 +31,32 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String CUSTOM_STATE_MACHINE_CONFIG = "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
+        private const String ENTITY_CONTROLLER_FIELD = "_entityController";
+        private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/Entity(1)");
+
+        private IStateMachineConfigLoader _stateMachineConfigLoader;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            
+
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
         }
 
         [TestMethod]
         [WorkItem(18)]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
-            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
-            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(Arg.AnyString)).Returns((String)null);
-            var lifeCycleManager = new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
-            PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
-            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
-            
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(Arg.AnyString)).Returns((String)null);
+            var lifeCycleManager = new LifeCycleManager(_stateMachineConfigLoader, ENTITY_TYPE);
+            var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
+
             Assert.IsNotNull(stateMachine);
             Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
         }
@@ -54,20 +65,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(11)]
         public void LifeCycleManagerConstructorCallsStateMachineConfigLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
-            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
-            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).MustBeCalled();
-            new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
-            
-            Mock.Assert(stateMachineConfigLoader);
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).MustBeCalled();
+            new LifeCycleManager(_stateMachineConfigLoader, ENTITY_TYPE);
+
+            Mock.Assert(_stateMachineConfigLoader);
         }
 
         [TestMethod]
         [WorkItem(12)]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
-            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
-            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns(CUSTOM_STATE_MACHINE_CONFIG);
-            var lifeCycleManager = new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE);
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns(CUSTOM_STATE_MACHINE_CONFIG);
+            var lifeCycleManager = new LifeCycleManager(_stateMachineConfigLoader, ENTITY_TYPE);
             PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
             var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
 
@@ -79,15 +88,32 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(12)]
         public void LifeCycleManagerConstructorLoadedInvalidStateMachineConfigurationThrowsException()
         {
-            var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
-            Mock.Arrange(() => stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns("Invalid state machine configuration");
-            ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(stateMachineConfigLoader, ENTITY_TYPE), "Invalid state machine configuration");
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE)).Returns("Invalid state machine configuration");
+            ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(_stateMachineConfigLoader, ENTITY_TYPE), "Invalid state machine configuration");
+        }
+
+        [TestMethod]
+        [WorkItem(28)]
+        public void ChangeStateCallsEntityLoader()
+        {
+            var entityLoader = Mock.Create<EntityController>();
+            Mock.Arrange(() => entityLoader.LoadEntity(SAMPLE_ENTITY_URI)).Returns("{}").MustBeCalled();
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(Arg.AnyString)).Returns((String)null);
+
+            var lifeCycleManager = new LifeCycleManager(_stateMachineConfigLoader, ENTITY_TYPE);
+            PrivateObject lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
+            lifeCycleManagerWithPrivateAccess.SetField(ENTITY_CONTROLLER_FIELD, entityLoader);
+            lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, "Condition");
+
+            Mock.Assert(entityLoader);
+            Mock.Assert(_stateMachineConfigLoader);
         }
 
         [TestMethod]
         [WorkItem(21)]
         public void ChangeStateForLockedEntityThrowsException()
         {
+
             // DFTODO Define which exception should be thrown (Adjust test method name)
         }
 
@@ -95,13 +121,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(21)]
         public void ChangeStateForNonLockedEntityLocksEntity()
         {
-            
+
         }
 
         [TestMethod]
         public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadPreCalloutDefinition()
         {
-            
+
         }
 
         [TestMethod]
