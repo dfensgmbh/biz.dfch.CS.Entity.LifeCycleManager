@@ -77,6 +77,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(12)]
         public void LifeCycleManagerConstructorLoadedInvalidStateMachineConfigurationThrowsException()
         {
             var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
