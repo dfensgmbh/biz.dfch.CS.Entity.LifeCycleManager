@@ -19,7 +19,6 @@ using System.Runtime.CompilerServices;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
-using biz.dfch.CS.Entity.LifeCycleManager.Loader;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
