@@ -51,8 +51,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
             }
             
-            
-            // DFTODO Check what happens if 404 or 500 is returned
             return response.Content.ReadAsStringAsync().Result;
         }
 
