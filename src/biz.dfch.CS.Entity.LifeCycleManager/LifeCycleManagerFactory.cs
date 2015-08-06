@@ -16,18 +16,61 @@
 
 ﻿using System;
 ﻿using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition.Hosting;
+﻿using System.Configuration;
+﻿using System.IO;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
     public class LifeCycleManagerFactory
     {
+        private CompositionContainer _container;
+
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager CreateLifeCycleManager(String entityType)
+        public LifeCycleManagerFactory()
         {
-            return null;
+            LoadAndComposeParts();
+        }
+
+        private void LoadAndComposeParts()
+        {
+            var assemblyCatalog = new AggregateCatalog();
+
+            // Adds all the parts found in the given directory
+            var folder = ConfigurationManager.AppSettings["LifeCycleManager.ExtensionsFolder"];
+            try
+            {
+                if (!Path.IsPathRooted(folder))
+                {
+                    folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
+                }
+                assemblyCatalog.Catalogs.Add(new DirectoryCatalog(folder));
+            }
+            catch (Exception ex)
+            {
+                // DFTODO replace with log4net!
+                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message));
+            }
+
+            _container = new CompositionContainer(assemblyCatalog);
+
+            try
+            {
+                _container.ComposeParts(this);
+            }
+            catch (CompositionException compositionException)
+            {
+                Console.WriteLine(compositionException.ToString());
+            }
+        }
+
+        public LifeCycleManager CreateLifeCycleManager(ICredentialProvider credentialProvider, String entityType)
+        {
+            return new LifeCycleManager(_stateMachineConfigLoader, credentialProvider, entityType);
         }
     }
 }

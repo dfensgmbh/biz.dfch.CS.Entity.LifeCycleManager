@@ -21,12 +21,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     [TestClass]
     public class LifeCycleManagerFactoryTest
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-            
-        }
-
         [TestMethod]
         public void Test()
         {
