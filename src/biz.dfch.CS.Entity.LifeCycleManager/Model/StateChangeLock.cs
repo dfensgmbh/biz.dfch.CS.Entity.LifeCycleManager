@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-﻿using System.Data.Entity;
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
+using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Context
+namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
-    public class LifeCycleContext : DbContext
+    public class StateChangeLock
     {
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<CalloutDefinition> CalloutDefinitions { get; set; }
-        public DbSet<StateChangeLock> StateChangeLocks { get; set; }
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public String EntityId { get; set; }
+        [Required]
+        public String EntityType { get; set; }
+        [Required]
+        public DateTimeOffset Created { get; set; }
     }
 }

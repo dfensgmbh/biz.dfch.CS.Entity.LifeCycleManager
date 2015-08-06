@@ -21,17 +21,31 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
     public class Job
     {
         [Key]
-        public String Id { get; set; }
+        public int Id { get; set; }
+        private StateEnum _State { get; set; }
         [Required]
-        public String State { get; set; }
+        public String State 
+        {
+            get { return _State.ToString(); }
+            set { _State = EnumUtil.Parse<StateEnum>(value, true); }
+        }
         [Required]
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
 
-        public String ReferenceId { get; set; }
-        public String ReferenceType { get; set; }
+        [Required]
+        public String EntityId { get; set; }
+        [Required]
+        public String EntityType { get; set; }
         public String SourceState { get; set; }
         public String Condition { get; set; }
         public String TargetState { get; set; }
+    }
+
+    public enum StateEnum
+    {
+        PENDING
+        ,
+        FINISHED
     }
 }

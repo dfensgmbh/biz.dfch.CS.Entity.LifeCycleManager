@@ -59,8 +59,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\JobContext.cs" />
+    <Compile Include="Context\LifeCycleContext.cs" />
+    <Compile Include="Controller\CalloutDefinitionController.cs" />
+    <Compile Include="Controller\JobController.cs" />
+    <Compile Include="Controller\StateChangeLockController.cs" />
     <Compile Include="Credentials\ICredentialProvider.cs" />
+    <Compile Include="EnumUtil.cs" />
     <Compile Include="LifeCycleManagerFactory.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Controller\EntityController.cs" />
@@ -68,7 +72,9 @@
     <Compile Include="Logging\LogBase.cs" />
     <Compile Include="Logging\Debug.cs" />
     <Compile Include="Logging\Trace.cs" />
+    <Compile Include="Model\CalloutDefinition.cs" />
     <Compile Include="Model\Job.cs" />
+    <Compile Include="Model\StateChangeLock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

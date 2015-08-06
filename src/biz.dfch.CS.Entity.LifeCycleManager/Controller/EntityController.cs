@@ -15,10 +15,10 @@
  */
 
 ﻿using System;
-﻿using System.Diagnostics;
 ﻿using System.Net.Http;
 ﻿using System.Net.Http.Headers;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
@@ -64,7 +64,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private void SetHeaders()
         {
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applicaiton/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
     }
 }

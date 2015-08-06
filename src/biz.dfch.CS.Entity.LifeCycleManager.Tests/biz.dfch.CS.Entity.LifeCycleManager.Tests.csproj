@@ -70,7 +70,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Controller\EntityControllerTest.cs" />
-    <Compile Include="LifeCycleManagerFactoryTest.cs" />
     <Compile Include="LifeCycleManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

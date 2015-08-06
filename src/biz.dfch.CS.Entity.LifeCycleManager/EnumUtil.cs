@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+﻿using System;
 
-﻿using System.Data.Entity;
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
-
-namespace biz.dfch.CS.Entity.LifeCycleManager.Context
+namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    public class LifeCycleContext : DbContext
+    public static class EnumUtil
     {
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<CalloutDefinition> CalloutDefinitions { get; set; }
-        public DbSet<StateChangeLock> StateChangeLocks { get; set; }
+        public static T Parse<T>(string value, bool ignoreCase = true)
+        {
+            return (T)Enum.Parse(typeof(T), value, ignoreCase);
+        }
     }
 }

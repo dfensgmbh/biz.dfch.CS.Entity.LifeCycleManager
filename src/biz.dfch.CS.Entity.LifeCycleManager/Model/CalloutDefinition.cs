@@ -22,7 +22,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
     public class CalloutDefinition
     {
         [Key]
-        public String Id { get; set; }
+        public int Id { get; set; }
         [Required]
         public String TenantId { get; set; }
         [Required]
