@@ -21,6 +21,7 @@
 ﻿using System.IO;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
@@ -42,6 +43,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
             // Adds all the parts found in the given directory
             var folder = ConfigurationManager.AppSettings["LifeCycleManager.ExtensionsFolder"];
+            Debug.WriteLine("Loading assemblies from folder: {0}", folder);
             try
             {
                 if (!Path.IsPathRooted(folder))
@@ -52,19 +54,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
             catch (Exception ex)
             {
-                // DFTODO replace with log4net!
-                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message));
+                Trace.WriteLine("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message);
             }
 
             _container = new CompositionContainer(assemblyCatalog);
 
             try
             {
+                Debug.WriteLine("Composing MEF parts...");
                 _container.ComposeParts(this);
+                Debug.WriteLine("Composition successfully completed!");
             }
             catch (CompositionException compositionException)
             {
-                Console.WriteLine(compositionException.ToString());
+                Trace.WriteLine(compositionException.ToString());
             }
         }
 

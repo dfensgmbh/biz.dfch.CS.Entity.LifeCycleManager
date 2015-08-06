@@ -16,6 +16,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
@@ -38,8 +39,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             ConfigureStateMachine(entityType);
         }
 
-        private void ConfigureStateMachine(string entityType)
+        private void ConfigureStateMachine(String entityType)
         {
+            Debug.WriteLine("Configuring state machine");
             var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
 
             if (null != config)
@@ -50,6 +52,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 }
                 catch (JsonReaderException e)
                 {
+                    Debug.WriteLine("Error occured while parsing state machine configuraiton: {0}", e.Message);
                     throw new ArgumentException("Invalid state machine configuration", e);
                 }
             }
@@ -57,6 +60,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void ChangeState(Uri entityUri, String condition)
         {
+            Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             var entity = _entityController.LoadEntity(entityUri);
         }
     }

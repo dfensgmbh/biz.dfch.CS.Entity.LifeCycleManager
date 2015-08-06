@@ -15,6 +15,7 @@
  */
 
 ﻿using System;
+﻿using System.Diagnostics;
 ﻿using System.Net.Http;
 ﻿using System.Net.Http.Headers;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
@@ -27,6 +28,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public EntityController(ICredentialProvider credentialProvider)
         {
+            Debug.Write("Initializing Http Client");
             var clientHandler = new HttpClientHandler();
             clientHandler.Credentials = credentialProvider.GetCredentials();
             _httpClient = new HttpClient(clientHandler);
@@ -34,8 +36,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public String LoadEntity(Uri entityUri)
         {
+            Debug.WriteLine("Loading entity with Uri: '{0}'", entityUri);
             if (null == entityUri)
             {
+                Debug.WriteLine("Entity Uri passed to LoadEntity method is null");
                 throw new ArgumentNullException("entityUri");
             }
 
@@ -51,6 +55,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
+                Debug.WriteLine("Error occurred while fetching entity: {0}", e.Message);
                 throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
             }
             

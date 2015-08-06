@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
 
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "App.config", Watch = true)]
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 {
     [TestClass]
