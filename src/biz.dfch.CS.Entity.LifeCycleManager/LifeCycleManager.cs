@@ -43,9 +43,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     _stateMachine.SetupStateMachine(config);
                 }
-                catch (JsonReaderException)
+                catch (JsonReaderException e)
                 {
-                    throw new ArgumentException("Invalid state machine configuration");
+                    throw new ArgumentException("Invalid state machine configuration", e);
                 }
             }
         }

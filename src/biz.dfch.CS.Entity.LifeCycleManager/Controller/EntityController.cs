@@ -42,7 +42,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
 
             HttpResponseMessage response = _httpClient.GetAsync(entityUri).Result;
-
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException e)
+            {
+                throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
+            }
+            
+            
             // DFTODO Check what happens if 404 or 500 is returned
             return response.Content.ReadAsStringAsync().Result;
         }
