@@ -38,6 +38,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(18)]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
             var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
@@ -51,6 +52,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(11)]
         public void LifeCycleManagerConstructorCallsStateMachineConfigLoaderToLoadStateMachineConfigurationAccordingEntityType()
         {
             var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
@@ -61,6 +63,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(12)]
         public void LifeCycleManagerConstructorInitializesStateMachineWithLoadedConfigurationIfAvailable()
         {
             var stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
