@@ -19,7 +19,6 @@ using System.Runtime.CompilerServices;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
-using Newtonsoft.Json;
 using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
@@ -86,12 +85,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(21)]
         public void ChangeStateForLockedEntityThrowsException()
         {
             // DFTODO Define which exception should be thrown (Adjust test method name)
         }
 
         [TestMethod]
+        [WorkItem(21)]
         public void ChangeStateForNonLockedEntityLocksEntity()
         {
             
@@ -126,5 +127,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
 
         }
+
+        /**
+         * For entity framework mocking see here: https://github.com/tailsu/Telerik.JustMock.EntityFramework
+         **/
     }
 }
