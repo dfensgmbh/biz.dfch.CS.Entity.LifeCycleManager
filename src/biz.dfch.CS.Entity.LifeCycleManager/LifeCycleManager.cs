@@ -33,6 +33,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _stateMachine = new StateMachine.StateMachine();
             _stateMachineConfigLoader = stateMachineConfigLoader;
             var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
+            
             if (null != config)
             {
                 try
@@ -45,5 +46,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 }
             }
         }
+
+
     }
 }
