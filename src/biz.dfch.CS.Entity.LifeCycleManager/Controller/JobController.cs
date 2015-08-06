@@ -54,11 +54,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return false;
                 }
-
+                
                 job.Updated = DateTimeOffset.Now;
                 job.State = StateEnum.FINISHED.ToString();
-                db.Jobs.Attach(job);
-
+                db.SaveChanges();
+                
                 return true;
             }
         }
