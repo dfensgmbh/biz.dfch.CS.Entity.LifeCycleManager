@@ -68,7 +68,6 @@
     <Compile Include="LifeCycleManagerFactory.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Controller\EntityController.cs" />
-    <Compile Include="Loader\CalloutDefinitionLoader.cs" />
     <Compile Include="Logging\LogBase.cs" />
     <Compile Include="Logging\Debug.cs" />
     <Compile Include="Logging\Trace.cs" />
