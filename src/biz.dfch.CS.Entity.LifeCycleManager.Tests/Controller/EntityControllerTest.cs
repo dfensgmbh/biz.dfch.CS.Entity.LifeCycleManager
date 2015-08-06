@@ -16,7 +16,6 @@
 
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
@@ -63,6 +62,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
             Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
+            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).MustBeCalled();
             Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
 
             var entityController = new EntityController();
@@ -77,9 +77,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(28)]
-        public void LoadEntityWithUriPointingToNonExistingEntityThrowsException()
+        public void LoadEntityWithUriPointingToNonExistingEntityThrowsArgumentException()
         {
+            var mockedHttpClient = Mock.Create<HttpClient>();
+            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
+            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
+            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
 
+            var entityController = new EntityController();
+            var entityControllerWithPrivatAccess = new PrivateObject(entityController);
+            entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
+
+            ThrowsAssert.Throws<ArgumentException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
+
+            Mock.Assert(mockedHttpClient);
+            Mock.Assert(mockedResponseMessage);
         }
     }
 }
