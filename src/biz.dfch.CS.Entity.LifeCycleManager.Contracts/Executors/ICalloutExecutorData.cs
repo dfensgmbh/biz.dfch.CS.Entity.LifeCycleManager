@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executor
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
 {
     public interface ICalloutExecutorData
     {

@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
+namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
 {
-    [TestClass]
-    public class LifeCycleManagerFactoryTest
+    public class CalloutDefinitionLoader
     {
-        [TestMethod]
-        public void Test()
-        {
-            
-        }
+        // DFTODO implement an Entity Framework Controller that allows persisting and loading callout definitions
     }
 }

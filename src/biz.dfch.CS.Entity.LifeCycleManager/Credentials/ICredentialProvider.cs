@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace biz.dfch.CS.Entity.LifeCycleManager.Loader
+namespace biz.dfch.CS.Entity.LifeCycleManager.Credentials
 {
-    public class DefaultCalloutDefinitionLoader
+    public interface ICredentialProvider
     {
-        // DFTODO implement an Entity Framework Controller that allows persisting and loading callout definitions
+        System.Net.ICredentials GetCredentials();
     }
 }

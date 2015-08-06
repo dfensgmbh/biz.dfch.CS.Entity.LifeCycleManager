@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
+namespace biz.dfch.CS.Entity.LifeCycleManager.Logging
 {
-    [TestClass]
-    public class LifeCycleManagerFactoryTest
+    public class LogBase
     {
-        [TestMethod]
-        public void Test()
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static void WriteException(string message, Exception ex)
         {
-            
+            if (log.IsErrorEnabled) log.ErrorFormat("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace);
         }
     }
 }

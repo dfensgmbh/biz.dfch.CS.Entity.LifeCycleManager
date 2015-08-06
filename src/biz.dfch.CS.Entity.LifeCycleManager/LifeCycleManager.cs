@@ -16,8 +16,10 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Linq.Expressions;
+using System.Diagnostics;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 using Newtonsoft.Json;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -25,25 +27,41 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
+        private EntityController _entityController;
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, String entityType)
+        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, ICredentialProvider credentialProvider, String entityType)
         {
+            _entityController = new EntityController(credentialProvider);
             _stateMachine = new StateMachine.StateMachine();
             _stateMachineConfigLoader = stateMachineConfigLoader;
+            ConfigureStateMachine(entityType);
+        }
+
+        private void ConfigureStateMachine(String entityType)
+        {
+            Debug.WriteLine("Configuring state machine");
             var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
+
             if (null != config)
             {
                 try
                 {
                     _stateMachine.SetupStateMachine(config);
                 }
-                catch (JsonReaderException)
+                catch (JsonReaderException e)
                 {
-                    throw new ArgumentException("Invalid state machine configuration");
+                    Debug.WriteLine("Error occured while parsing state machine configuraiton: {0}", e.Message);
+                    throw new ArgumentException("Invalid state machine configuration", e);
                 }
             }
+        }
+
+        public void ChangeState(Uri entityUri, String condition)
+        {
+            Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
+            var entity = _entityController.LoadEntity(entityUri);
         }
     }
 }
