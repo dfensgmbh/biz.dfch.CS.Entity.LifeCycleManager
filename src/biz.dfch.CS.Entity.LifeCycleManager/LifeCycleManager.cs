@@ -19,6 +19,7 @@ using System.ComponentModel.Composition;
 using System.Linq.Expressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 using biz.dfch.CS.Entity.LifeCycleManager.Loader;
 using Newtonsoft.Json;
 
@@ -27,16 +28,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
-        private EntityController _entityController = new EntityController();
+        private EntityController _entityController;
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
-        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, String entityType)
+        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, ICredentialProvider credentialProvider, String entityType)
         {
+            _entityController = new EntityController(credentialProvider);
             _stateMachine = new StateMachine.StateMachine();
             _stateMachineConfigLoader = stateMachineConfigLoader;
+            ConfigureStateMachine(entityType);
+        }
+
+        private void ConfigureStateMachine(string entityType)
+        {
             var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
-            
+
             if (null != config)
             {
                 try

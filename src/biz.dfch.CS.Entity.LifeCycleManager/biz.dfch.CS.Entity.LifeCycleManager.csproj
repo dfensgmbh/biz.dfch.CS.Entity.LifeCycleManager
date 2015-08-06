@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\JobContext.cs" />
+    <Compile Include="Credentials\ICredentialProvider.cs" />
     <Compile Include="LifeCycleManagerFactory.cs" />
     <Compile Include="Loader\DefaultCalloutDefinitionLoader.cs" />
     <Compile Include="LifeCycleManager.cs" />

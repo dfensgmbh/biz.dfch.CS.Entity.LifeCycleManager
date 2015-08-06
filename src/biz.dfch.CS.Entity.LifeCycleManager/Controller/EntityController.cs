@@ -17,6 +17,7 @@
 ﻿using System;
 ﻿using System.Net.Http;
 ﻿using System.Net.Http.Headers;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
@@ -24,9 +25,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     {
         private HttpClient _httpClient;
 
-        public EntityController()
+        public EntityController(ICredentialProvider credentialProvider)
         {
-            _httpClient = new HttpClient();
+            var clientHandler = new HttpClientHandler();
+            clientHandler.Credentials = credentialProvider.GetCredentials();
+            _httpClient = new HttpClient(clientHandler);
         }
 
         public String LoadEntity(Uri entityUri)
@@ -56,7 +59,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private void SetHeaders()
         {
-            // DFTODO Add credentials to header
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applicaiton/json"));
         }
     }

@@ -15,8 +15,10 @@
  */
 
 using System;
+using System.Net;
 using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
@@ -27,13 +29,30 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     public class EntityControllerTest
     {
         private const String HTTP_CLIENT_FIELD = "_httpClient";
+
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
+        
+        private ICredentialProvider _credentialProvider;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _credentialProvider = Mock.Create<ICredentialProvider>();
+        }
+
+        [TestMethod]
+        public void EntityControllerConstructorReadsCredentialsFromCredentialsProvider()
+        {
+            Mock.Arrange(() => _credentialProvider.GetCredentials()).Returns(CredentialCache.DefaultNetworkCredentials).MustBeCalled();
+            new EntityController(_credentialProvider);
+            Mock.Assert(_credentialProvider);
+        }
 
         [TestMethod]
         [WorkItem(28)]
         public void LoadEntityWithNullEntityUriThrowsArgumentNullException()
         {
-            var entityController = new EntityController();
+            var entityController = new EntityController(_credentialProvider);
             ThrowsAssert.Throws<ArgumentNullException>(() => entityController.LoadEntity(null));
         }
 
@@ -46,7 +65,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
             Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
             
-            var entityController = new EntityController();
+            var entityController = new EntityController(_credentialProvider);
             var entityControllerWithPrivatAccess = new PrivateObject(entityController);
             entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
             entityController.LoadEntity(SAMPLE_ENTITY_URI);
@@ -65,7 +84,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).MustBeCalled();
             Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
 
-            var entityController = new EntityController();
+            var entityController = new EntityController(_credentialProvider);
             var entityControllerWithPrivatAccess = new PrivateObject(entityController);
             entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
 
@@ -84,7 +103,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
             Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
 
-            var entityController = new EntityController();
+            var entityController = new EntityController(_credentialProvider);
             var entityControllerWithPrivatAccess = new PrivateObject(entityController);
             entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
 
