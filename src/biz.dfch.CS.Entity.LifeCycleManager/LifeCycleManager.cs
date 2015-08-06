@@ -18,6 +18,8 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq.Expressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
+using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Loader;
 using Newtonsoft.Json;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -25,6 +27,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager
     {
         private StateMachine.StateMachine _stateMachine;
+        private EntityController _entityController = new EntityController();
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
@@ -47,6 +50,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-
+        public void ChangeState(Uri entityUri, String condition)
+        {
+            var entity = _entityController.LoadEntity(entityUri);
+        }
     }
 }
