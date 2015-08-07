@@ -14,10 +14,167 @@
  * limitations under the License.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
+    [TestClass]
     public class JobsControllerTest
     {
+        [TestMethod]
+        public void GetJobsForUserWithReadPermissionReturnsHisJobs()
+        {
+            
+        }
 
+        [TestMethod]
+        public void GetJobsForUserWithoutReadPermissionReturnsForbidden()
+        {
+            
+        }
+
+        [TestMethod]
+        public void GetJobsWithNonExistingJobsForCurrentUserReturnsEmptyList()
+        {
+
+        }
+
+        [TestMethod]
+        public void GetJobsWithFilterOnStateReturnsJobsWithDesiredState()
+        {
+
+        }
+
+        [TestMethod]
+        public void GetJobByIdForUserWithOwnershipAndReadPermissionReturnsDesiredJob()
+        {
+            
+        }
+
+        [TestMethod]
+        public void GetJobByIdForUserWithoutOwnershipReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void GetJobByIdForNonExistingJobIdReturnsNotFound()
+        {
+
+        }
+
+        [TestMethod]
+        public void GetJobByIdForUserWithoutReadPermissionReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PutJobForUserWithUpdatePermissionAndOwnershipUpdatesJob()
+        {
+            
+        }
+
+        [TestMethod]
+        public void PutJobForUserWithoutUpdatePermissionReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PutJobForUserWithoutOwnershipReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PutJobForAuthorizedUserSetsUpdatedDate()
+        {
+
+        }
+
+        [TestMethod]
+        public void PutJobForNonExistingJobIdReturnsNotFound()
+        {
+
+        }
+
+        [TestMethod]
+        public void PostJobForUserWithCreatePermissionAndOwnershipCreatesJob()
+        {
+
+        }
+
+        [TestMethod]
+        public void PutJobForUserWithoutWritePermissionReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PostJobForAuthorizedUserSetsStateTypeAndCreatedDate()
+        {
+
+        }
+
+        [TestMethod]
+        public void PostJobForNonExistingJobIdReturnsNotFound()
+        {
+
+        }
+
+        [TestMethod]
+        public void PatchJobForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields()
+        {
+
+        }
+
+        [TestMethod]
+        public void PatchJobForUserWithoutUpdatePermissionReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PatchJobForUserWithoutOwnershipReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void PatchJobForAuthorizedUserSetsUpdatedDate()
+        {
+
+        }
+
+        [TestMethod]
+        public void PatchForNonExistingJobIdReturnsNotFound()
+        {
+
+        }
+
+        [TestMethod]
+        public void DeleteJobForUserWithDeletePermissionAndOwnershipDeletesJob()
+        {
+
+        }
+
+        [TestMethod]
+        public void DeleteJobForUserWithoutUpdatePermissionReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void DeleteJobForUserWithoutOwnershipReturnsForbidden()
+        {
+
+        }
+
+        [TestMethod]
+        public void DeleteForNonExistingJobIdReturnsNotFound()
+        {
+            
+        }
     }
 }

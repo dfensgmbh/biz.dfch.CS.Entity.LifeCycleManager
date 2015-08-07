@@ -82,6 +82,7 @@
     <Compile Include="Context\LifeCycleContext.cs" />
     <Compile Include="Controller\JobsController.cs" />
     <Compile Include="Controller\StateChangeLockController.cs" />
+    <Compile Include="CoreEndpoint.cs" />
     <Compile Include="UserData\ICredentialProvider.cs" />
     <Compile Include="UserData\CurrentUserDataProvider.cs" />
     <Compile Include="Util\EnumUtil.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Model\Job.cs" />
     <Compile Include="Model\StateChangeLock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ODataControllerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

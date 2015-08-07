@@ -89,7 +89,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(18)]
         public void LifeCycleManagerConstructorInitializesStateMachineWithDefaultConfigurationIfNoConfigurationDefinedExplicit()
         {
-            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
+            var x = Mock.Create<IStateMachineConfigLoader>();
+            Mock.Arrange(() => x.LoadConfiguration(ENTITY_TYPE))
                 .IgnoreInstance()
                 .Returns((String)null)
                 .MustBeCalled();
