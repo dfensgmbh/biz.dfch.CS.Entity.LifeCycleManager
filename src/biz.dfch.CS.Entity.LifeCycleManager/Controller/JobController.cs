@@ -48,7 +48,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             using (var db = new LifeCycleContext())
             {
-                var job = db.Jobs.Where(j => j.EntityId.Equals(entityId) && j.EntityType.Equals(entityType) && j.State.Equals(StateEnum.PENDING.ToString())).FirstOrDefault();
+                var job = db.Jobs
+                    .Where(j => j.EntityId.Equals(entityId) &&
+                        j.EntityType.Equals(entityType) &&
+                        j.State.Equals(StateEnum.PENDING.ToString()))
+                        .FirstOrDefault();
 
                 if (null == job)
                 {

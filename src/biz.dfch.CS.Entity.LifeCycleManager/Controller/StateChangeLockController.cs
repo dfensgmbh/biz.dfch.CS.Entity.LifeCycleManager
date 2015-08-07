@@ -44,7 +44,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             using (var db = new LifeCycleContext())
             {
-                var stateChangeLock = db.StateChangeLocks.Where(l => l.EntityId.Equals(entityId) && l.EntityType.Equals(entityType)).FirstOrDefault();
+                var stateChangeLock = db.StateChangeLocks
+                    .Where(l => l.EntityId.Equals(entityId) &&
+                        l.EntityType.Equals(entityType))
+                        .FirstOrDefault();
                 return null == stateChangeLock ? false : true;
             }
         }

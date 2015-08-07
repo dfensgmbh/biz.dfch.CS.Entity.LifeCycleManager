@@ -15,7 +15,7 @@
  */
 ﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager
+namespace biz.dfch.CS.Entity.LifeCycleManager.Util
 {
     public static class EnumUtil
     {

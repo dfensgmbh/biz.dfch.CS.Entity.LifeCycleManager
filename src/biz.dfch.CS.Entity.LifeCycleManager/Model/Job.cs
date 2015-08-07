@@ -15,6 +15,7 @@
  */
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Util;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
