@@ -64,7 +64,7 @@
     <Compile Include="Controller\JobController.cs" />
     <Compile Include="Controller\StateChangeLockController.cs" />
     <Compile Include="Credentials\ICredentialProvider.cs" />
-    <Compile Include="EnumUtil.cs" />
+    <Compile Include="Util\EnumUtil.cs" />
     <Compile Include="LifeCycleManagerFactory.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Controller\EntityController.cs" />
