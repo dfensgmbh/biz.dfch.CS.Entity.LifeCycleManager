@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entity\CalloutData.cs" />
     <Compile Include="Executors\ICalloutExecutor.cs" />
     <Compile Include="Executors\ICalloutExecutorData.cs" />
     <Compile Include="Loaders\IStateMachineConfigLoader.cs" />

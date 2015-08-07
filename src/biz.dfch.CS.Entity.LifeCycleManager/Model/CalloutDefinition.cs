@@ -31,6 +31,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 
         public String EntityId { get; set; }
         public String EntityType { get; set; }
-        public String Definition { get; set; }
+        public String Parameters { get; set; }
     }
 }

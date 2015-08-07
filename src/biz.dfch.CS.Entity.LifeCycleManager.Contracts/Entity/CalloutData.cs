@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
 {
-    public interface ICalloutExecutor
+    public class CalloutData
     {
-        void ExecuteCallout(CalloutData data);
+        public String EntityId { get; set; }
+        public String EntityType { get; set; }
+        public String Action { get; set; }
+        public String DecisionId { get; set; }
+        public String UserId { get; set; }
+        public String TenantId { get; set; }
+        public String Type { get; set; }
     }
 }

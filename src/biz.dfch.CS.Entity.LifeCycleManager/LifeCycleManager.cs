@@ -62,11 +62,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         {
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             var entity = _entityController.LoadEntity(entityUri);
-            // DFTODO create job of type Lifecycle
+            // DFTODO create job of type Lifecycle (extract data from JSON)
             // DFTODO lock entity
             // DFTODO load callout definition
             // DFTODO execute Pre callout
             // DFTODO if no pre callout found -> call preCalloutCallback method
+            // DFTODO on callout -> if exception: job = failed, unlock
         }
 
         // DFTODO preCalloutCallback: finish job, change state, persist, load callout definition and execute post callout + create new job
