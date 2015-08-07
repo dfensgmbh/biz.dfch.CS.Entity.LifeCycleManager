@@ -16,7 +16,6 @@
 
 ﻿using System;
 ﻿using System.ComponentModel.Composition;
-﻿using System.Configuration;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 
 namespace LifeCycleManager.Extensions.Default.Loaders
@@ -26,7 +25,11 @@ namespace LifeCycleManager.Extensions.Default.Loaders
     {
         public String LoadConfiguration(String entityType)
         {
-            return ConfigurationManager.AppSettings[entityType];
+            if (entityType.Equals("EntityType"))
+            {
+                return "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";    
+            }
+            return null;
         }
     }
 }

@@ -16,27 +16,82 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.Configuration;
+using System.IO;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
-using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
+using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Newtonsoft.Json;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
     public class LifeCycleManager
     {
+        private CompositionContainer _container;
+
+        private static Object _lock = new Object();
+
+        // DFTODO Check if MEF access to var is thread safe
+        [Import(typeof(IStateMachineConfigLoader))]
+        private IStateMachineConfigLoader _stateMachineConfigLoader;
+
+        private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
 
-        private IStateMachineConfigLoader _stateMachineConfigLoader;
-
-        public LifeCycleManager(IStateMachineConfigLoader stateMachineConfigLoader, ICredentialProvider credentialProvider, String entityType)
+        public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
+            lock (_lock)
+            {
+                if (null == _staticStateMachineConfigLoader)
+                {
+                    LoadAndComposeParts();
+                    _staticStateMachineConfigLoader = _stateMachineConfigLoader;
+                }
+                else
+                {
+                    _stateMachineConfigLoader = _staticStateMachineConfigLoader;
+                }
+            }
             _entityController = new EntityController(credentialProvider);
             _stateMachine = new StateMachine.StateMachine();
-            _stateMachineConfigLoader = stateMachineConfigLoader;
             ConfigureStateMachine(entityType);
+        }
+
+        private void LoadAndComposeParts()
+        {
+            var assemblyCatalog = new AggregateCatalog();
+
+            // Adds all the parts found in the given directory
+            var folder = ConfigurationManager.AppSettings["LifeCycleManager.ExtensionsFolder"];
+            Debug.WriteLine("Loading assemblies from folder: {0}", folder);
+            try
+            {
+                if (!Path.IsPathRooted(folder))
+                {
+                    folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
+                }
+                assemblyCatalog.Catalogs.Add(new DirectoryCatalog(folder));
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message);
+            }
+
+            _container = new CompositionContainer(assemblyCatalog);
+
+            try
+            {
+                Debug.WriteLine("Composing MEF parts...");
+                _container.ComposeParts(this);
+                Debug.WriteLine("Composition successfully completed!");
+            }
+            catch (CompositionException compositionException)
+            {
+                Trace.WriteLine(compositionException.ToString());
+            }
         }
 
         private void ConfigureStateMachine(String entityType)

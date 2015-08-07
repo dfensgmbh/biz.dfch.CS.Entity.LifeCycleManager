@@ -17,8 +17,8 @@
 ﻿using System;
 ﻿using System.Net.Http;
 ﻿using System.Net.Http.Headers;
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Logging;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {

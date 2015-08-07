@@ -24,31 +24,44 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         [Key]
         public int Id { get; set; }
         private StateEnum _State { get; set; }
-        [Required]
+
+        // DFTODO - define a default state?
         public String State 
         {
             get { return _State.ToString(); }
             set { _State = EnumUtil.Parse<StateEnum>(value, true); }
         }
+        // DFTODO - define a default job?
         [Required]
         public String Type { get; set; }
-        [Required]
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
-
-        [Required]
-        public String EntityId { get; set; }
-        [Required]
-        public String EntityType { get; set; }
-        
 
         public String Parameters { get; set; }
     }
 
     public enum StateEnum
     {
-        PENDING
+        Configuring
         ,
-        FINISHED
+        Submitted
+        ,
+        Validating
+        ,
+        Queued
+        ,
+        Dispatching
+        ,
+        Running
+        ,
+        Finishing
+        ,
+        Finished
+        ,
+        Failed
+        ,
+        Canceling
+        ,
+        Canceled
     }
 }

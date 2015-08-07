@@ -18,7 +18,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
-using biz.dfch.CS.Entity.LifeCycleManager.Credentials;
+using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;

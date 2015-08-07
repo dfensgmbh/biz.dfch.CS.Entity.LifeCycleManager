@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Credentials
+namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
-    public interface ICredentialProvider
+    public static class CurrentUserDataProvider
     {
-        System.Net.ICredentials GetCredentials();
+        public static Boolean HasCurrentUserPermission(String permissionId)
+        {
+            return true;
+        }
     }
 }
