@@ -118,8 +118,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Job job = null;
                 using (var db = new LifeCycleContext())
                 {
-                    job = db.Jobs
-                        .Where(j => j.Id == key).FirstOrDefault();
+                    job = db.Jobs.Find(key);
                 }
                 if (null == job)
                 {
@@ -181,7 +180,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     db.SaveChanges();
                 }
                 return Ok<Job>(job);
-
             }
             catch (Exception e)
             {
@@ -199,7 +197,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Entity to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
-
             try
             {
                 Debug.WriteLine(fn);
@@ -217,16 +214,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine(String.Format("Trying to save job : '{0}'", job.Id));
 
-                Job jobEntity;
+                Job jobEntity = null;
                 using (var db = new LifeCycleContext())
                 {
-                    jobEntity = new Job()
+                    var jobEntity = new Job()
                     {
                         // DFTODO Check job type -> set default job type
                         Created = DateTimeOffset.Now,
                         CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                        State = StateEnum.Queued.ToString(),
-                        Type = job.Type,
+                        State = null == job.State ? StateEnum.Queued.ToString() : job.State,
+                        Type = null == job.Type ? "DefaultJob" : job.Type,
                         Parameters = job.Parameters,
                     };
                     Debug.WriteLine("Saving job with id '{0}'", job.Id);
@@ -253,15 +250,41 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ModelState);
             }
 
-            Debug.WriteLine(fn);
-            // TODO: Get the entity here.
+            try
+            {
+                Debug.WriteLine(fn);
 
-            // delta.Patch(job);
-
-            // TODO: Save the patched entity.
-
-            // return Updated(job);
-            return StatusCode(HttpStatusCode.NotImplemented);
+                var permissionId = CreatePermissionId("CanUpdate");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                Job job;
+                using (var db = new LifeCycleContext())
+                {
+                    job = db.Jobs.Find(key);
+                    if (null == job)
+                    {
+                        return StatusCode(HttpStatusCode.NotFound);
+                    }
+                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                    {
+                        return StatusCode(HttpStatusCode.Forbidden);
+                    }
+                    delta.Patch(job);
+                    job.Modified = DateTimeOffset.Now;
+                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                    db.Jobs.Attach(job);
+                    db.Entry(job).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                return Ok<Job>(job);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
+                throw;
+            }
         }
 
         // DELETE: api/Core.svc/Jobs(5)
@@ -278,19 +301,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var entity =
-                    (
-                    from entry in _inMemoryDemoApprovals
-                    where entry.Id.Equals(key)
-                    select entry
-                    )
-                    .FirstOrDefault();
-                if (null == entity) { return StatusCode(HttpStatusCode.NotFound); }
-                if (NotAssignedToCurrentUserOrToGroupOfCurrentUser(CurrentUserDataProvider.GetCurrentUserId(), CurrentUserDataProvider.GetRolesOfCurrentUser(), entity))
+                using (var db = new LifeCycleContext())
                 {
-                    return StatusCode(HttpStatusCode.Forbidden);
+                    var job = db.Jobs.Find(key);
+                    if (null == job)
+                    {
+                        return StatusCode(HttpStatusCode.NotFound);
+                    }
+                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                    {
+                        return StatusCode(HttpStatusCode.Forbidden);
+                    }
+                    db.Jobs.Remove(job);
                 }
-                _inMemoryDemoApprovals.TryTake(out entity);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -308,28 +331,31 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
-                var permissionId = CreatePermissionId("CanDecline");
+                var permissionId = CreatePermissionId("CanRun");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var entity =
-                    (
-                    from entry in _inMemoryDemoApprovals
-                    where entry.Id.Equals(key)
-                    select entry
-                    ).FirstOrDefault();
-
-                if (null == entity) { return StatusCode(HttpStatusCode.NotFound); }
-                if (NotAssignedToCurrentUserOrToGroupOfCurrentUser(CurrentUserDataHelper.GetCurrentUserId(), CurrentUserDataHelper.GetRolesOfCurrentUser(), entity) || AlreadyApprovedOrDeclined(entity))
+                using (var db = new LifeCycleContext())
                 {
-                    return StatusCode(HttpStatusCode.Forbidden);
+                    var job = db.Jobs.Find(key);
+                    if (null == job)
+                    {
+                        return StatusCode(HttpStatusCode.NotFound);
+                    }
+                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                    {
+                        return StatusCode(HttpStatusCode.Forbidden);
+                    }
+                    job.Modified = DateTimeOffset.Now;
+                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                    job.State = StateEnum.Running.ToString();
+                    db.Jobs.Attach(job);
+                    db.Entry(job).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return Ok<String>(job.State);
                 }
-                var currentState = Models.Approval.StatusEnum.DECLINED.ToString();
-                entity.Status = currentState;
-
-                return Ok<String>(currentState);
             }
             catch (Exception ex)
             {

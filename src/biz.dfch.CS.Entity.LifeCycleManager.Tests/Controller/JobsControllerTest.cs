@@ -112,7 +112,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PostJobForAuthorizedUserSetsStateTypeAndCreatedDate()
+        public void PostJobWithoutStateAndTypeForAuthorizedUserSetsCreatedDateAndDefaultStateAndType()
+        {
+
+        }
+
+        [TestMethod]
+        public void PostJobWithStateAndTypeForAuthorizedUserSetsDefaultStateAndTypeAccordingSentData()
         {
 
         }
