@@ -24,7 +24,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class JobController
     {
-        public Boolean CreateJob(String entityId, String entityType, String condition, String sourceState, String targetState)
+        public Boolean CreateJob(String entityId, String entityType, String jobType, String parameters)
         {
             using (var db = new LifeCycleContext())
             {
@@ -32,11 +32,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     Created = DateTimeOffset.Now,
                     State = StateEnum.PENDING.ToString(),
+                    Type = jobType,
                     EntityId = entityId,
                     EntityType = entityType,
-                    Condition = condition,
-                    SourceState = sourceState,
-                    TargetState = targetState
+                    Parameters = parameters
                 };
                 Debug.WriteLine("Saving job for entity of type '{0}' with id '{1}'", entityType, entityId);
                 db.Jobs.Add(job);

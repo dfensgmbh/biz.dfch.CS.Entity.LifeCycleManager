@@ -28,8 +28,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     [TestClass]
     public class EntityControllerTest
     {
-        private const String HTTP_CLIENT_FIELD = "_httpClient";
-
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
         
         private ICredentialProvider _credentialProvider;
@@ -43,7 +41,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void EntityControllerConstructorReadsCredentialsFromCredentialsProvider()
         {
-            Mock.Arrange(() => _credentialProvider.GetCredentials()).Returns(CredentialCache.DefaultNetworkCredentials).MustBeCalled();
+            Mock.Arrange(() => _credentialProvider.GetCredentials())
+                .Returns(CredentialCache.DefaultNetworkCredentials)
+                .MustBeCalled();
             new EntityController(_credentialProvider);
             Mock.Assert(_credentialProvider);
         }
@@ -63,11 +63,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
             Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
+            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+                .IgnoreInstance()
+                .Returns(mockedResponseMessage)
+                .MustBeCalled();
             
             var entityController = new EntityController(_credentialProvider);
-            var entityControllerWithPrivatAccess = new PrivateObject(entityController);
-            entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
             entityController.LoadEntity(SAMPLE_ENTITY_URI);
 
             Mock.Assert(mockedHttpClient);
@@ -82,11 +83,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
             Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
             Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
+            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+                .IgnoreInstance()
+                .Returns(mockedResponseMessage)
+                .MustBeCalled();
 
             var entityController = new EntityController(_credentialProvider);
-            var entityControllerWithPrivatAccess = new PrivateObject(entityController);
-            entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
 
             Assert.AreEqual("test", entityController.LoadEntity(SAMPLE_ENTITY_URI));
 
@@ -101,11 +103,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
             Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result).Returns(mockedResponseMessage).MustBeCalled();
+            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+                .IgnoreInstance()
+                .Returns(mockedResponseMessage)
+                .MustBeCalled();
 
             var entityController = new EntityController(_credentialProvider);
-            var entityControllerWithPrivatAccess = new PrivateObject(entityController);
-            entityControllerWithPrivatAccess.SetField(HTTP_CLIENT_FIELD, mockedHttpClient);
 
             ThrowsAssert.Throws<ArgumentException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
 

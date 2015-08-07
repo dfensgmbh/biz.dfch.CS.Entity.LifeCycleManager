@@ -31,7 +31,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
             set { _State = EnumUtil.Parse<StateEnum>(value, true); }
         }
         [Required]
-        private String Type { get; set; }
+        public String Type { get; set; }
         [Required]
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
