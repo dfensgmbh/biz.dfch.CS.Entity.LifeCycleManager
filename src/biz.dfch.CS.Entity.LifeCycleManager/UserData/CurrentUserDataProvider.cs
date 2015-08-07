@@ -19,6 +19,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
     public static class CurrentUserDataProvider
     {
+        public static String GetCurrentUserId()
+        {
+            return "Administrator";
+        }
+
+        public static String GetCurrentUserName()
+        {
+            return "TestUser";
+        }
+
         public static Boolean HasCurrentUserPermission(String permissionId)
         {
             return true;
