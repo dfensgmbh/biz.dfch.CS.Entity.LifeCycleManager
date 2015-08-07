@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -146,9 +147,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 return BadRequest();
             }
-
-            Debug.WriteLine(fn);
-            // TODO: Add logic here.
+            using (var db = new LifeCycleContext())
+            {
+                job.Updated = DateTimeOffset.Now;
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+            }
 
             // return Updated(job);
             return StatusCode(HttpStatusCode.NotImplemented);
@@ -181,7 +186,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine(String.Format("Trying to save job : '{0}'", job.Id));
 
-                var jobEntity;
+                Job jobEntity;
                 using (var db = new LifeCycleContext())
                 {
                     jobEntity = new Job()

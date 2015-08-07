@@ -34,8 +34,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         // DFTODO - define a default job?
         [Required]
         public String Type { get; set; }
+        public String CreatedBy { get; set; }
+        public String ModifiedBy { get; set; }
         public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Updated { get; set; }
+        public DateTimeOffset Modified { get; set; }
 
         public String Parameters { get; set; }
     }
