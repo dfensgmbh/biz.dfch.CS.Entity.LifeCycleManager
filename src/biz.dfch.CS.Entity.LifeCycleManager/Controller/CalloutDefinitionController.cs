@@ -15,9 +15,36 @@
  */
 
 
+using System;
+using System.Linq;
+using biz.dfch.CS.Entity.LifeCycleManager.Context;
+using biz.dfch.CS.Entity.LifeCycleManager.Model;
+
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class CalloutDefinitionController
     {
+        public String LoadCalloutDefinition(String entityId, String entityType)
+        {
+            using (var db = new LifeCycleContext())
+            {
+                var definition = db
+                    .Where(j => j.EntityId.Equals(entityId) && 
+                        j.EntityType.Equals(entityType) && 
+                        j.State.Equals(StateEnum.PENDING.ToString()))
+                    .FirstOrDefault();
+
+                if (null == definition)
+                {
+                    return false;
+                }
+
+                definition.Updated = DateTimeOffset.Now;
+                definition.State = StateEnum.FINISHED.ToString();
+                db.SaveChanges();
+
+                return true;
+            }
+        }
     }
 }

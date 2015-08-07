@@ -30,6 +30,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
             set { _State = EnumUtil.Parse<StateEnum>(value, true); }
         }
         [Required]
+        private String Type { get; set; }
+        [Required]
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Updated { get; set; }
 
@@ -37,9 +39,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public String EntityId { get; set; }
         [Required]
         public String EntityType { get; set; }
-        public String SourceState { get; set; }
-        public String Condition { get; set; }
-        public String TargetState { get; set; }
+        
+
+        public String Parameters { get; set; }
     }
 
     public enum StateEnum
