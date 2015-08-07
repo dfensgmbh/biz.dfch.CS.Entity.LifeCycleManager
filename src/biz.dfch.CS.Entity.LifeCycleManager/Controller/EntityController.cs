@@ -25,6 +25,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class EntityController
     {
         private HttpClient _httpClient;
+        private const String APPLICATION_JSON = "application/json";
 
         public EntityController(ICredentialProvider credentialProvider)
         {
@@ -37,11 +38,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         public String LoadEntity(Uri entityUri)
         {
             Debug.WriteLine("Loading entity with Uri: '{0}'", entityUri);
-            if (null == entityUri)
-            {
-                Debug.WriteLine("Entity Uri passed to LoadEntity method is null");
-                throw new ArgumentNullException("entityUri");
-            }
+            CheckEntityUri(entityUri);
 
             SetHeaders();
             _httpClient.BaseAddress = entityUri;
@@ -62,9 +59,42 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             return response.Content.ReadAsStringAsync().Result;
         }
 
+        public void UpdateEntity(Uri entityUri, String entity)
+        {
+            Debug.WriteLine("Updating entity with Uri: '{0}'", entityUri);
+            CheckEntityUri(entityUri);
+
+            SetHeaders();
+            _httpClient.BaseAddress = entityUri;
+            int _TimeoutSec = 90;
+            _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
+            new StringContent(entity);
+            HttpContent body = new StringContent(entity);
+            body.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
+            HttpResponseMessage response = _httpClient.PutAsync(entityUri, body).Result;
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error occurred while updating entity: {0}", e.Message);
+                throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
+            }
+        }
+
+        private void CheckEntityUri(Uri entityUri)
+        {
+            if (null == entityUri)
+            {
+                Debug.WriteLine("Entity Uri passed to LoadEntity method is null");
+                throw new ArgumentNullException("entityUri");
+            }
+        }
+
         private void SetHeaders()
         {
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
         }
     }
 }

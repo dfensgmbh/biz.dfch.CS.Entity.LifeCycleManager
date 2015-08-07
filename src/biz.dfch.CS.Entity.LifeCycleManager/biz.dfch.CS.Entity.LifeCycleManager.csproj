@@ -60,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\LifeCycleContext.cs" />
-    <Compile Include="Controller\CalloutDefinitionController.cs" />
     <Compile Include="Controller\JobController.cs" />
     <Compile Include="Controller\StateChangeLockController.cs" />
     <Compile Include="Credentials\ICredentialProvider.cs" />

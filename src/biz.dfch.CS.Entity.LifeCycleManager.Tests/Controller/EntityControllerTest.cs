@@ -58,7 +58,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(28)]
-        public void LoadEntityCallsHttpClientWithEntityUri()
+        public void LoadEntityExecutesGetWithHttpClientOnEntityUri()
         {
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
@@ -111,6 +111,49 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var entityController = new EntityController(_credentialProvider);
 
             ThrowsAssert.Throws<ArgumentException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
+
+            Mock.Assert(mockedHttpClient);
+            Mock.Assert(mockedResponseMessage);
+        }
+
+        [TestMethod]
+        public void UpdateEntityWithNullEntityUriThrowsArgumentNullException()
+        {
+            var entityController = new EntityController(_credentialProvider);
+            ThrowsAssert.Throws<ArgumentNullException>(() => entityController.UpdateEntity(null, ""));
+        }
+
+        [TestMethod]
+        public void UpdateEntityExecutesPuthWithHttpClientOnEntityUri()
+        {
+            var mockedHttpClient = Mock.Create<HttpClient>();
+            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
+            Mock.Arrange(() => mockedHttpClient.PutAsync(SAMPLE_ENTITY_URI, Arg.IsAny<HttpContent>()).Result)
+                .IgnoreInstance()
+                .Returns(mockedResponseMessage)
+                .MustBeCalled();
+
+            var entityController = new EntityController(_credentialProvider);
+            entityController.UpdateEntity(SAMPLE_ENTITY_URI, "");
+
+            Mock.Assert(mockedHttpClient);
+            Mock.Assert(mockedResponseMessage);
+        }
+
+        [TestMethod]
+        public void UpdateEntityWithUriPointingToNonExistingEntityThrowsArgumentException() 
+        {
+            var mockedHttpClient = Mock.Create<HttpClient>();
+            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
+            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
+            Mock.Arrange(() => mockedHttpClient.PutAsync(SAMPLE_ENTITY_URI, Arg.IsAny<HttpContent>()).Result)
+                .IgnoreInstance()
+                .Returns(mockedResponseMessage)
+                .MustBeCalled();
+
+            var entityController = new EntityController(_credentialProvider);
+
+            ThrowsAssert.Throws<ArgumentException>(() => entityController.UpdateEntity(SAMPLE_ENTITY_URI, ""));
 
             Mock.Assert(mockedHttpClient);
             Mock.Assert(mockedResponseMessage);
