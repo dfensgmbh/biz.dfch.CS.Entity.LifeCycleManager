@@ -25,14 +25,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public int Id { get; set; }
         private StateEnum _State { get; set; }
 
-        // DFTODO - define a default state?
         public String State 
         {
             get { return _State.ToString(); }
             set { _State = EnumUtil.Parse<StateEnum>(value, true); }
         }
-        // DFTODO - define a default job?
-        [Required]
         public String Type { get; set; }
         public String CreatedBy { get; set; }
         public String ModifiedBy { get; set; }

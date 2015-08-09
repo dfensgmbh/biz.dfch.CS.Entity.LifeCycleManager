@@ -50,8 +50,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             builder.EntitySet<Job>(EntitySetName);
 
-            builder.Entity<Job>().Action("Run")
-                .Returns<String>();
+            builder.Entity<Job>().Action("Run").Returns<String>();
         }
 
         // GET: api/Core.svc/Jobs
@@ -179,10 +178,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     {
                         return StatusCode(HttpStatusCode.Forbidden);
                     }
-                    job.Modified = DateTimeOffset.Now;
-                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                    // DFTODO Check what to do if Type and State are not set
                     job.Created = original.Created;
                     job.CreatedBy = original.CreatedBy;
+                    job.Modified = DateTimeOffset.Now;
+                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
                     db.Jobs.Attach(job);
                     db.Entry(job).State = EntityState.Modified;
                     db.SaveChanges();
@@ -202,6 +202,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+
             if (!ModelState.IsValid)
             {
                 Debug.WriteLine("Entity to be created has invalid ModelState.");
@@ -228,10 +229,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     var jobEntity = new Job()
                     {
-                        // DFTODO Check job type -> set default job type
                         Created = DateTimeOffset.Now,
                         CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                        State = null == job.State ? StateEnum.Queued.ToString() : job.State,
                         Type = null == job.Type ? "DefaultJob" : job.Type,
                         Parameters = job.Parameters,
                     };
@@ -282,6 +281,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     {
                         return StatusCode(HttpStatusCode.Forbidden);
                     }
+                    // DFTODO Check what to do if Type and State are not set
                     var id = job.Id;
                     var created = job.Created;
                     var createdBy = job.CreatedBy;

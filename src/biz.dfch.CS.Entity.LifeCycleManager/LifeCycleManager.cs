@@ -107,7 +107,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 }
                 catch (JsonReaderException e)
                 {
-                    Debug.WriteLine("Error occured while parsing state machine configuraiton: {0}", e.Message);
+                    Debug.WriteLine("Error occured while parsing state machine configuraiton for entity type '{0}' : {1}",
+                        entityType,
+                        e.Message);
                     throw new ArgumentException("Invalid state machine configuration", e);
                 }
             }
