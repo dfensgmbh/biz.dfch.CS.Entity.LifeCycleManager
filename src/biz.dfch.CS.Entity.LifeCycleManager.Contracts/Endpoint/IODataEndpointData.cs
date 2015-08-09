@@ -18,9 +18,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint
 {
     public interface IODataEndpointData
     {
-        public interface IODataEndpointData
-        {
-            ServerRole ServerRole { get; }
-        }
+        ServerRole ServerRole { get; }
     }
 }

@@ -35,7 +35,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class JobsController : ODataController
     {
         private const String _permissionInfix = "Job";
-        private const String _permissionPrefix = "Cumulus.Core";
+        private const String _permissionPrefix = "CumulusCore";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
 
@@ -58,7 +58,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [EnableQuery(PageSize = 45)]
         public async Task<IHttpActionResult> GetJobs(ODataQueryOptions<Job> queryOptions)
         {
-            String fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            String fn = String.Format("{0}:{1}", 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             try
             {
@@ -95,7 +97,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> GetJob([FromODataUri] int key, ODataQueryOptions<Job> queryOptions)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}", 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             try
             {
@@ -140,7 +144,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // PUT: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> Put([FromODataUri] int key, Job job)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -175,6 +181,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     }
                     job.Modified = DateTimeOffset.Now;
                     job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                    job.Created = original.Created;
+                    job.CreatedBy = original.CreatedBy;
                     db.Jobs.Attach(job);
                     db.Entry(job).State = EntityState.Modified;
                     db.SaveChanges();
@@ -191,7 +199,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // POST: api/Core.svc/Jobs
         public async Task<IHttpActionResult> Post(Job job)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             if (!ModelState.IsValid)
             {
                 Debug.WriteLine("Entity to be created has invalid ModelState.");
@@ -212,9 +222,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine(String.Format("Trying to save job : '{0}'", job.Id));
+                Debug.WriteLine("Saving new job");
 
-                Job jobEntity = null;
                 using (var db = new LifeCycleContext())
                 {
                     var jobEntity = new Job()
@@ -226,11 +235,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                         Type = null == job.Type ? "DefaultJob" : job.Type,
                         Parameters = job.Parameters,
                     };
-                    Debug.WriteLine("Saving job with id '{0}'", job.Id);
-                    db.Jobs.Add(job);
+                    jobEntity = db.Jobs.Add(jobEntity);
+                    Debug.WriteLine("Created job with id '{0}'", jobEntity.Id);
                     db.SaveChanges();
+                    return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
                 }
-                return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
             }
             catch (Exception e)
             {
@@ -243,7 +252,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<Job> delta)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -271,7 +282,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     {
                         return StatusCode(HttpStatusCode.Forbidden);
                     }
+                    var id = job.Id;
+                    var created = job.Created;
+                    var createdBy = job.CreatedBy;
                     delta.Patch(job);
+                    job.Id = id;
+                    job.Created = created;
+                    job.CreatedBy = createdBy;
                     job.Modified = DateTimeOffset.Now;
                     job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
                     db.Jobs.Attach(job);
@@ -290,7 +307,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // DELETE: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}", 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             try
             {
@@ -326,7 +345,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Run([FromODataUri] int key, ODataActionParameters parameters)
         {
-            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var fn = String.Format("{0}:{1}", 
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             Debug.WriteLine(fn);
 
             try
