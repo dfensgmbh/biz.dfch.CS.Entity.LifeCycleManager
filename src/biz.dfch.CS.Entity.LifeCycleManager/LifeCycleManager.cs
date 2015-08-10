@@ -33,7 +33,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private static Object _lock = new Object();
 
-        // DFTODO Check if MEF access to var is thread safe
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
@@ -97,7 +96,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private void ConfigureStateMachine(String entityType)
         {
             Debug.WriteLine("Configuring state machine");
-            var config = _stateMachineConfigLoader.LoadConfiguration(entityType);
+            String config;
+            lock (_lock)
+            {
+                config = _stateMachineConfigLoader.LoadConfiguration(entityType);
+            }
 
             if (null != config)
             {
