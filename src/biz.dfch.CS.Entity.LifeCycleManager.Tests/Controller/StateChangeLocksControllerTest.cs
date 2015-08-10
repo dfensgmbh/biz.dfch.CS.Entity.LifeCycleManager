@@ -20,8 +20,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.OData;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Query;
 using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Controller;
@@ -34,7 +32,7 @@ using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
     [TestClass]
-    public class StateChangeLocksControllerTest
+    public class StateChangeLocksControllerTest : BaseControllerTest<StateChangeLock>
     {
         private StateChangeLocksController _stateChangeLocksController;
         private LifeCycleContext _lifeCycleContext;
@@ -73,11 +71,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(CreateSampleStateChangeLockDbSetForUser(CURRENT_USER_ID))
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
-
             var actionResult = _stateChangeLocksController.GetStateChangeLocks(
-                new ODataQueryOptions<StateChangeLock>(context, request))
+                CreateODataQueryOptions("http://localhost/api/Core.svc/StateChangeLocks"))
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<StateChangeLock>>));
@@ -98,16 +93,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(false)
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
-
             var actionResult = _stateChangeLocksController.GetStateChangeLocks(
-                new ODataQueryOptions<StateChangeLock>(context, request))
+                CreateODataQueryOptions("http://localhost/api/Core.svc/StateChangeLocks"))
                 .Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_READ_PERMISSION));
         }
@@ -126,11 +116,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(CreateSampleStateChangeLockDbSetForUser(ANOTHER_USER_ID))
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
-
             var actionResult = _stateChangeLocksController.GetStateChangeLocks(
-                new ODataQueryOptions<StateChangeLock>(context, request))
+                CreateODataQueryOptions("http://localhost/api/Core.svc/StateChangeLocks"))
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<StateChangeLock>>));
@@ -162,9 +149,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     EntityId = 3
                 }).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_CREATE_PERMISSION));
         }
@@ -237,9 +222,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _stateChangeLocksController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -255,9 +238,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _stateChangeLocksController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_DELETE_PERMISSION));
         }
@@ -277,9 +258,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _stateChangeLocksController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -298,19 +277,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _stateChangeLocksController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(STATE_CHANGE_LOCK_DELETE_PERMISSION));
             Mock.Assert(_lifeCycleContext);
-        }
-
-        private ODataConventionModelBuilder GetBuilder()
-        {
-            var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<StateChangeLock>("StateChangeLocks");
-            return builder;
         }
 
         private IList<StateChangeLock> CreateSampleStateChangeLockDbSetForUser(String ownerId)

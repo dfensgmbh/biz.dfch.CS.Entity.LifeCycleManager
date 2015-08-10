@@ -21,8 +21,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.OData;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Query;
 using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
@@ -35,7 +33,7 @@ using Telerik.JustMock;
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
     [TestClass]
-    public class JobsControllerTest
+    public class JobsControllerTest : BaseControllerTest<Job>
     {
         private JobsController _jobsController;
         private LifeCycleContext _lifeCycleContext;
@@ -76,10 +74,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(CreateSampleJobDbSetForUser(CURRENT_USER_ID))
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
-
-            var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
+            var actionResult = _jobsController.GetJobs(
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs"))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<Job>>));
 
@@ -99,14 +96,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(false)
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
+            var actionResult = _jobsController.GetJobs(
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs"))
+                .Result;
 
-            var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
-
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
         }
@@ -125,10 +119,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(CreateSampleJobDbSetForUser(ANOTHER_USER_ID))
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
-
-            var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
+            var actionResult = _jobsController.GetJobs(
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs"))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<Job>>));
 
@@ -155,10 +148,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
-
-            var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
+            var actionResult = _jobsController.GetJob(1, 
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs(1)"))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<Job>));
 
@@ -186,14 +178,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
+            var actionResult = _jobsController.GetJob(1,
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs(1)"))
+                .Result;
 
-            var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
-
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -211,14 +200,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns((Job)null)
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
+            var actionResult = _jobsController.GetJob(1,
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs(1)"))
+                .Result;
 
-            var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
-
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
             Mock.Assert(_lifeCycleContext);
@@ -231,14 +217,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(false)
                 .MustBeCalled();
 
-            var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
+            var actionResult = _jobsController.GetJob(1,
+                CreateODataQueryOptions("http://localhost/api/Core.svc/Jobs(1)"))
+                .Result;
 
-            var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
-
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
         }
@@ -309,9 +292,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 new Job { Id = 1 })
                 .Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
         }
@@ -343,9 +324,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Parameters = "testparameters",
                 }).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -421,9 +400,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Parameters = "testparameters",
                 }).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(_lifeCycleContext);
@@ -460,9 +437,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Parameters = "testparameters",
                 }).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_CREATE_PERMISSION));
         }
@@ -672,9 +647,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _jobsController.Patch(1, new Delta<Job>()).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
         }
@@ -694,9 +667,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _jobsController.Patch(1, new Delta<Job>()).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -715,9 +686,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _jobsController.Patch(1, new Delta<Job>()).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(_lifeCycleContext);
@@ -741,9 +710,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _jobsController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -759,9 +726,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _jobsController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
         }
@@ -781,9 +746,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _jobsController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -802,9 +765,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             var actionResult = _jobsController.Delete(1).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
             Mock.Assert(_lifeCycleContext);
@@ -819,9 +780,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _jobsController.Run(1, null).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
         }
@@ -842,9 +801,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _jobsController.Run(1, null).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -864,9 +821,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var actionResult = _jobsController.Run(1, null).Result;
 
-            Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
-            var response = (StatusCodeResult)actionResult;
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(_lifeCycleContext);
@@ -907,13 +862,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
             Mock.Assert(_lifeCycleContext);
-        }
-
-        private ODataConventionModelBuilder GetBuilder()
-        {
-            var builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Job>("Jobs");
-            return builder;
         }
 
         private IList<Job> CreateSampleJobDbSetForUser(String ownerId)

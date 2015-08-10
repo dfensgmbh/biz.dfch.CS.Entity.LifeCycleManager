@@ -24,7 +24,7 @@ using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
-    public class CallbacksControllerTest
+    public class CallbacksControllerTest : BaseControllerTest<CallbacksController>
     {
         private CallbacksController _callbacksController;
         private LifeCycleContext _lifeCycleContext;
