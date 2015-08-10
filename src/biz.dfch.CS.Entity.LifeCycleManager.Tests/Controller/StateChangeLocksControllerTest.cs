@@ -76,7 +76,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
             var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
 
-            var actionResult = _stateChangeLocksController.GetStateChangeLocks(new ODataQueryOptions<StateChangeLock>(context, request)).Result;
+            var actionResult = _stateChangeLocksController.GetStateChangeLocks(
+                new ODataQueryOptions<StateChangeLock>(context, request))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<StateChangeLock>>));
 
@@ -99,7 +101,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
             var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
 
-            var actionResult = _stateChangeLocksController.GetStateChangeLocks(new ODataQueryOptions<StateChangeLock>(context, request)).Result;
+            var actionResult = _stateChangeLocksController.GetStateChangeLocks(
+                new ODataQueryOptions<StateChangeLock>(context, request))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(StatusCodeResult));
             var response = (StatusCodeResult)actionResult;
@@ -125,7 +129,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(StateChangeLock));
             var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/StateChangeLocks");
 
-            var actionResult = _stateChangeLocksController.GetStateChangeLocks(new ODataQueryOptions<StateChangeLock>(context, request)).Result;
+            var actionResult = _stateChangeLocksController.GetStateChangeLocks(
+                new ODataQueryOptions<StateChangeLock>(context, request))
+                .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<IEnumerable<StateChangeLock>>));
 
