@@ -185,7 +185,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(21)]
         public void ChangeStateForLockedEntityThrowsException()
         {
-
             // DFTODO Define which exception should be thrown (Adjust test method name)
         }
 
