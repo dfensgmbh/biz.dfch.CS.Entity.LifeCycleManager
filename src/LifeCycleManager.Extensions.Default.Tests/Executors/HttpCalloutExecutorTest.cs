@@ -21,7 +21,6 @@ using LifecycleManager.Extensions.Default.Executors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
-using Telerik.JustMock.Helpers;
 
 namespace LifeCycleManager.Extensions.Default.Tests.Executors
 {

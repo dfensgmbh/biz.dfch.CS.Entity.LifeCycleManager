@@ -27,6 +27,7 @@ namespace LifeCycleManager.Extensions.Default.Loaders
         {
             if (entityType.Equals("EntityType"))
             {
+                // DFTODO load configuration from elsewhere?!
                 return "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";    
             }
             return null;
