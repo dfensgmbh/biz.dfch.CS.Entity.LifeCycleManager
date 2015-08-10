@@ -42,6 +42,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
+            Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
             lock (_lock)
             {
                 if (null == _staticStateMachineConfigLoader)

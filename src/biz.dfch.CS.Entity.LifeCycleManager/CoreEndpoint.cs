@@ -19,6 +19,7 @@ using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Web.Http.OData.Builder;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
+using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 using Microsoft.Data.Edm;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -29,9 +30,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         public IEdmModel GetModel()
         {
+            Debug.WriteLine("Start building model of CoreEndpoint...");
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             builder.ContainerName = GetContainerName();
             Controller.JobsController.ModelBuilder(builder);
+            Debug.WriteLine("Model of CoreEndpoint built!");
 
             return builder.GetEdmModel();
         }

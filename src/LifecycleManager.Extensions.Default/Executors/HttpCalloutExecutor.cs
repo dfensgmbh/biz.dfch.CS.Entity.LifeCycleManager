@@ -16,11 +16,11 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
+using LifeCycleManager.Extensions.Default.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -29,8 +29,6 @@ namespace LifecycleManager.Extensions.Default.Executors
     [Export(typeof(ICalloutExecutor))]
     public class HttpCalloutExecutor : ICalloutExecutor
     {
-        // DFTODO Add logging lib
-
         private HttpClient _httpClient;
         private const String APPLICATION_JSON = "application/json";
         private Uri _url;
