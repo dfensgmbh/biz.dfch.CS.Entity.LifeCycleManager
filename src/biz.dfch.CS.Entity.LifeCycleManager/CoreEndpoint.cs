@@ -30,11 +30,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         public IEdmModel GetModel()
         {
-            Debug.WriteLine("Start building model of CoreEndpoint...");
+            Debug.WriteLine("Start building core endpoint...");
             ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
             builder.ContainerName = GetContainerName();
+
             Controller.JobsController.ModelBuilder(builder);
-            Debug.WriteLine("Model of CoreEndpoint built!");
+            Controller.CallbacksController.ModelBuilder(builder);
+            Controller.StateChangeLocksController.ModelBuilder(builder);
+
+            Debug.WriteLine("Core endpoint built!");
 
             return builder.GetEdmModel();
         }

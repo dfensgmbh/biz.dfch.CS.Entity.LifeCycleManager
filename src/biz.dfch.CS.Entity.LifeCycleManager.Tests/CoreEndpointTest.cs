@@ -33,12 +33,30 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        public void GetModelReturnsModelContainingEdmEntityTypeForApprovals()
+        public void GetModelReturnsModelContainingEdmEntityTypeForJobs()
         {
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
             Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("Job")).Count());
+        }
+
+        [TestMethod]
+        public void GetModelReturnsModelContainingEdmEntityTypeForCallbacks()
+        {
+            var utilitiesEndpoint = new CoreEndpoint();
+            var model = utilitiesEndpoint.GetModel();
+
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("Callback")).Count());
+        }
+
+        [TestMethod]
+        public void GetModelReturnsModelContainingEdmEntityTypeForStateChangeLocks()
+        {
+            var utilitiesEndpoint = new CoreEndpoint();
+            var model = utilitiesEndpoint.GetModel();
+
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("StateChangeLock")).Count());
         }
     }
 }

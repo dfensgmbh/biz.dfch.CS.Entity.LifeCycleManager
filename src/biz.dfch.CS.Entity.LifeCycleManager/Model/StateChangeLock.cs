@@ -31,5 +31,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public String EntityId { get; set; }
         [Required]
         public String EntityType { get; set; }
+
+        public StateChangeLock()
+        {
+        }
     }
 }

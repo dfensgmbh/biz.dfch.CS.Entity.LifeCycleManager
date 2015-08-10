@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCycleManager.Extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeCycleManager.Extensions.Default.Tests", "LifeCycleManager.Extensions.Default.Tests\LifeCycleManager.Extensions.Default.Tests.csproj", "{95FD6F72-C923-4417-9C36-E2D6431D5E62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biz.dfch.CS.Entity.LifeCycleManager.TestServer", "biz.dfch.CS.Entity.LifeCycleManager.TestServer\biz.dfch.CS.Entity.LifeCycleManager.TestServer.csproj", "{7BE0C160-E34F-44D2-9980-42599A4D35D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95FD6F72-C923-4417-9C36-E2D6431D5E62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BE0C160-E34F-44D2-9980-42599A4D35D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BE0C160-E34F-44D2-9980-42599A4D35D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BE0C160-E34F-44D2-9980-42599A4D35D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BE0C160-E34F-44D2-9980-42599A4D35D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

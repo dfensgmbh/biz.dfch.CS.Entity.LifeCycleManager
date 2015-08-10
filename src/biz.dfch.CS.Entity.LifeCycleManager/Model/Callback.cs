@@ -13,27 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
-    public class CalloutDefinition
+    public class Callback
     {
-        [Key]
         public int Id { get; set; }
-        public String TenantId { get; set; }
-        public String CreatedBy { get; set; }
-        public String ModifiedBy { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
 
-        public String EntityId { get; set; }
-        public String EntityType { get; set; }
-        public String Parameters { get; set; }
-
-        public CalloutDefinition()
+        public Callback()
         {
         }
     }

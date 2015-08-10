@@ -22,6 +22,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Web.Http.OData.Builder;
 using System.Web.Http.OData.Query;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
@@ -44,7 +45,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             Debug.WriteLine("JobsController()");
         }
 
-        internal static void ModelBuilder(System.Web.Http.OData.Builder.ODataConventionModelBuilder builder)
+        internal static void ModelBuilder(ODataConventionModelBuilder builder)
         {
             var EntitySetName = "Jobs";
 

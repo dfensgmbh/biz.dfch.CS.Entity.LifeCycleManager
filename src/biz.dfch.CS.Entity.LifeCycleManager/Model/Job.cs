@@ -37,6 +37,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public DateTimeOffset Modified { get; set; }
 
         public String Parameters { get; set; }
+
+        public Job()
+        {
+        }
     }
 
     public enum StateEnum
