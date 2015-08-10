@@ -77,7 +77,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
 
             var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -100,7 +100,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
 
             var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -126,7 +126,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs");
 
             var actionResult = _jobsController.GetJobs(new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -156,7 +156,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs(1)");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
 
             var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -187,7 +187,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs(1)");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
 
             var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -212,7 +212,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs(1)");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
 
             var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
 
@@ -232,7 +232,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var context = new ODataQueryContext(GetBuilder().GetEdmModel(), typeof(Job));
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Utilities.svc/Jobs(1)");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Core.svc/Jobs(1)");
 
             var actionResult = _jobsController.GetJob(1, new ODataQueryOptions<Job>(context, request)).Result;
 
