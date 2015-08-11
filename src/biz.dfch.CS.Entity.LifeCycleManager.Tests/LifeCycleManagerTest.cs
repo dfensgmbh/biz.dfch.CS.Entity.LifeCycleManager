@@ -224,9 +224,5 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
 
         }
-
-        /**
-         * For entity framework mocking see here: https://github.com/tailsu/Telerik.JustMock.EntityFramework
-         **/
     }
 }
