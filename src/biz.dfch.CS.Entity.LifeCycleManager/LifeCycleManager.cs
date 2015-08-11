@@ -19,6 +19,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
 using System.IO;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
@@ -36,7 +37,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
+        [Import(typeof (ICalloutExecutor))]
+        private ICalloutExecutor _calloutExecutor;
+
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
+        private static ICalloutExecutor _staticCalloutExecutor = null
+
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
 
@@ -50,10 +56,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     LoadAndComposeParts();
                     _staticStateMachineConfigLoader = _stateMachineConfigLoader;
+                    _staticCalloutExecutor = _calloutExecutor;
                 }
                 else
                 {
                     _stateMachineConfigLoader = _staticStateMachineConfigLoader;
+                    _calloutExecutor = _staticCalloutExecutor;
                 }
             }
             _entityController = new EntityController(credentialProvider);
@@ -122,7 +130,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void ChangeState(Uri entityUri, String condition)
         {
-            // DFTODO load CalloutExceutor plugin (same way as other plugins are loaded)
+            // DFTODO Call service references as system user!? (Problems on IIS)
             // DFTODO check, if entity will be passed as String from Controller?
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             var entity = _entityController.LoadEntity(entityUri);
@@ -134,7 +142,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             // DFTODO on callout -> if exception: job = failed, unlock
         }
 
-        // DFTODO preCalloutCallback: finish job, change state, persist, load callout definition and execute post callout + create new job
-        // DFTODO postCalloutCallback: unlock entity
+        public void OnCallback()
+        {
+            // DFTODO preCalloutCallback: finish job, change state, persist entity, load callout definition and execute post callout + create new job
+            // DFTODO postCalloutCallback: unlock entity   
+        }
     }
 }
