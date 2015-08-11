@@ -21,7 +21,6 @@ using System.Reflection;
 using System.Web.Http;
 ﻿using System.Web.Http.OData;
 ﻿using System.Web.Http.OData.Query;
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using System.Web.Http.OData.Builder;
 ﻿using System.Web.Http.Results;
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
