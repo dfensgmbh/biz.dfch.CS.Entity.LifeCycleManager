@@ -14,7 +14,7 @@
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Parameters" Type="Edm.String" />
       </EntityType>
-      <EntityType Name="Callback">
+      <EntityType Name="LifeCycle">
         <Key>
           <PropertyRef Name="Id" />
         </Key>
@@ -50,17 +50,17 @@
     <Schema Namespace="Default" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
       <EntityContainer Name="Core" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Jobs" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
-        <EntitySet Name="Callbacks" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.Callback" />
+        <EntitySet Name="LifeCycles" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
         <EntitySet Name="StateChangeLocks" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.StateChangeLock" />
         <EntitySet Name="CalloutDefinitions" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.CalloutDefinition" />
         <FunctionImport Name="Run" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
           <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
         </FunctionImport>
         <FunctionImport Name="Allow" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
-          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Callback" />
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
         </FunctionImport>
         <FunctionImport Name="Deny" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
-          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Callback" />
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
         </FunctionImport>
       </EntityContainer>
     </Schema>

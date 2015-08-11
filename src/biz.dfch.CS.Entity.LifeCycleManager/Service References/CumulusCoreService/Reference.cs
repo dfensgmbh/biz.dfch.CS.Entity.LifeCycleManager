@@ -177,7 +177,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
                 "me=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeO" +
                 "ffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nu" +
                 "llable=\"false\" /><Property Name=\"Parameters\" Type=\"Edm.String\" /></EntityType><E" +
-                "ntityType Name=\"Callback\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id" +
+                "ntityType Name=\"LifeCycle\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id" +
                 "\" Type=\"Edm.Int32\" Nullable=\"false\" /></EntityType><EntityType Name=\"StateChange" +
                 "Lock\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.Int32\" N" +
                 "ullable=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Name=" +
@@ -203,10 +203,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
                 "true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManag" +
                 "er.Model.Job\" /></FunctionImport><FunctionImport Name=\"Allow\" ReturnType=\"Edm.St" +
                 "ring\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParame" +
-                "ter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.Callback\" /></FunctionImpor" +
+                "ter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImpor" +
                 "t><FunctionImport Name=\"Deny\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwa" +
                 "ysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.Li" +
-                "feCycleManager.Model.Callback\" /></FunctionImport></EntityContainer></Schema></e" +
+                "feCycleManager.Model.LifeCycle\" /></FunctionImport></EntityContainer></Schema></e" +
                 "dmx:DataServices></edmx:Edmx>";
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
             private static string GetConcatenatedEdmxString()
@@ -456,7 +456,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         }
     }
     /// <summary>
-    /// There are no comments for biz.dfch.CS.Entity.LifeCycleManager.Model.Callback in the schema.
+    /// There are no comments for biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle in the schema.
     /// </summary>
     /// <KeyProperties>
     /// Id
@@ -466,7 +466,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
     public partial class Callback : global::System.ComponentModel.INotifyPropertyChanged
     {
         /// <summary>
-        /// Create a new Callback object.
+        /// Create a new LifeCycle object.
         /// </summary>
         /// <param name="ID">Initial value of Id.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]

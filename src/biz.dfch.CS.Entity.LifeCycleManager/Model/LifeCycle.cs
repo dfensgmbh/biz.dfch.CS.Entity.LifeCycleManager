@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+using System;
+
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
-    public class Callback
+    public class LifeCycle
     {
-        public int Id { get; set; }
+        // The URI of the entity
+        public String Id { get; set; }
+        public String Condition { get; set; }
 
-        public Callback()
+        public LifeCycle()
         {
         }
     }

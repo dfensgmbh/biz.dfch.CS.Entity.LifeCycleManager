@@ -100,7 +100,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Controller\BaseControllerTest.cs" />
-    <Compile Include="Controller\CallbacksControllerTest.cs" />
+    <Compile Include="Controller\LifeCyclesControllerTest.cs" />
     <Compile Include="Controller\CalloutDefinitionsControllerTest.cs" />
     <Compile Include="Controller\EntityControllerTest.cs" />
     <Compile Include="Controller\JobsControllerTest.cs" />

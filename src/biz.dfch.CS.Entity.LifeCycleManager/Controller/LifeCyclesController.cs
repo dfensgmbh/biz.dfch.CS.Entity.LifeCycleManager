@@ -28,15 +28,15 @@ using Microsoft.Data.OData;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
-    public class CallbacksController : ODataController
+    public class LifeCyclesController : ODataController
     {
 
-        private const String _permissionInfix = "Callback";
+        private const String _permissionInfix = "LifeCycle";
         private const String _permissionPrefix = "CumulusCore";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
 
-        public CallbacksController()
+        public LifeCyclesController()
         {
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
@@ -46,16 +46,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         internal static void ModelBuilder(ODataConventionModelBuilder builder)
         {
-            var EntitySetName = "Callbacks";
+            var EntitySetName = "LifeCycles";
 
-            builder.EntitySet<Callback>(EntitySetName);
+            builder.EntitySet<LifeCycle>(EntitySetName);
 
-            builder.Entity<Callback>().Action("Allow").Returns<String>();
-            builder.Entity<Callback>().Action("Deny").Returns<String>();
+            builder.Entity<LifeCycle>().Action("Next").Returns<String>();
+            builder.Entity<LifeCycle>().Action("Cancel").Returns<String>();
+
+            builder.Entity<LifeCycle>().Action("Allow").Returns<String>();
+            builder.Entity<LifeCycle>().Action("Decline").Returns<String>();
         }
 
-        // GET: api/Utilities.svc/Callbacks
-        public async Task<IHttpActionResult> GetCallbacks(ODataQueryOptions<Callback> queryOptions)
+        // GET: api/Utilities.svc/LifeCycle
+        public async Task<IHttpActionResult> GetLifeCycles(ODataQueryOptions<LifeCycle> queryOptions)
         {
             // validate the query.
             try
@@ -67,12 +70,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ex.Message);
             }
 
-            // return Ok<IEnumerable<Callback>>(callbacks);
+            // return Ok<IEnumerable<LifeCycle>>(lifeCycles);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
-        // GET: api/Utilities.svc/Callbacks(5)
-        public async Task<IHttpActionResult> GetCallback([FromODataUri] int key, ODataQueryOptions<Callback> queryOptions)
+        // GET: api/Utilities.svc/LifeCycles(5)
+        public async Task<IHttpActionResult> GetLifeCycle([FromODataUri] int key, ODataQueryOptions<LifeCycle> queryOptions)
         {
             // validate the query.
             try
@@ -84,31 +87,32 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ex.Message);
             }
 
-            // return Ok<Callback>(callback);
+            // return Ok<LifeCycle>(LifeCycle);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
-        // PUT: api/Utilities.svc/Callbacks(5)
-        public async Task<IHttpActionResult> Put([FromODataUri] int key, Callback callback)
+        // PUT: api/Utilities.svc/LifeCycles(5)
+        public async Task<IHttpActionResult> Put([FromODataUri] String key, LifeCycle lifeCycle)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (key != callback.Id)
+            if (!key.Equals(lifeCycle.Id))
             {
                 return BadRequest();
             }
 
+            // DFTODO change state with given condition
             // TODO: Add replace logic here.
 
-            // return Updated(callback);
+            // return Updated(LifeCycle);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
-        // POST: api/Utilities.svc/Callbacks
-        public async Task<IHttpActionResult> Post(Callback callback)
+        // POST: api/Utilities.svc/LifeCycles
+        public async Task<IHttpActionResult> Post(LifeCycle lifeCycle)
         {
             if (!ModelState.IsValid)
             {
@@ -117,13 +121,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             // TODO: Add create logic here.
 
-            // return Created(callback);
+            // return Created(LifeCycle);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
-        // PATCH: api/Utilities.svc/Callbacks(5)
+        // PATCH: api/Utilities.svc/LifeCycles(5)
         [AcceptVerbs("PATCH", "MERGE")]
-        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<Callback> delta)
+        public async Task<IHttpActionResult> Patch([FromODataUri] String key, Delta<LifeCycle> delta)
         {
             if (!ModelState.IsValid)
             {
@@ -131,22 +135,73 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
 
             // TODO: Get the entity here.
+            // DFTODO change state with given condition
 
-            // delta.Patch(callback);
+            // delta.Patch(LifeCycle);
 
             // TODO: Save the patched entity.
 
-            // return Updated(callback);
+            // return Updated(LifeCycle);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
-        // DELETE: api/Utilities.svc/Callbacks(5)
-        public async Task<IHttpActionResult> Delete([FromODataUri] int key)
+        // DELETE: api/Utilities.svc/LifeCycles(5)
+        public async Task<IHttpActionResult> Delete([FromODataUri] String key)
         {
             // TODO: Add delete logic here.
 
             // return StatusCode(HttpStatusCode.NoContent);
             return StatusCode(HttpStatusCode.NotImplemented);
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Next([FromODataUri] int key, ODataActionParameters parameters)
+        {
+            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            Debug.WriteLine(fn);
+
+            try
+            {
+                var permissionId = CreatePermissionId("CanDecline");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+
+                // DFTODO execute with continue condition
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Cancel([FromODataUri] int key, ODataActionParameters parameters)
+        {
+            var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            Debug.WriteLine(fn);
+
+            try
+            {
+                var permissionId = CreatePermissionId("CanDecline");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+
+                // DFTODO handle cancellation (revert logic)
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                throw;
+            }
         }
 
         [HttpPost]
@@ -165,7 +220,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO Load job
                 // DFTODO Create new lifecycle manager instance
-                // DFTODO Excecute pre or post callback on lifecycle manager depending on jobs parameters
+                // DFTODO Excecute pre or post LifeCycle on lifecycle manager depending on jobs parameters
 
                 // DFTODO Check what to return
                 return Ok();
@@ -193,7 +248,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO Load job
                 // DFTODO Create new lifecycle manager instance
-                // DFTODO Excecute pre or post callback on lifecycle manager depending on jobs parameters
+                // DFTODO Excecute pre or post LifeCycle on lifecycle manager depending on jobs parameters
 
                 // DFTODO Check what to return
                 return Ok();

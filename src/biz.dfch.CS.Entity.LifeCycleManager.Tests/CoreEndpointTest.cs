@@ -47,7 +47,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
-            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("Callback")).Count());
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("LifeCycle")).Count());
         }
 
         [TestMethod]

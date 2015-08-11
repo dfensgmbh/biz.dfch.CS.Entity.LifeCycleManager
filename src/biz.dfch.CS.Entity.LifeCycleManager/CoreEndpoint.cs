@@ -35,7 +35,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             builder.ContainerName = GetContainerName();
 
             Controller.JobsController.ModelBuilder(builder);
-            Controller.CallbacksController.ModelBuilder(builder);
+            Controller.LifeCyclesController.ModelBuilder(builder);
             Controller.StateChangeLocksController.ModelBuilder(builder);
             Controller.CalloutDefinitionsController.ModelBuilder(builder);
 

@@ -86,12 +86,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\LifeCycleContext.cs" />
-    <Compile Include="Controller\CallbacksController.cs" />
+    <Compile Include="Controller\LifeCyclesController.cs" />
     <Compile Include="Controller\CalloutDefinitionsController.cs" />
     <Compile Include="Controller\JobsController.cs" />
     <Compile Include="Controller\StateChangeLocksController.cs" />
     <Compile Include="CoreEndpoint.cs" />
-    <Compile Include="Model\Callback.cs" />
+    <Compile Include="Model\LifeCycle.cs" />
     <Compile Include="Service References\CumulusCoreService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
