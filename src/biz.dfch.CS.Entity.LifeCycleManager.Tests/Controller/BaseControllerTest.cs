@@ -17,7 +17,8 @@
 using System;
 ﻿using System.Net;
 ﻿using System.Net.Http;
-﻿using System.Web.Http;
+using System.Reflection;
+using System.Web.Http;
 ﻿using System.Web.Http.OData;
 ﻿using System.Web.Http.OData.Query;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
@@ -31,23 +32,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     {
         protected ODataQueryOptions<T> CreateODataQueryOptions(String uri)
         {
-            var context = new ODataQueryContext(GetBuilder(typeof(T).Name).GetEdmModel(), typeof(T));
+            var context = new ODataQueryContext(GetBuilder(typeof(T)).GetEdmModel(), typeof(T));
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             return new ODataQueryOptions<T>(context, request);
         }
 
-        protected ODataConventionModelBuilder GetBuilder(String type)
+        protected ODataConventionModelBuilder GetBuilder(Type type)
         {
             var builder = new ODataConventionModelBuilder();
-            switch (type)
-            {
-                case "Job":
-                    builder.EntitySet<Job>("Jobs");
-                    break;
-                case "StateChangeLock":
-                    builder.EntitySet<StateChangeLock>("StateChangeLocks");
-                    break;
-            }
+            MethodInfo method = typeof(ODataConventionModelBuilder).GetMethod("EntitySet");
+            MethodInfo genericMethod = method.MakeGenericMethod(type);
+            genericMethod.Invoke(builder, new object[]{type.Name + "s"});
             return builder;
         }
 
