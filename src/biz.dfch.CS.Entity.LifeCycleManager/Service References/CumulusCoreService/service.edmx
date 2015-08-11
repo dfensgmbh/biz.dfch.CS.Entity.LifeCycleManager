@@ -57,6 +57,9 @@
         <FunctionImport Name="Run" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
           <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
         </FunctionImport>
+        <FunctionImport Name="Finish" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
+        </FunctionImport>
         <FunctionImport Name="Next" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
           <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
         </FunctionImport>
