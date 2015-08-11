@@ -30,18 +30,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 {
     public class LifeCycleManager
     {
-        private CompositionContainer _container;
-
         private static Object _lock = new Object();
+        private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
+        private static ICalloutExecutor _staticCalloutExecutor = null;
 
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
         [Import(typeof (ICalloutExecutor))]
         private ICalloutExecutor _calloutExecutor;
-
-        private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
-        private static ICalloutExecutor _staticCalloutExecutor = null
 
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
@@ -89,7 +86,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 Trace.WriteLine("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message);
             }
 
-            _container = new CompositionContainer(assemblyCatalog);
+            var _container = new CompositionContainer(assemblyCatalog);
 
             try
             {
