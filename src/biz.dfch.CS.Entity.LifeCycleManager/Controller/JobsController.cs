@@ -37,6 +37,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     {
         private const String _permissionInfix = "Job";
         private const String _permissionPrefix = "CumulusCore";
+        private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
 
@@ -80,12 +81,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                using (var db = new LifeCycleContext())
-                {
-                    var jobs = db.Jobs
-                        .Where(j => j.CreatedBy.Equals(CurrentUserDataProvider.GetCurrentUserId()));
-                    return Ok<IEnumerable<Job>>(jobs);
-                }
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                var jobs = from job in db.Jobs
+                    where job.CreatedBy == currentUserId
+                    select job;
+                    
+                return Ok<IEnumerable<Job>>(jobs);
             }
             catch (Exception e)
             {
@@ -119,11 +120,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                Job job = null;
-                using (var db = new LifeCycleContext())
-                {
-                    job = db.Jobs.Find(key);
-                }
+                var job = db.Jobs.Find(key);
                 if (null == job)
                 {
                     return StatusCode(HttpStatusCode.NotFound);
@@ -168,25 +165,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                using (var db = new LifeCycleContext())
+                var original = db.Jobs.Find(job.Id);
+                if (null == original)
                 {
-                    var original = db.Jobs.Find(job.Id);
-                    if (null == original)
-                    {
-                        return StatusCode(HttpStatusCode.NotFound);
-                    }
-                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(original.CreatedBy))
-                    {
-                        return StatusCode(HttpStatusCode.Forbidden);
-                    }
-                    job.Created = original.Created;
-                    job.CreatedBy = original.CreatedBy;
-                    job.Modified = DateTimeOffset.Now;
-                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                    db.Jobs.Attach(job);
-                    db.Entry(job).State = EntityState.Modified;
-                    db.SaveChanges();
+                    return StatusCode(HttpStatusCode.NotFound);
                 }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(original.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                job.Created = original.Created;
+                job.CreatedBy = original.CreatedBy;
+                job.Modified = DateTimeOffset.Now;
+                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
                 return Ok<Job>(job);
             }
             catch (Exception e)
@@ -225,21 +219,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine("Saving new job");
 
-                using (var db = new LifeCycleContext())
+                var jobEntity = new Job()
                 {
-                    var jobEntity = new Job()
-                    {
-                        Created = DateTimeOffset.Now,
-                        CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                        Type = null == job.Type ? "DefaultJob" : job.Type,
-                        State = job.State,
-                        Parameters = job.Parameters,
-                    };
-                    jobEntity = db.Jobs.Add(jobEntity);
-                    Debug.WriteLine("Created job with id '{0}'", jobEntity.Id);
-                    db.SaveChanges();
-                    return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
-                }
+                    Created = DateTimeOffset.Now,
+                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    Type = null == job.Type ? "DefaultJob" : job.Type,
+                    State = job.State,
+                    Parameters = job.Parameters,
+                };
+                jobEntity = db.Jobs.Add(jobEntity);
+                Debug.WriteLine("Created job with id '{0}'", jobEntity.Id);
+                db.SaveChanges();
+                return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
             }
             catch (Exception e)
             {
@@ -270,31 +261,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                Job job;
-                using (var db = new LifeCycleContext())
+                var job = db.Jobs.Find(key);
+                if (null == job)
                 {
-                    job = db.Jobs.Find(key);
-                    if (null == job)
-                    {
-                        return StatusCode(HttpStatusCode.NotFound);
-                    }
-                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
-                    {
-                        return StatusCode(HttpStatusCode.Forbidden);
-                    }
-                    var id = job.Id;
-                    var created = job.Created;
-                    var createdBy = job.CreatedBy;
-                    delta.Patch(job);
-                    job.Id = id;
-                    job.Created = created;
-                    job.CreatedBy = createdBy;
-                    job.Modified = DateTimeOffset.Now;
-                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                    db.Jobs.Attach(job);
-                    db.Entry(job).State = EntityState.Modified;
-                    db.SaveChanges();
+                    return StatusCode(HttpStatusCode.NotFound);
                 }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                var id = job.Id;
+                var created = job.Created;
+                var createdBy = job.CreatedBy;
+                delta.Patch(job);
+                job.Id = id;
+                job.Created = created;
+                job.CreatedBy = createdBy;
+                job.Modified = DateTimeOffset.Now;
+                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
                 return Ok<Job>(job);
             }
             catch (Exception e)
@@ -320,19 +307,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                using (var db = new LifeCycleContext())
+                var job = db.Jobs.Find(key);
+                if (null == job)
                 {
-                    var job = db.Jobs.Find(key);
-                    if (null == job)
-                    {
-                        return StatusCode(HttpStatusCode.NotFound);
-                    }
-                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
-                    {
-                        return StatusCode(HttpStatusCode.Forbidden);
-                    }
-                    db.Jobs.Remove(job);
+                    return StatusCode(HttpStatusCode.NotFound);
                 }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                db.Jobs.Remove(job);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -358,25 +342,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                using (var db = new LifeCycleContext())
+                var job = db.Jobs.Find(key);
+                if (null == job)
                 {
-                    var job = db.Jobs.Find(key);
-                    if (null == job)
-                    {
-                        return StatusCode(HttpStatusCode.NotFound);
-                    }
-                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
-                    {
-                        return StatusCode(HttpStatusCode.Forbidden);
-                    }
-                    job.Modified = DateTimeOffset.Now;
-                    job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                    job.State = StateEnum.Running.ToString();
-                    db.Jobs.Attach(job);
-                    db.Entry(job).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return Ok<String>(job.State);
+                    return StatusCode(HttpStatusCode.NotFound);
                 }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                job.Modified = DateTimeOffset.Now;
+                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.State = StateEnum.Running.ToString();
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+                return Ok<String>(job.State);
             }
             catch (Exception ex)
             {
@@ -388,6 +369,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private String CreatePermissionId(String permissionSuffix)
         {
             return String.Format("{0}:{1}{2}", _permissionPrefix, _permissionInfix, permissionSuffix);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

@@ -160,13 +160,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-
                 // DFTODO Load job
                 // DFTODO Create new lifecycle manager instance
                 // DFTODO Excecute pre or post callback on lifecycle manager depending on jobs parameters
 
                 // DFTODO Check what to return
-                return Ok<String>("");
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -194,7 +193,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Excecute pre or post callback on lifecycle manager depending on jobs parameters
 
                 // DFTODO Check what to return
-                return Ok<String>("");
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -36,6 +36,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     {
         private const String _permissionInfix = "StateChangeLock";
         private const String _permissionPrefix = "CumulusCore";
+        private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
 
@@ -76,12 +77,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                using (var db = new LifeCycleContext())
-                {
-                    var stateChangeLocks = db.StateChangeLocks
-                        .Where(s => s.CreatedBy.Equals(CurrentUserDataProvider.GetCurrentUserId()));
-                    return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
-                }
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                var stateChangeLocks = from stateChangeLock in db.StateChangeLocks
+                           where stateChangeLock.CreatedBy == currentUserId
+                           select stateChangeLock;
+                return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
             }
             catch (Exception e)
             {
@@ -157,20 +157,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     stateChangeLock.EntityType,
                     stateChangeLock.EntityId);
 
-                using (var db = new LifeCycleContext())
+                var stateChangeLockEntity = new StateChangeLock()
                 {
-                    var stateChangeLockEntity = new StateChangeLock()
-                    {
-                        CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                        Created = DateTimeOffset.Now,
-                        EntityId = stateChangeLock.EntityId,
-                        EntityType = stateChangeLock.EntityType,
-                    };
-                    stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
-                    Debug.WriteLine("Created job with id '{0}'", stateChangeLockEntity.Id);
-                    db.SaveChanges();
-                    return ResponseMessage(ODataControllerHelper.ResponseCreated(this, stateChangeLockEntity));
-                }
+                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    Created = DateTimeOffset.Now,
+                    EntityId = stateChangeLock.EntityId,
+                    EntityType = stateChangeLock.EntityType,
+                };
+                stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
+                db.SaveChanges();
+                Debug.WriteLine("Created job with id '{0}'", stateChangeLockEntity.Id);
+                return ResponseMessage(ODataControllerHelper.ResponseCreated(this, stateChangeLockEntity));
             }
             catch (Exception e)
             {
@@ -214,21 +211,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                using (var db = new LifeCycleContext())
+                var stateChangeLock = db.StateChangeLocks.Find(key);
+                if (null == stateChangeLock)
                 {
-                    var stateChangeLock = db.StateChangeLocks.Find(key);
-                    if (null == stateChangeLock)
-                    {
-                        return StatusCode(HttpStatusCode.NotFound);
-                    }
-                    if (!CurrentUserDataProvider.GetCurrentUserId().Equals(stateChangeLock.CreatedBy))
-                    {
-                        return StatusCode(HttpStatusCode.Forbidden);
-                    }
-                    Debug.WriteLine("Deleting state change lock for entity of type '{0}' with id '{1}'...",
-                        stateChangeLock.EntityType, stateChangeLock.EntityId);
-                    db.StateChangeLocks.Remove(stateChangeLock);
+                    return StatusCode(HttpStatusCode.NotFound);
                 }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(stateChangeLock.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                Debug.WriteLine("Deleting state change lock for entity of type '{0}' with id '{1}'...",
+                    stateChangeLock.EntityType, stateChangeLock.EntityId);
+                db.StateChangeLocks.Remove(stateChangeLock);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -241,6 +235,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private String CreatePermissionId(String permissionSuffix)
         {
             return String.Format("{0}:{1}{2}", _permissionPrefix, _permissionInfix, permissionSuffix);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
