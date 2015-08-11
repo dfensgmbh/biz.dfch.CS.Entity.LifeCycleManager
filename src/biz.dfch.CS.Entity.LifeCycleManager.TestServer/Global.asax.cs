@@ -5,13 +5,8 @@ using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
