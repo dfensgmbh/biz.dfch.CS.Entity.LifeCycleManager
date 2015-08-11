@@ -31,15 +31,19 @@ namespace LifecycleManager.Extensions.Default.Executors
     {
         private HttpClient _httpClient;
         private const String APPLICATION_JSON = "application/json";
-        private Uri _url;
+        private Uri _requestUrl;
 
-        public HttpCalloutExecutor(String definitionParameters)
+        public HttpCalloutExecutor()
         {
             Debug.Write("Initializing Http Client");
             // DFTODO Authentication/Credentials?
             _httpClient = new HttpClient();
-            _url = ExtractUrlFromDefinition(definitionParameters);
-            _httpClient.BaseAddress = _url;
+        }
+
+        public void Configure(string definitionParameters)
+        {
+            _requestUrl = ExtractUrlFromDefinition(definitionParameters);
+            _httpClient.BaseAddress = _requestUrl;
         }
 
         private Uri ExtractUrlFromDefinition(String definitionParameters)
@@ -55,14 +59,14 @@ namespace LifecycleManager.Extensions.Default.Executors
                 Debug.WriteLine("CalloutData parameter is null");
                 throw new ArgumentException("Callout data should not be null");
             }
-            Debug.WriteLine("Executing callout to '{0}'", _url);
+            Debug.WriteLine("Executing callout to '{0}'", _requestUrl);
             
             SetHeaders();
             int _TimeoutSec = 90;
             _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
             HttpContent body = new StringContent(JsonConvert.SerializeObject(data));
             body.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
-            HttpResponseMessage response = _httpClient.PostAsync(_url, body).Result;
+            HttpResponseMessage response = _httpClient.PostAsync(_requestUrl, body).Result;
             try
             {
                 response.EnsureSuccessStatusCode();
@@ -70,7 +74,7 @@ namespace LifecycleManager.Extensions.Default.Executors
             catch (HttpRequestException e)
             {
                 Debug.WriteLine("Error occurred while executing callout: {0}", e.Message);
-                throw new ArgumentException(String.Format("The callout request URL '{0}' is not valid", _url), e);
+                throw new ArgumentException(String.Format("The callout request URL '{0}' is not valid", _requestUrl), e);
             }
         }
 

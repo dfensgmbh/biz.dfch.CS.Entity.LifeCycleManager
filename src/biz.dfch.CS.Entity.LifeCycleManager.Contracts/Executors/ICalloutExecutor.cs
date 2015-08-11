@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+using System;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
 {
     public interface ICalloutExecutor
     {
+        void Configure(String definitionParameters);
         void ExecuteCallout(CalloutData data);
     }
 }
