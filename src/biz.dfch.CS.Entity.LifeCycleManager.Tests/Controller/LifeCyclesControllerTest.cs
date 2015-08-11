@@ -15,8 +15,10 @@
  */
 
 
+using System.Net;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using biz.dfch.CS.Entity.LifeCycleManager.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,23 +26,43 @@ using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
-    public class LifeCyclesControllerTest : BaseControllerTest<LifeCyclesController>
+    [TestClass]
+    public class LifeCyclesControllerTest : BaseControllerTest<LifeCycle>
     {
         private LifeCyclesController _lifeCyclesController;
-        private LifeCycleContext _lifeCycleContext;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
             Mock.SetupStatic(typeof(ODataControllerHelper));
-            Mock.SetupStatic(typeof(CurrentUserDataProvider));
         }
 
         [TestInitialize]
         public void TestInitialize()
         {
             _lifeCyclesController = new LifeCyclesController();
-            _lifeCycleContext = Mock.Create<LifeCycleContext>();
         }
+
+        [TestMethod]
+        public void GetLifeCyclesReturnsNotImplemented()
+        {
+            var actionResult = _lifeCyclesController.GetLifeCycles(
+                CreateODataQueryOptions("http://localhost/api/Core.svc/LifeCycles"))
+                .Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotImplemented);
+        }
+
+        [TestMethod]
+        public void GetJobsByIdReturnsNotImplemented()
+        {
+            var actionResult = _lifeCyclesController.GetLifeCycle("1",
+                CreateODataQueryOptions("http://localhost/api/Core.svc/LifeCycles(1)"))
+                .Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotImplemented);
+        }
+
+
     }
 }

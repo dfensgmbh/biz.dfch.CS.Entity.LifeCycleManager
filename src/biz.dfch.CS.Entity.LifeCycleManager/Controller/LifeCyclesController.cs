@@ -75,7 +75,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         // GET: api/Utilities.svc/LifeCycles(5)
-        public async Task<IHttpActionResult> GetLifeCycle([FromODataUri] int key, ODataQueryOptions<LifeCycle> queryOptions)
+        public async Task<IHttpActionResult> GetLifeCycle([FromODataUri] String key, ODataQueryOptions<LifeCycle> queryOptions)
         {
             // validate the query.
             try
@@ -155,7 +155,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Next([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Next([FromODataUri] String key, ODataActionParameters parameters)
         {
             var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             Debug.WriteLine(fn);
@@ -180,7 +180,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Cancel([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Cancel([FromODataUri] String key, ODataActionParameters parameters)
         {
             var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             Debug.WriteLine(fn);
@@ -205,14 +205,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Allow([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Allow([FromODataUri] String key, ODataActionParameters parameters)
         {
             var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             Debug.WriteLine(fn);
 
             try
             {
-                var permissionId = CreatePermissionId("CanApprove");
+                var permissionId = CreatePermissionId("CanAllow");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
@@ -233,7 +233,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Decline([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Decline([FromODataUri] String key, ODataActionParameters parameters)
         {
             var fn = String.Format("{0}:{1}", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             Debug.WriteLine(fn);
