@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-
+using System;
 using System.Net;
-using biz.dfch.CS.Entity.LifeCycleManager.Context;
+using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Model;
-using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using biz.dfch.CS.Entity.LifeCycleManager.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Telerik.JustMock;
@@ -30,6 +29,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     public class LifeCyclesControllerTest : BaseControllerTest<LifeCycle>
     {
         private LifeCyclesController _lifeCyclesController;
+        private const String ENTITY_ID = "http://test/api/ApplicationData.svc/Users(1)";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -54,7 +54,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void GetJobsByIdReturnsNotImplemented()
+        public void GetLifeCycleByIdReturnsNotImplemented()
         {
             var actionResult = _lifeCyclesController.GetLifeCycle("1",
                 CreateODataQueryOptions("http://localhost/api/Core.svc/LifeCycles(1)"))
@@ -63,6 +63,41 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotImplemented);
         }
 
+        [TestMethod]
+        public void PutWithDifferentIdsInUrlAndBodyReturnsBadRequest()
+        {
+            var actionResult = _lifeCyclesController.Put("1",
+                new LifeCycle{Id = ENTITY_ID})
+                .Result;
 
+            Assert.IsTrue(actionResult.GetType() == typeof(BadRequestResult));
+        }
+
+        // DFTODO Tests for Put
+
+        [TestMethod]
+        public void PostLifeCycleByIdReturnsNotImplemented()
+        {
+            var actionResult = _lifeCyclesController.Post(new LifeCycle { Id = ENTITY_ID })
+                .Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotImplemented);
+        }
+
+        // DFTODO Tests for Patch
+
+        [TestMethod]
+        public void DeleteLifeCycleByIdReturnsNotImplemented()
+        {
+            var actionResult = _lifeCyclesController.Delete(ENTITY_ID)
+                .Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotImplemented);
+        }
+
+        // DFTODO Tests for Next
+        // DFTODO Tests for Cancel
+        // DFTODO Tests for Allow
+        // DFTODO Tests for Decline
     }
 }

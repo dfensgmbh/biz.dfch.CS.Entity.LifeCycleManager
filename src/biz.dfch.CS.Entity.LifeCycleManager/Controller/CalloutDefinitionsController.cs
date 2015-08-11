@@ -70,6 +70,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (ODataException ex)
             {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", ex.Source, ex.Message, ex.StackTrace));
                 return BadRequest(ex.Message);
             }
 
@@ -109,6 +110,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (ODataException ex)
             {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", ex.Source, ex.Message, ex.StackTrace));
                 return BadRequest(ex.Message);
             }
 
@@ -148,7 +150,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Entity to be updated has invalid ModelState.");
+                Debug.WriteLine("CalloutDefinition to be updated with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
@@ -182,6 +184,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 db.CalloutDefinitions.Attach(calloutDefinition);
                 db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
+                Debug.WriteLine("CalloutDefinition with id '{0}' updated", key);
                 return Ok<CalloutDefinition>(calloutDefinition);
             }
             catch (Exception e)
@@ -200,7 +203,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Entity to be created has invalid ModelState.");
+                Debug.WriteLine("CalloutDefinition to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
             try
@@ -214,11 +217,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 if (null == calloutDefinition)
                 {
-                    var errorMsg = "Entity to be created contains invalid data.";
+                    var errorMsg = "CalloutDefinition to be created contains invalid data.";
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine("Saving new calloutDefinition");
+                Debug.WriteLine("Saving new CalloutDefinition...");
 
                 var calloutDefinitionEntity = new CalloutDefinition()
                 {
@@ -230,8 +233,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Parameters = calloutDefinition.Parameters,
                 };
                 calloutDefinitionEntity = db.CalloutDefinitions.Add(calloutDefinitionEntity);
-                Debug.WriteLine("Created calloutDefinition with id '{0}'", calloutDefinitionEntity.Id);
                 db.SaveChanges();
+                Debug.WriteLine("Saved CalloutDefinition with id '{0}'", calloutDefinitionEntity.Id);
                 return ResponseMessage(ODataControllerHelper.ResponseCreated(this, calloutDefinitionEntity));
             }
             catch (Exception e)
@@ -251,6 +254,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("CalloutDefinition to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
 
@@ -272,6 +276,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
+                Debug.WriteLine("Patching CalloutDefinition with id '{0}'", key);
                 var id = calloutDefinition.Id;
                 var created = calloutDefinition.Created;
                 var createdBy = calloutDefinition.CreatedBy;
@@ -284,6 +289,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 db.CalloutDefinitions.Attach(calloutDefinition);
                 db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
+                Debug.WriteLine("CalloutDefinition with id '{0}' patched", key);
                 return Ok<CalloutDefinition>(calloutDefinition);
             }
             catch (Exception e)
@@ -319,6 +325,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 db.CalloutDefinitions.Remove(calloutDefinition);
+                Debug.WriteLine("CalloutDefintion with id '{0}' deleted", key);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -337,7 +344,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             if (disposing)
             {
+                Debug.WriteLine("Disposing database context...");
                 db.Dispose();
+                Debug.WriteLine("Database context disposed");
             }
             base.Dispose(disposing);
         }

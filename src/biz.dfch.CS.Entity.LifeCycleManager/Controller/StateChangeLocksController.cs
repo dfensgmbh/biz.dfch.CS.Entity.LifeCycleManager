@@ -68,6 +68,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (ODataException ex)
             {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", ex.Source, ex.Message, ex.StackTrace));
                 return BadRequest(ex.Message);
             }
 
@@ -96,7 +97,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Utilities.svc/StateChangeLocks(5)
         public async Task<IHttpActionResult> GetStateChangeLock([FromODataUri] int key, ODataQueryOptions<StateChangeLock> queryOptions)
         {
-            // validate the query.
+            String fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             try
             {
                 queryOptions.Validate(_validationSettings);
@@ -106,6 +109,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ex.Message);
             }
 
+            Debug.WriteLine(fn);
+
             // return Ok<StateChangeLock>(stateChangeLock);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
@@ -113,6 +118,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // PUT: api/Utilities.svc/StateChangeLocks(5)
         public async Task<IHttpActionResult> Put([FromODataUri] int key, StateChangeLock stateChangeLock)
         {
+            String fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -122,6 +131,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 return BadRequest();
             }
+
+            Debug.WriteLine(fn);
 
             // TODO: Add replace logic here.
 
@@ -138,7 +149,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Entity to be created has invalid ModelState.");
+                Debug.WriteLine("StateChangeLock to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
             try
@@ -152,11 +163,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 if (null == stateChangeLock)
                 {
-                    var errorMsg = "Entity to be created contains invalid data.";
+                    var errorMsg = "StateChangeLock to be created contains invalid data.";
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine("Saving new state change lock for entity of type '{0}' and id '{1}'", 
+                Debug.WriteLine("Saving new StateChangeLock for entity of type '{0}' and id '{1}'...", 
                     stateChangeLock.EntityType,
                     stateChangeLock.EntityId);
 
@@ -169,7 +180,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 };
                 stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
                 db.SaveChanges();
-                Debug.WriteLine("Created job with id '{0}'", stateChangeLockEntity.Id);
+                Debug.WriteLine("Saved StateChangeLock for entity of type '{0}' and id '{1}'", 
+                    stateChangeLockEntity.EntityType, 
+                    stateChangeLockEntity.EntityId);
                 return ResponseMessage(ODataControllerHelper.ResponseCreated(this, stateChangeLockEntity));
             }
             catch (Exception e)
@@ -183,11 +196,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<StateChangeLock> delta)
         {
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Debug.WriteLine(fn);
             // TODO: Get the entity here.
 
             // delta.Patch(stateChangeLock);
@@ -223,9 +241,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                Debug.WriteLine("Deleting state change lock for entity of type '{0}' with id '{1}'...",
-                    stateChangeLock.EntityType, stateChangeLock.EntityId);
                 db.StateChangeLocks.Remove(stateChangeLock);
+                Debug.WriteLine("Deleted StateChangeLock for entity of type '{0}' with id '{1}'...",
+                    stateChangeLock.EntityType, stateChangeLock.EntityId);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -244,7 +262,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             if (disposing)
             {
+                Debug.WriteLine("Disposing database context...");
                 db.Dispose();
+                Debug.WriteLine("Database context disposed");
             }
             base.Dispose(disposing);
         }

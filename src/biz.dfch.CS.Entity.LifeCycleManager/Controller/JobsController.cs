@@ -72,6 +72,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (ODataException ex)
             {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", ex.Source, ex.Message, ex.StackTrace));
                 return BadRequest(ex.Message);
             }
 
@@ -111,6 +112,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (ODataException ex)
             {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", ex.Source, ex.Message, ex.StackTrace));
                 return BadRequest(ex.Message);
             }
 
@@ -150,7 +152,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Entity to be updated has invalid ModelState.");
+                Debug.WriteLine("Job to be updated with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
@@ -184,6 +186,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
+                Debug.WriteLine("Job with id '{0}' updated", key);
                 return Ok<Job>(job);
             }
             catch (Exception e)
@@ -202,7 +205,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Entity to be created has invalid ModelState.");
+                Debug.WriteLine("Job to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
             try
@@ -216,11 +219,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 if (null == job)
                 {
-                    var errorMsg = "Entity to be created contains invalid data.";
+                    var errorMsg = "Job to be created contains invalid data.";
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine("Saving new job");
+                Debug.WriteLine("Saving new job...");
 
                 var jobEntity = new Job()
                 {
@@ -231,8 +234,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Parameters = job.Parameters,
                 };
                 jobEntity = db.Jobs.Add(jobEntity);
-                Debug.WriteLine("Created job with id '{0}'", jobEntity.Id);
                 db.SaveChanges();
+                Debug.WriteLine("Saved job with id '{0}'", jobEntity.Id);
                 return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
             }
             catch (Exception e)
@@ -252,6 +255,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("Job to be created has invalid ModelState.");
                 return BadRequest(ModelState);
             }
 
@@ -273,6 +277,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
+                Debug.WriteLine("Patching Job with id '{0}'", key);
                 var id = job.Id;
                 var created = job.Created;
                 var createdBy = job.CreatedBy;
@@ -285,6 +290,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
+                Debug.WriteLine("Job with id '{0}' patched", key);
                 return Ok<Job>(job);
             }
             catch (Exception e)
@@ -320,6 +326,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 db.Jobs.Remove(job);
+                Debug.WriteLine("Job with id '{0}' deleted", key);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
@@ -354,12 +361,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
+                Debug.WriteLine("Run job with id '{0}'", key);
                 job.Modified = DateTimeOffset.Now;
                 job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
                 job.State = StateEnum.Running.ToString();
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
+                Debug.WriteLine("Job with id '{0}' is now running", key);
                 return Ok<String>(job.State);
             }
             catch (Exception ex)
@@ -378,7 +387,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             if (disposing)
             {
+                Debug.WriteLine("Disposing database context...");
                 db.Dispose();
+                Debug.WriteLine("Database context disposed");
             }
             base.Dispose(disposing);
         }
