@@ -56,6 +56,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             builder.EntitySet<Job>(EntitySetName);
 
             builder.Entity<Job>().Action("Run").Returns<String>();
+            builder.Entity<Job>().Action("Finish").Returns<String>();
         }
 
         // GET: api/Core.svc/Jobs
@@ -369,6 +370,48 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
                 Debug.WriteLine("Job with id '{0}' is now running", key);
+                return Ok<String>(job.State);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Finish([FromODataUri] int key, ODataActionParameters parameters)
+        {
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            Debug.WriteLine(fn);
+
+            try
+            {
+                var permissionId = CreatePermissionId("CanRun");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+
+                var job = db.Jobs.Find(key);
+                if (null == job)
+                {
+                    return StatusCode(HttpStatusCode.NotFound);
+                }
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+                Debug.WriteLine("Finish job with id '{0}'", key);
+                job.Modified = DateTimeOffset.Now;
+                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.State = StateEnum.Finished.ToString();
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+                Debug.WriteLine("Job with id '{0}' is now finished", key);
                 return Ok<String>(job.State);
             }
             catch (Exception ex)

@@ -864,6 +864,99 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Assert(_lifeCycleContext);
         }
 
+        [TestMethod]
+        public void FinishForUserWithoutRunPermissionReturnsForbidden()
+        {
+            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
+                .Returns(false)
+                .MustBeCalled();
+
+            var actionResult = _jobsController.Finish(1, null).Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
+
+            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
+        }
+
+        [TestMethod]
+        public void FinishForUserWithoutOwnerShipReturnsForbidden()
+        {
+            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
+                .Returns(true)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns(ANOTHER_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
+                .IgnoreInstance()
+                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .MustBeCalled();
+
+            var actionResult = _jobsController.Finish(1, null).Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
+
+            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(_lifeCycleContext);
+        }
+
+        [TestMethod]
+        public void FinishForUserForNonExistingEntityReturnsNotFound()
+        {
+            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
+                .Returns(true)
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
+                .IgnoreInstance()
+                .Returns((Job)null)
+                .MustBeCalled();
+
+            var actionResult = _jobsController.Finish(1, null).Result;
+
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
+
+            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
+            Mock.Assert(_lifeCycleContext);
+        }
+
+        [TestMethod]
+        public void FinishForUserWithPermissionAndOwnershipSetsStateToFinishedAndReturnsOk()
+        {
+            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
+                .Returns(true)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.Jobs.Find(2))
+                .IgnoreInstance()
+                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[1])
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.Entry(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .Returns(Mock.Create<DbEntityEntry<Job>>())
+                .MustBeCalled();
+            Mock.Arrange(() => _lifeCycleContext.SaveChanges())
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            var actionResult = _jobsController.Finish(2, null).Result;
+
+            Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<String>));
+
+            var response = actionResult as OkNegotiatedContentResult<String>;
+            var jobState = response.Content;
+            Assert.AreEqual(StateEnum.Finished.ToString(), jobState);
+
+            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(_lifeCycleContext);
+        }
+
         private IList<Job> CreateSampleJobDbSetForUser(String ownerId)
         {
             var dbSet = new List<Job>();
