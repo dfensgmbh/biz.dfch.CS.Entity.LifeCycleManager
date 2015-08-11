@@ -179,7 +179,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     {
                         return StatusCode(HttpStatusCode.Forbidden);
                     }
-                    // DFTODO Check what to do if Type and State are not set
                     job.Created = original.Created;
                     job.CreatedBy = original.CreatedBy;
                     job.Modified = DateTimeOffset.Now;
@@ -283,7 +282,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     {
                         return StatusCode(HttpStatusCode.Forbidden);
                     }
-                    // DFTODO Check what to do if Type and State are not set
                     var id = job.Id;
                     var created = job.Created;
                     var createdBy = job.CreatedBy;
