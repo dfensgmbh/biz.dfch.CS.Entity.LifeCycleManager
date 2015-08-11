@@ -33,15 +33,15 @@ using Microsoft.Data.OData;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
-    public class JobsController : ODataController
+    public class CalloutDefinitionsController : ODataController
     {
-        private const String _permissionInfix = "Job";
+        private const String _permissionInfix = "CalloutDefinition";
         private const String _permissionPrefix = "CumulusCore";
         private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
 
-        public JobsController()
+        public CalloutDefinitionsController()
         {
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
@@ -51,19 +51,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         internal static void ModelBuilder(ODataConventionModelBuilder builder)
         {
-            var EntitySetName = "Jobs";
+            var EntitySetName = "CalloutDefinitions";
 
-            builder.EntitySet<Job>(EntitySetName);
-
-            builder.Entity<Job>().Action("Run").Returns<String>();
+            builder.EntitySet<CalloutDefinition>(EntitySetName);
         }
 
-        // GET: api/Core.svc/Jobs
+        // GET: api/Core.svc/CalloutDefinitions
         [EnableQuery(PageSize = 45)]
-        public async Task<IHttpActionResult> GetJobs(ODataQueryOptions<Job> queryOptions)
+        public async Task<IHttpActionResult> GetCalloutDefinitions(ODataQueryOptions<CalloutDefinition> queryOptions)
         {
-            String fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
+            String fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             try
@@ -85,11 +83,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                var jobs = from job in db.Jobs
-                    where job.CreatedBy == currentUserId
-                    select job;
-                    
-                return Ok<IEnumerable<Job>>(jobs);
+                var calloutDefinitions = from calloutDefinition in db.CalloutDefinitions
+                           where calloutDefinition.CreatedBy == currentUserId
+                           select calloutDefinition;
+
+                return Ok<IEnumerable<CalloutDefinition>>(calloutDefinitions);
             }
             catch (Exception e)
             {
@@ -98,10 +96,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
         }
 
-        // GET: api/Core.svc/Jobs(5)
-        public async Task<IHttpActionResult> GetJob([FromODataUri] int key, ODataQueryOptions<Job> queryOptions)
+        // GET: api/Core.svc/CalloutDefinitions(5)
+        public async Task<IHttpActionResult> GetCalloutDefinition([FromODataUri] int key, ODataQueryOptions<CalloutDefinition> queryOptions)
         {
-            var fn = String.Format("{0}:{1}", 
+            var fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
@@ -123,16 +121,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var job = db.Jobs.Find(key);
-                if (null == job)
+                var calloutDefinition = db.CalloutDefinitions.Find(key);
+                if (null == calloutDefinition)
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                return Ok<Job>(job);
+                return Ok<CalloutDefinition>(calloutDefinition);
             }
             catch (Exception e)
             {
@@ -141,8 +139,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
         }
 
-        // PUT: api/Core.svc/Jobs(5)
-        public async Task<IHttpActionResult> Put([FromODataUri] int key, Job job)
+        // PUT: api/Core.svc/CalloutDefinitions(5)
+        public async Task<IHttpActionResult> Put([FromODataUri] int key, CalloutDefinition calloutDefinition)
         {
             var fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
@@ -154,7 +152,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ModelState);
             }
 
-            if (key != job.Id)
+            if (key != calloutDefinition.Id)
             {
                 return BadRequest();
             }
@@ -162,13 +160,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             try
             {
                 Debug.WriteLine(fn);
-                
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var original = db.Jobs.Find(job.Id);
+                var original = db.CalloutDefinitions.Find(calloutDefinition.Id);
                 if (null == original)
                 {
                     return StatusCode(HttpStatusCode.NotFound);
@@ -177,14 +175,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                job.Created = original.Created;
-                job.CreatedBy = original.CreatedBy;
-                job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                db.Jobs.Attach(job);
-                db.Entry(job).State = EntityState.Modified;
+                calloutDefinition.Created = original.Created;
+                calloutDefinition.CreatedBy = original.CreatedBy;
+                calloutDefinition.Modified = DateTimeOffset.Now;
+                calloutDefinition.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                db.CalloutDefinitions.Attach(calloutDefinition);
+                db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
-                return Ok<Job>(job);
+                return Ok<CalloutDefinition>(calloutDefinition);
             }
             catch (Exception e)
             {
@@ -193,8 +191,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
         }
 
-        // POST: api/Core.svc/Jobs
-        public async Task<IHttpActionResult> Post(Job job)
+        // POST: api/Core.svc/CalloutDefinitions
+        public async Task<IHttpActionResult> Post(CalloutDefinition calloutDefinition)
         {
             var fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
@@ -214,26 +212,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                if (null == job)
+                if (null == calloutDefinition)
                 {
                     var errorMsg = "Entity to be created contains invalid data.";
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine("Saving new job");
+                Debug.WriteLine("Saving new calloutDefinition");
 
-                var jobEntity = new Job()
+                var calloutDefinitionEntity = new CalloutDefinition()
                 {
                     Created = DateTimeOffset.Now,
                     CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                    Type = null == job.Type ? "DefaultJob" : job.Type,
-                    State = job.State,
-                    Parameters = job.Parameters,
+                    TenantId = calloutDefinition.TenantId,
+                    EntityType = calloutDefinition.EntityType,
+                    EntityId = calloutDefinition.EntityId,
+                    Parameters = calloutDefinition.Parameters,
                 };
-                jobEntity = db.Jobs.Add(jobEntity);
-                Debug.WriteLine("Created job with id '{0}'", jobEntity.Id);
+                calloutDefinitionEntity = db.CalloutDefinitions.Add(calloutDefinitionEntity);
+                Debug.WriteLine("Created calloutDefinition with id '{0}'", calloutDefinitionEntity.Id);
                 db.SaveChanges();
-                return ResponseMessage(ODataControllerHelper.ResponseCreated(this, jobEntity));
+                return ResponseMessage(ODataControllerHelper.ResponseCreated(this, calloutDefinitionEntity));
             }
             catch (Exception e)
             {
@@ -242,9 +241,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
         }
 
-        // PATCH: api/Core.svc/Jobs(5)
+        // PATCH: api/Core.svc/CalloutDefinitions(5)
         [AcceptVerbs("PATCH", "MERGE")]
-        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<Job> delta)
+        public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<CalloutDefinition> delta)
         {
             var fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
@@ -264,28 +263,28 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var job = db.Jobs.Find(key);
-                if (null == job)
+                var calloutDefinition = db.CalloutDefinitions.Find(key);
+                if (null == calloutDefinition)
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var id = job.Id;
-                var created = job.Created;
-                var createdBy = job.CreatedBy;
-                delta.Patch(job);
-                job.Id = id;
-                job.Created = created;
-                job.CreatedBy = createdBy;
-                job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                db.Jobs.Attach(job);
-                db.Entry(job).State = EntityState.Modified;
+                var id = calloutDefinition.Id;
+                var created = calloutDefinition.Created;
+                var createdBy = calloutDefinition.CreatedBy;
+                delta.Patch(calloutDefinition);
+                calloutDefinition.Id = id;
+                calloutDefinition.Created = created;
+                calloutDefinition.CreatedBy = createdBy;
+                calloutDefinition.Modified = DateTimeOffset.Now;
+                calloutDefinition.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                db.CalloutDefinitions.Attach(calloutDefinition);
+                db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
-                return Ok<Job>(job);
+                return Ok<CalloutDefinition>(calloutDefinition);
             }
             catch (Exception e)
             {
@@ -294,11 +293,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
         }
 
-        // DELETE: api/Core.svc/Jobs(5)
+        // DELETE: api/Core.svc/CalloutDefinitions(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
-            var fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
+            var fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
             try
@@ -310,61 +309,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var job = db.Jobs.Find(key);
-                if (null == job)
+                var calloutDefinition = db.CalloutDefinitions.Find(key);
+                if (null == calloutDefinition)
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                db.Jobs.Remove(job);
+                db.CalloutDefinitions.Remove(calloutDefinition);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
-                throw;
-            }
-        }
-
-        [HttpPost]
-        public async Task<IHttpActionResult> Run([FromODataUri] int key, ODataActionParameters parameters)
-        {
-            var fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-            Debug.WriteLine(fn);
-
-            try
-            {
-                var permissionId = CreatePermissionId("CanRun");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
-                {
-                    return StatusCode(HttpStatusCode.Forbidden);
-                }
-
-                var job = db.Jobs.Find(key);
-                if (null == job)
-                {
-                    return StatusCode(HttpStatusCode.NotFound);
-                }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
-                {
-                    return StatusCode(HttpStatusCode.Forbidden);
-                }
-                job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                job.State = StateEnum.Running.ToString();
-                db.Jobs.Attach(job);
-                db.Entry(job).State = EntityState.Modified;
-                db.SaveChanges();
-                return Ok<String>(job.State);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
                 throw;
             }
         }

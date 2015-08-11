@@ -37,6 +37,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             Controller.JobsController.ModelBuilder(builder);
             Controller.CallbacksController.ModelBuilder(builder);
             Controller.StateChangeLocksController.ModelBuilder(builder);
+            Controller.CalloutDefinitionsController.ModelBuilder(builder);
 
             Debug.WriteLine("Core endpoint built!");
 

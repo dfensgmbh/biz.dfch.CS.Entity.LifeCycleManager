@@ -38,7 +38,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public CallbacksController()
         {
-            Debug.WriteLine("CallbacksController()");
+            String fn = String.Format("{0}:{1}",
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
+                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            Debug.WriteLine(fn);
         }
 
         internal static void ModelBuilder(ODataConventionModelBuilder builder)

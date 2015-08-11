@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="Context\LifeCycleContext.cs" />
     <Compile Include="Controller\CallbacksController.cs" />
+    <Compile Include="Controller\CalloutDefinitionsController.cs" />
     <Compile Include="Controller\JobsController.cs" />
     <Compile Include="Controller\StateChangeLocksController.cs" />
     <Compile Include="CoreEndpoint.cs" />

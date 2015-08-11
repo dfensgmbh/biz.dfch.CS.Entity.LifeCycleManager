@@ -58,5 +58,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("StateChangeLock")).Count());
         }
+
+        [TestMethod]
+        public void GetModelReturnsModelContainingEdmEntityTypeForCalloutDefinitions()
+        {
+            var utilitiesEndpoint = new CoreEndpoint();
+            var model = utilitiesEndpoint.GetModel();
+
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("CalloutDefinition")).Count());
+        }
     }
 }

@@ -23,12 +23,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
     {
         [Key]
         public int Id { get; set; }
-        public String TenantId { get; set; }
         public String CreatedBy { get; set; }
         public String ModifiedBy { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Modified { get; set; }
 
+        public String TenantId { get; set; }
         public String EntityId { get; set; }
         public String EntityType { get; set; }
         public String Parameters { get; set; }
