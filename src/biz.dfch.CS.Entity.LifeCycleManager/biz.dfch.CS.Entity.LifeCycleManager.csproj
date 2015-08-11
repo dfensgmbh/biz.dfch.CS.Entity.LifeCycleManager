@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="biz.dfch.CS.StateMachine">
-      <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.1\biz.dfch.CS.StateMachine\bin\Release\biz.dfch.CS.StateMachine.dll</HintPath>
+      <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.2\biz.dfch.CS.StateMachine\bin\Release\biz.dfch.CS.StateMachine.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
