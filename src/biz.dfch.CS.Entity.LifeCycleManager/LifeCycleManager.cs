@@ -40,6 +40,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
 
+        // DFTODO check, how pass credential provider from controller
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
@@ -121,6 +122,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void ChangeState(Uri entityUri, String condition)
         {
+            // DFTODO load CalloutExceutor plugin (same way as other plugins are loaded)
+            // DFTODO check, if entity will be passed as String from Controller?
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             var entity = _entityController.LoadEntity(entityUri);
             // DFTODO create job of type Lifecycle (extract data from JSON)

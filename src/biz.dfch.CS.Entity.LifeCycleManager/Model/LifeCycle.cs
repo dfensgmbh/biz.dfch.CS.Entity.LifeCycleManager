@@ -20,7 +20,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
     public class LifeCycle
     {
-        // The URI of the entity
+        // The Id corresponds to the URI of the entity
         public String Id { get; set; }
         public String Condition { get; set; }
 

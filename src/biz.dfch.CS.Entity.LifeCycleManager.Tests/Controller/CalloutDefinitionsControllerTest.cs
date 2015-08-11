@@ -416,7 +416,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PutCalloutDefinitionDifferentCalloutDefinitionIdsInUrlAndBodyReturnsBadRequest()
+        public void PutCalloutDefinitionWithDifferentCalloutDefinitionIdsInUrlAndBodyReturnsBadRequest()
         {
             var actionResult = _calloutDefinitionsController.Put(2,
                 new CalloutDefinition

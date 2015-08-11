@@ -407,7 +407,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PutJobDifferentJobIdsInUrlAndBodyReturnsBadRequest()
+        public void PutJobWithDifferentJobIdsInUrlAndBodyReturnsBadRequest()
         {
             var actionResult = _jobsController.Put(2,
                 new Job
