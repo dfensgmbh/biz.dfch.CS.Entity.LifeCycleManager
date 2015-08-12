@@ -125,6 +125,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
+        // DFTODO check where to get TenantId from to load calloutDefinition!
         public void ChangeState(Uri entityUri, String entity, String condition)
         {
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
