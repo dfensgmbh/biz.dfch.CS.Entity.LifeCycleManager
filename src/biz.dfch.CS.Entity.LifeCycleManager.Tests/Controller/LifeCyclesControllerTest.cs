@@ -142,6 +142,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(28)]
         public void PutWithValidKeyLoadsEntity()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
@@ -257,6 +258,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(28)]
         public void PatchWithValidKeyLoadsEntity()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
@@ -368,6 +370,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(28)]
         public void NextWithValidKeyLoadsEntity()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
@@ -466,6 +469,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(28)]
         public void CancelWithValidKeyLoadsEntity()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
