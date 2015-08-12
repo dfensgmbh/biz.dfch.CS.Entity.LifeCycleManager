@@ -125,12 +125,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        public void ChangeState(Uri entityUri, String condition)
+        public void ChangeState(Uri entityUri, String entity, String condition)
         {
             // DFTODO Call service references as system user!? (Problems on IIS)
             // DFTODO check, if entity will be passed as String from Controller?
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
-            var entity = _entityController.LoadEntity(entityUri);
+            
+
             // DFTODO create job of type Lifecycle (extract data from JSON)
             // DFTODO lock entity
             // DFTODO load callout definition

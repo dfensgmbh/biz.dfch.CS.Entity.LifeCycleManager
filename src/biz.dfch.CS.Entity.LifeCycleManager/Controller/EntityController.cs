@@ -31,7 +31,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             Debug.Write("Initializing Http Client");
             var clientHandler = new HttpClientHandler();
-            clientHandler.Credentials = credentialProvider.GetCredentials();
+            if (null != credentialProvider)
+            {
+                clientHandler.Credentials = credentialProvider.GetCredentials();
+            }
             _httpClient = new HttpClient(clientHandler);
         }
 
@@ -53,7 +56,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             catch (HttpRequestException e)
             {
                 Debug.WriteLine("Error occurred while fetching entity from '{0}'", e.Message);
-                throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
+                throw;
             }
             
             return response.Content.ReadAsStringAsync().Result;

@@ -16,6 +16,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.OData;
@@ -111,6 +112,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("Entity to be changed by LifeCycleManager with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
@@ -119,14 +121,29 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest();
             }
 
-            Debug.WriteLine(fn);
+            try
+            {
+                Debug.WriteLine(fn);
+                var entity = LoadEntity(new Uri(key));
 
-            // DFTODO Load entity and check if user is permitted
-            // DFTODO change state with given condition
+                new LifeCycleManager(null, ExtractType(key));
 
-            // return Updated(LifeCycle);
-            // DFTODO Check what to return
-            return StatusCode(HttpStatusCode.NotImplemented);
+                return Ok();
+            }
+            catch (UriFormatException e)
+            {
+                return BadRequest("Invalid id (Id should be a valid URI)");
+            }
+            catch (HttpRequestException e)
+            {
+                // DFTODO handle different status code cases?
+                return BadRequest("Unable to load passed entity by Id (Either not found or not authorized)");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
+                throw;
+            }
         }
 
         // POST: api/Utilities.svc/LifeCycles
@@ -159,6 +176,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("Entity to be changed by LifeCycleManager with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
@@ -311,6 +329,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private String CreatePermissionId(String permissionSuffix)
         {
             return String.Format("{0}:{1}{2}", _permissionPrefix, _permissionInfix, permissionSuffix);
+        }
+
+        private String LoadEntity(Uri uri)
+        {
+            // DFTODO Check what ICredentialProvider implementation to pass
+            // DFTODO Check permission on entity
+            var entityLoader = new EntityController(null);
+            return entityLoader.LoadEntity(uri);
+        }
+
+        private String ExtractType(String key)
+        {
+            return "";
         }
     }
 }

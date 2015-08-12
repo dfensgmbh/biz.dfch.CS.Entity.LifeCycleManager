@@ -34,6 +34,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
+        private const String SAMPLE_ENTITY = "{}";
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/Entity(1)");
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
@@ -157,28 +158,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
             var entityController = (EntityController)lifecycleManager.GetField(ENTITY_CONTROLLER_FIELD);
             Assert.IsNotNull(entityController);
-        }
-
-        [TestMethod]
-        [WorkItem(28)]
-        public void ChangeStateCallsEntityLoader()
-        {
-            var entityLoader = Mock.Create<EntityController>();
-            Mock.Arrange(() => entityLoader.LoadEntity(SAMPLE_ENTITY_URI))
-                .Returns("{}")
-                .MustBeCalled();
-            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(Arg.AnyString))
-                .IgnoreInstance()
-                .Returns((String)null)
-                .MustBeCalled();
-
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
-            PrivateObject lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
-            lifeCycleManagerWithPrivateAccess.SetField(ENTITY_CONTROLLER_FIELD, entityLoader);
-            lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, "Condition");
-
-            Mock.Assert(entityLoader);
-            Mock.Assert(_stateMachineConfigLoader);
         }
 
         [TestMethod]

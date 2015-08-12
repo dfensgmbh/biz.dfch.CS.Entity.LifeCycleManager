@@ -39,7 +39,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void EntityControllerConstructorReadsCredentialsFromCredentialsProvider()
+        public void EntityControllerConstructorReadsCredentialsFromCredentialsProviderIfNotNull()
         {
             Mock.Arrange(() => _credentialProvider.GetCredentials())
                 .Returns(CredentialCache.DefaultNetworkCredentials)
@@ -98,7 +98,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(28)]
-        public void LoadEntityWithUriPointingToNonExistingEntityThrowsArgumentException()
+        public void LoadEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException()
         {
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
@@ -110,7 +110,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var entityController = new EntityController(_credentialProvider);
 
-            ThrowsAssert.Throws<ArgumentException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
+            ThrowsAssert.Throws<HttpRequestException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
 
             Mock.Assert(mockedHttpClient);
             Mock.Assert(mockedResponseMessage);
@@ -141,7 +141,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void UpdateEntityWithUriPointingToNonExistingEntityThrowsArgumentException() 
+        public void UpdateEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException() 
         {
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
@@ -153,7 +153,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var entityController = new EntityController(_credentialProvider);
 
-            ThrowsAssert.Throws<ArgumentException>(() => entityController.UpdateEntity(SAMPLE_ENTITY_URI, ""));
+            ThrowsAssert.Throws<HttpRequestException>(() => entityController.UpdateEntity(SAMPLE_ENTITY_URI, ""));
 
             Mock.Assert(mockedHttpClient);
             Mock.Assert(mockedResponseMessage);

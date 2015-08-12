@@ -16,6 +16,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Model;
@@ -30,6 +31,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     {
         private LifeCyclesController _lifeCyclesController;
         private const String ENTITY_ID = "http://test/api/ApplicationData.svc/Users(1)";
+        private const String INVALID_ENTITY_ID = "test";
+        private const String ENTITY = "{}";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -73,6 +76,47 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestResult));
         }
 
+        [TestMethod]
+        public void PutWithInvalidUriReturnsBadRequest()
+        {
+            var actionResult = _lifeCyclesController.Put(INVALID_ENTITY_ID,
+                new LifeCycle { Id = INVALID_ENTITY_ID })
+                .Result;
+
+            Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
+        }
+
+        [TestMethod]
+        public void PutReturnsBadRequestIfEntityCouldNotBeLoaded()
+        {
+            var mockedEntityController = Mock.Create<EntityController>();
+            Mock.Arrange(() => mockedEntityController.LoadEntity(Arg.IsAny<Uri>()))
+                .IgnoreInstance()
+                .Throws<HttpRequestException>();
+
+            var actionResult = _lifeCyclesController.Put(ENTITY_ID,
+                new LifeCycle { Id = ENTITY_ID })
+                .Result;
+
+            Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
+        }
+
+        [TestMethod]
+        public void PutWithValidKeyLoadsEntity()
+        {
+            var mockedEntityController = Mock.Create<EntityController>();
+            Mock.Arrange(() => mockedEntityController.LoadEntity(Arg.IsAny<Uri>()))
+                .IgnoreInstance()
+                .Returns(ENTITY)
+                .MustBeCalled();
+
+            var actionResult = _lifeCyclesController.Put(ENTITY_ID,
+                new LifeCycle { Id = ENTITY_ID })
+                .Result;
+
+            Mock.Assert(mockedEntityController);
+        }
+
         // DFTODO Tests for Put
 
         [TestMethod]
@@ -96,8 +140,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         // DFTODO Tests for Next
+        
         // DFTODO Tests for Cancel
+        
         // DFTODO Tests for Allow
+        
         // DFTODO Tests for Decline
     }
 }
