@@ -52,7 +52,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error occurred while fetching entity: {0}", e.Message);
+                Debug.WriteLine("Error occurred while fetching entity from '{0}'", e.Message);
                 throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
             }
             

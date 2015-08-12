@@ -124,6 +124,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("StateChangeLock to be updated with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
@@ -202,6 +203,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             if (!ModelState.IsValid)
             {
+                Debug.WriteLine("StateChangeLock to be updated with id '{0}' has invalid ModelState.", key);
                 return BadRequest(ModelState);
             }
 
