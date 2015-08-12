@@ -328,7 +328,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         public async Task<IHttpActionResult> Allow([FromODataUri] int key, ODataActionParameters parameters)
         {
             // DFTODO Check how to avoid that remote apps can allow jobs of another user
-
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -367,7 +366,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         public async Task<IHttpActionResult> Decline([FromODataUri] int key, ODataActionParameters parameters)
         {
             // DFTODO Check how to avoid that remote apps can decline jobs of another user
-
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
