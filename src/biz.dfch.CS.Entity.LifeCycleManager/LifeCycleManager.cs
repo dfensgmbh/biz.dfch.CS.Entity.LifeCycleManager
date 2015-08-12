@@ -44,7 +44,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
 
-        // DFTODO check, how pass credential provider from controller
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
@@ -93,7 +92,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             {
                 Debug.WriteLine("Composing MEF parts...");
                 _container.ComposeParts(this);
-                Debug.WriteLine("Composition successfully completed!");
+                Debug.WriteLine("Composition MEF parts successfully completed!");
             }
             catch (CompositionException compositionException)
             {
@@ -103,7 +102,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void ConfigureStateMachine(String entityType)
         {
-            Debug.WriteLine("Configuring state machine");
+            Debug.WriteLine("Configuring state machine for entityType '{0}'", entityType);
             String config;
             lock (_lock)
             {
@@ -118,7 +117,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 }
                 catch (JsonReaderException e)
                 {
-                    Debug.WriteLine("Error occured while parsing state machine configuraiton for entity type '{0}' : {1}",
+                    Debug.WriteLine("Error occurred while parsing state machine configuraiton for entity type '{0}' : {1}",
                         entityType,
                         e.Message);
                     throw new ArgumentException("Invalid state machine configuration", e);
@@ -128,27 +127,29 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void ChangeState(Uri entityUri, String entity, String condition)
         {
-            // DFTODO check, if user matches the job
-            // DFTODO Call service references as system user!? (Problems on IIS)
-            // DFTODO check, if entity will be passed as String from Controller?
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             
+            // DFTODO logging!!!
+            // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
 
-            // DFTODO create job of type Lifecycle (extract data from JSON)
+            // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
             // DFTODO lock entity
             // DFTODO load callout definition
             // DFTODO execute Pre callout
             // DFTODO if no pre callout found -> call preCalloutCallback method
+            
             // DFTODO on callout -> if exception: job = failed, unlock
         }
 
         public void Next(Uri entityUri, string entity)
         {
+            Debug.WriteLine("Next for entity with Uri: '{0}", entityUri);
             ChangeState(entityUri, entity, _stateMachine.ContinueCondition);
         }
 
         public void Cancel(Uri entityUri, string entity)
         {
+            Debug.WriteLine("Cancel entity with Uri: '{0}", entityUri);
             ChangeState(entityUri, entity, _stateMachine.CancelCondition);
         }
 
