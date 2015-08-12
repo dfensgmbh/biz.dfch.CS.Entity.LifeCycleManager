@@ -23,11 +23,11 @@ namespace LifeCycleManager.Extensions.Default.Loaders
     [Export(typeof(IStateMachineConfigLoader))]
     public class DefaultStateMachineConfigLoader : IStateMachineConfigLoader
     {
+        // DFTODO load configuration from elsewhere?!
         public String LoadConfiguration(String entityType)
         {
             if (entityType.Equals("EntityType"))
             {
-                // DFTODO load configuration from elsewhere?!
                 return "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";    
             }
             return null;
