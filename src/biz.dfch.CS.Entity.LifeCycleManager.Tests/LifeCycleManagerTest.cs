@@ -34,8 +34,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
-        private const String SAMPLE_ENTITY = "{}";
-        private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/Entity(1)");
+        private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
         private ICredentialProvider _credentialProvider;

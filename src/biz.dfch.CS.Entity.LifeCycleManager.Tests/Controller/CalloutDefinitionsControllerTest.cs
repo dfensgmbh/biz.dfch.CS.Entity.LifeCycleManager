@@ -41,7 +41,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String CALLOUT_DEFINITION_UPDATE_PERMISSION = "CumulusCore:CalloutDefinitionCanUpdate";
         private const String CALLOUT_DEFINITION_CREATE_PERMISSION = "CumulusCore:CalloutDefinitionCanCreate";
         private const String CALLOUT_DEFINITION_DELETE_PERMISSION = "CumulusCore:CalloutDefinitionCanDelete";
-        private const String CALLOUT_DEFINITION_RUN_PERMISSION = "CumulusCore:CalloutDefinitionCanRun";
         private const String CURRENT_USER_ID = "currentUser";
         private const String ANOTHER_USER_ID = "anotherUser";
         private const String SAMPLE_ENTITY_TYPE = "User";
