@@ -520,6 +520,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void AllowWithoutAllowPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
@@ -534,6 +536,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void AllowWithKeyOfNonExistingJobReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
@@ -554,6 +558,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void AllowWithValidKeyCreatesLifecycleManagerAndExecutesOnCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
@@ -581,6 +587,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void DeclineWithoutCancelPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
@@ -595,6 +603,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void DeclineWithKeyOfNonExistingJobReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
@@ -615,6 +625,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(19)]
+        [WorkItem(20)]
         public void DeclinewWithValidKeyCreatesLifecycleManagerAndExecutesOnCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
