@@ -19,7 +19,7 @@
           <PropertyRef Name="Id" />
         </Key>
         <Property Name="Id" Type="Edm.String" Nullable="false" />
-        <Property Name="Condition" Type="Edm.String" />
+        <Property Name="Condition" Type="Edm.String" Nullable="false" />
       </EntityType>
       <EntityType Name="StateChangeLock">
         <Key>

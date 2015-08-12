@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
@@ -22,6 +23,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
     {
         // The Id corresponds to the URI of the entity
         public String Id { get; set; }
+        [Required]
         public String Condition { get; set; }
 
         public LifeCycle()

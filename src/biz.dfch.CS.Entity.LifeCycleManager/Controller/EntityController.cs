@@ -81,8 +81,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error occurred while updating entity: {0}", e.Message);
-                throw new ArgumentException(String.Format("The entity URI '{0}' is not valid", entityUri), e);
+                Debug.WriteLine("Error occurred while updating entity '{0}'", e.Message);
+                throw;
             }
         }
 

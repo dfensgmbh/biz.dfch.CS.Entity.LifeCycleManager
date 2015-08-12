@@ -145,7 +145,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         {
             var mockedHttpClient = Mock.Create<HttpClient>();
             var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
+            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode())
+                .Throws<HttpRequestException>().MustBeCalled();
             Mock.Arrange(() => mockedHttpClient.PutAsync(SAMPLE_ENTITY_URI, Arg.IsAny<HttpContent>()).Result)
                 .IgnoreInstance()
                 .Returns(mockedResponseMessage)

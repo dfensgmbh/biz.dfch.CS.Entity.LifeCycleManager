@@ -25,6 +25,7 @@ using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Newtonsoft.Json;
+using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
@@ -127,6 +128,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void ChangeState(Uri entityUri, String entity, String condition)
         {
+            // DFTODO check, if user matches the job
             // DFTODO Call service references as system user!? (Problems on IIS)
             // DFTODO check, if entity will be passed as String from Controller?
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
@@ -140,7 +142,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             // DFTODO on callout -> if exception: job = failed, unlock
         }
 
-        public void OnCallback()
+        public void Next(Uri entityUri, string entity)
+        {
+            ChangeState(entityUri, entity, _stateMachine.ContinueCondition);
+        }
+
+        public void Cancel(Uri entityUri, string entity)
+        {
+            ChangeState(entityUri, entity, _stateMachine.CancelCondition);
+        }
+
+        public void OnCallback(Job job)
         {
             // DFTODO preCalloutCallback: finish job, change state, persist entity, load callout definition and execute post callout + create new job
             // DFTODO postCalloutCallback: unlock entity   

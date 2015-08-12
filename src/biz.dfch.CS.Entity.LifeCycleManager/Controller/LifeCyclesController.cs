@@ -15,6 +15,9 @@
  */
 
 using System;
+using System.Configuration;
+using System.Data.Entity.Infrastructure.Pluralization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,10 +25,13 @@ using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Builder;
 using System.Web.Http.OData.Query;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.Data.OData;
+using Newtonsoft.Json;
+using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
@@ -35,6 +41,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private const String _permissionPrefix = "CumulusCore";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
+        private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
+        private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
+            new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
 
         public LifeCyclesController()
         {
@@ -124,20 +133,28 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             try
             {
                 Debug.WriteLine(fn);
-                var entity = LoadEntity(new Uri(key));
 
-                new LifeCycleManager(null, ExtractType(key));
+                var permissionId = CreatePermissionId("CanUpdate");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
+
+                var entityUri = new Uri(key);
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                var entity = LoadEntity(null, entityUri);
+                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
+                lifeCycleManager.ChangeState(entityUri, entity, lifeCycle.Condition);
 
                 return Ok();
             }
             catch (UriFormatException e)
             {
-                return BadRequest("Invalid id (Id should be a valid URI)");
+                return BadRequest("Invalid Id - Id has to be a valid URI");
             }
             catch (HttpRequestException e)
             {
-                // DFTODO handle different status code cases?
-                return BadRequest("Unable to load passed entity by Id (Either not found or not authorized)");
+                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
             }
             catch (Exception e)
             {
@@ -180,16 +197,37 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ModelState);
             }
 
-            Debug.WriteLine(fn);
+            try
+            {
+                Debug.WriteLine(fn);
 
-            // DFTODO Load entity and check if user is permitted
-            // DFTODO change state with given condition
+                var permissionId = CreatePermissionId("CanUpdate");
+                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                {
+                    return StatusCode(HttpStatusCode.Forbidden);
+                }
 
-            // delta.Patch(LifeCycle);
+                var entityUri = new Uri(key);
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                var entity = LoadEntity(null, entityUri);
+                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
+                lifeCycleManager.ChangeState(entityUri, entity, delta.GetEntity().Condition);
 
-            // return Updated(LifeCycle);
-            // DFTODO Check what to return
-            return StatusCode(HttpStatusCode.NotImplemented);
+                return Ok();
+            }
+            catch (UriFormatException e)
+            {
+                return BadRequest("Invalid Id - Id has to be a valid URI");
+            }
+            catch (HttpRequestException e)
+            {
+                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
+                throw;
+            }
         }
 
         // DELETE: api/Utilities.svc/LifeCycles(5)
@@ -212,25 +250,36 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-            Debug.WriteLine(fn);
 
             try
             {
+                Debug.WriteLine(fn);
+
                 var permissionId = CreatePermissionId("CanNext");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                // DFTODO Load entity and check if user is permitted
-                // DFTODO execute with continue condition
+                var entityUri = new Uri(key);
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                var entity = LoadEntity(null, entityUri);
+                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
+                lifeCycleManager.Next(entityUri, entity);
 
-                // DFTODO Check what to return
                 return Ok();
             }
-            catch (Exception ex)
+            catch (UriFormatException e)
             {
-                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                return BadRequest("Invalid id (Id should be a valid URI)");
+            }
+            catch (HttpRequestException e)
+            {
+                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
                 throw;
             }
         }
@@ -241,89 +290,119 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-            Debug.WriteLine(fn);
 
             try
             {
+                Debug.WriteLine(fn);
+
                 var permissionId = CreatePermissionId("CanCancel");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                // DFTODO Load entity and check if user is permitted
-                // DFTODO handle cancellation (revert logic)
+                var entityUri = new Uri(key);
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                var entity = LoadEntity(null, entityUri);
+                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
+                lifeCycleManager.Cancel(entityUri, entity);
 
-                // DFTODO Check what to return
                 return Ok();
             }
-            catch (Exception ex)
+            catch (UriFormatException e)
             {
-                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                return BadRequest("Invalid id (Id should be a valid URI)");
+            }
+            catch (HttpRequestException e)
+            {
+                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
                 throw;
             }
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Allow([FromODataUri] String key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Allow([FromODataUri] int key, ODataActionParameters parameters)
         {
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-            Debug.WriteLine(fn);
 
             try
             {
+                Debug.WriteLine(fn);
+
                 var permissionId = CreatePermissionId("CanAllow");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                // DFTODO Load entity and check if user is permitted
-                // DFTODO Load job
-                // DFTODO Create new lifecycle manager instance
-                // DFTODO Excecute pre or post LifeCycle on lifecycle manager depending on jobs parameters
+                var job = _coreService.Jobs.Where(j => j.Id == key && j.State.Equals(StateEnum.Running.ToString()))
+                    .SingleOrDefault();
 
-                // DFTODO Check what to return
+                if (null == job)
+                {
+                    return StatusCode(HttpStatusCode.NotFound);
+                }
+
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                DelegateJobHandlingToLifeCycleManager(job);
+
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
                 throw;
             }
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Decline([FromODataUri] String key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Decline([FromODataUri] int key, ODataActionParameters parameters)
         {
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-            Debug.WriteLine(fn);
 
             try
             {
+                Debug.WriteLine(fn);
+
                 var permissionId = CreatePermissionId("CanDecline");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                // DFTODO Load entity and check if user is permitted
-                // DFTODO Load job
-                // DFTODO Create new lifecycle manager instance
-                // DFTODO Excecute pre or post LifeCycle on lifecycle manager depending on jobs parameters
+                var job = _coreService.Jobs.Where(j => j.Id == key && j.State.Equals(StateEnum.Running.ToString()))
+                    .SingleOrDefault();
 
-                // DFTODO Check what to return
+                if (null == job)
+                {
+                    return StatusCode(HttpStatusCode.NotFound);
+                }
+
+                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                DelegateJobHandlingToLifeCycleManager(job);
+
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.WriteLine(String.Format("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace));
+                Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
                 throw;
             }
+        }
+
+        private void DelegateJobHandlingToLifeCycleManager(Job job)
+        {
+            var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
+            var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+            lifeCycleManager.OnCallback(job);
         }
 
         private String CreatePermissionId(String permissionSuffix)
@@ -331,17 +410,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             return String.Format("{0}:{1}{2}", _permissionPrefix, _permissionInfix, permissionSuffix);
         }
 
-        private String LoadEntity(Uri uri)
+        private String LoadEntity(ICredentialProvider credentialProvider, Uri uri)
         {
-            // DFTODO Check what ICredentialProvider implementation to pass
-            // DFTODO Check permission on entity
-            var entityLoader = new EntityController(null);
+            // DFTODO Check permissions on entity
+            var entityLoader = new EntityController(credentialProvider);
             return entityLoader.LoadEntity(uri);
         }
 
-        private String ExtractType(String key)
+        private String ExtractTypeFromUriString(String key)
         {
-            return "";
+            var begin = key.LastIndexOf("/");
+            var end = key.IndexOf("(");
+            return _pluralizationService.Singularize(key.Substring(begin + 1, end - begin - 1));
         }
     }
 }
