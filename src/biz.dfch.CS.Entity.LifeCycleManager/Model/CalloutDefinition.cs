@@ -16,6 +16,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using biz.dfch.CS.Entity.LifeCycleManager.Util;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
@@ -28,6 +29,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Modified { get; set; }
 
+        private CalloutDefinitionType _CalloutType { get; set; }
+
+        [Required]
+        public String CalloutType
+        {
+            get { return _CalloutType.ToString(); }
+            set { _CalloutType = EnumUtil.Parse<CalloutDefinitionType>(value, true); }
+        }
         public String TenantId { get; set; }
         public String EntityId { get; set; }
         public String EntityType { get; set; }
@@ -35,6 +44,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 
         public CalloutDefinition()
         {
+        }
+
+        public enum CalloutDefinitionType
+        {
+            PreAndPost,
+            Pre,
+            Post,
         }
     }
 }

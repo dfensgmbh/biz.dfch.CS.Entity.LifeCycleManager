@@ -227,6 +227,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     Created = DateTimeOffset.Now,
                     CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    CalloutType = calloutDefinition.CalloutType;
                     TenantId = calloutDefinition.TenantId,
                     EntityType = calloutDefinition.EntityType,
                     EntityId = calloutDefinition.EntityId,
