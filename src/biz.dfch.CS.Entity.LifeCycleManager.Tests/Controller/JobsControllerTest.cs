@@ -42,7 +42,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String JOB_CREATE_PERMISSION = "CumulusCore:JobCanCreate";
         private const String JOB_DELETE_PERMISSION = "CumulusCore:JobCanDelete";
         private const String JOB_RUN_PERMISSION = "CumulusCore:JobCanRun";
-        private const String DEFAULT_JOB_TYPE = "DefaultJob";
+        private const String DEFAULT_JOB_TYPE = "Default";
         private const String CURRENT_USER_ID = "currentUser";
         private const String ANOTHER_USER_ID = "anotherUser";
 

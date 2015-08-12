@@ -230,7 +230,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     Created = DateTimeOffset.Now,
                     CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                    Type = null == job.Type ? "DefaultJob" : job.Type,
+                    Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
                 };

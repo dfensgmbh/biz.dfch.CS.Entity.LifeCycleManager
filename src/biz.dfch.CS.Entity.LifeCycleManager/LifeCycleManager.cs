@@ -29,6 +29,7 @@ using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
+    // DFTODO Check how to access entitites like job, calloutDefinition, etc if the actual user is not the owner
     public class LifeCycleManager
     {
         private static Object _lock = new Object();
@@ -125,16 +126,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        // DFTODO check where to get TenantId from to load calloutDefinition!
+        // DFTODO Check where to get TenantId from to load calloutDefinition!
         public void ChangeState(Uri entityUri, String entity, String condition)
         {
             Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             
-            // DFTODO logging!!!
             // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
 
-            // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
+
             // DFTODO lock entity
+            // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
             // DFTODO load callout definition
             // DFTODO execute Pre callout
             // DFTODO if no pre callout found -> call preCalloutCallback method
@@ -156,6 +157,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public void OnCallback(Job job)
         {
+            Debug.WriteLine("Callback request for job with id '{0}'", job.Id);
             // DFTODO preCalloutCallback: finish job, change state, persist entity, load callout definition and execute post callout + create new job
             // DFTODO postCalloutCallback: unlock entity   
         }

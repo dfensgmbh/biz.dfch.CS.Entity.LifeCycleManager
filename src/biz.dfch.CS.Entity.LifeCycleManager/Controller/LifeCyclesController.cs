@@ -154,7 +154,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+                // DFTODO Check if this state has to be replaced by parsing the exception msg
+                return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(String.Format("Changing state with provided condition: '{0}' not possible", lifeCycle.Condition));
             }
             catch (Exception e)
             {
@@ -221,7 +226,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+                // DFTODO Check if this state has to be replaced by parsing the exception msg
+                return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(String.Format("Chaning state with provided condition: '{0}' not possible", delta.GetEntity().Condition));
             }
             catch (Exception e)
             {
@@ -237,8 +247,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             
-            // TODO: Add delete logic here.
-
             Debug.WriteLine(fn);
             // return StatusCode(HttpStatusCode.NoContent);
             return StatusCode(HttpStatusCode.NotImplemented);
@@ -275,7 +283,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+                // DFTODO Check if this state has to be replaced by parsing the exception msg
+                return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest("Changing state with 'Continue' condition not possible");
             }
             catch (Exception e)
             {
@@ -315,7 +328,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                return BadRequest("Unable to load entity from passed Uri (Either not found or not authorized)");
+                // DFTODO Check if this state has to be replaced by parsing the exception msg
+                return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest("Changing state with 'Cancel' condition not possible");
             }
             catch (Exception e)
             {
@@ -355,6 +373,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 return Ok();
             }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(String.Format("Allow job with id: '{0} not possible", key));
+            }
             catch (Exception e)
             {
                 Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
@@ -392,6 +414,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 DelegateJobHandlingToLifeCycleManager(job);
 
                 return Ok();
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(String.Format("Decline job with id: '{0} not possible", key));
             }
             catch (Exception e)
             {
