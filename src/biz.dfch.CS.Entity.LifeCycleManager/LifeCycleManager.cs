@@ -19,6 +19,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
@@ -36,6 +37,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
+        private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
+            new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
+
         [Import(typeof(IStateMachineConfigLoader))]
         private IStateMachineConfigLoader _stateMachineConfigLoader;
 
@@ -44,10 +48,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
+        private String _entityType;
 
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
+            _entityType = entityType;
+
             lock (_lock)
             {
                 if (null == _staticStateMachineConfigLoader)
@@ -133,8 +140,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             
             // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
 
+             var scl = _coreService.StateChangeLocks
+                .Where(l => l.EntityId.Equals(entityUri.ToString()) && l.EntityType == _entityType)
+                .FirstOrDefault();
+
+            if (null != scl)
+            {
+                throw new InvalidOperationException();
+            }
 
             // DFTODO lock entity
+            //_coreService.AddToStateChangeLocks();
             // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
             // DFTODO load callout definition
             // DFTODO execute Pre callout
