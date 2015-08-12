@@ -327,6 +327,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Allow([FromODataUri] int key, ODataActionParameters parameters)
         {
+            // DFTODO Check how to avoid that remote apps can allow jobs of another user
+
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -364,6 +366,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Decline([FromODataUri] int key, ODataActionParameters parameters)
         {
+            // DFTODO Check how to avoid that remote apps can decline jobs of another user
+
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -412,7 +416,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private String LoadEntity(ICredentialProvider credentialProvider, Uri uri)
         {
-            // DFTODO Check permissions on entity
+            // DFTODO Check how to pass credentials used to authenticate when loading the entity
+            // DFTODO Check if user is authorized to change the state of the entity with the given ID
             var entityLoader = new EntityController(credentialProvider);
             return entityLoader.LoadEntity(uri);
         }
