@@ -61,6 +61,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobsForUserWithReadPermissionReturnsHisJobs()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -90,6 +91,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobsForUserWithoutReadPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -106,6 +108,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobsWithNonExistingJobsForCurrentUserReturnsEmptyList()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -135,6 +138,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobByIdForUserWithOwnershipAndReadPermissionReturnsRequestedJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -165,6 +169,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobByIdForUserWithoutOwnershipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -190,6 +195,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobByIdForNonExistingJobIdReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -211,6 +217,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void GetJobByIdForUserWithoutReadPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
@@ -227,6 +234,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobForUserWithUpdatePermissionAndOwnershipUpdatesJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -282,6 +290,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobForUserWithoutUpdatePermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -298,6 +307,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobForUserWithoutOwnershipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -332,6 +342,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobForAuthorizedUserSetsUpdatedDate()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -381,6 +392,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobForNonExistingJobIdReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -407,6 +419,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PutJobWithDifferentJobIdsInUrlAndBodyReturnsBadRequest()
         {
             var actionResult = _jobsController.Put(2,
@@ -422,6 +435,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PostJobForUserWithoutCreatePermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_CREATE_PERMISSION))
@@ -443,6 +457,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PostJobForUserWithCreatePermissionCreatesJobAndReturnsCreated()
         {
             Job createdJob = null;
@@ -494,6 +509,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PostJobForUserWithCreatePermissionCreatesJobWithDefaultStateAndTypeAndReturnsCreated()
         {
             Job createdJob = null;
@@ -543,6 +559,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PatchJobForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -592,6 +609,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PatchJobForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields2()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -639,6 +657,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PatchJobForUserWithoutUpdatePermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -653,6 +672,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PatchJobForUserWithoutOwnershipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -675,6 +695,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void PatchForNonExistingJobIdReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
@@ -693,6 +714,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void DeleteJobForUserWithDeletePermissionAndOwnershipDeletesJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
@@ -718,6 +740,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void DeleteJobForUserWithoutDeletePermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
@@ -732,6 +755,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void DeleteJobForUserWithoutOwnershipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
@@ -754,6 +778,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void DeleteForNonExistingJobIdReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
@@ -772,6 +797,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void RunForUserWithoutRunPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -786,6 +812,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void RunForUserWithoutOwnerShipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -809,6 +836,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void RunForUserForNonExistingEntityReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -828,6 +856,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void RunForUserWithPermissionAndOwnershipSetsStateToRunningAndReturnsOk()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -865,6 +894,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void FinishForUserWithoutRunPermissionReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -879,6 +909,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void FinishForUserWithoutOwnerShipReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -902,6 +933,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void FinishForUserForNonExistingEntityReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
@@ -921,6 +953,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(16)]
         public void FinishForUserWithPermissionAndOwnershipSetsStateToFinishedAndReturnsOk()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
