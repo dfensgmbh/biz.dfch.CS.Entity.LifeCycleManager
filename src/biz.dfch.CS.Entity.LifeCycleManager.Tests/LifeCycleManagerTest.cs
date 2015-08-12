@@ -52,6 +52,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        [WorkItem(25)]
         public void LifeCycleMangerConstructorLoadsAndComposesMefPartsOnFirstCall()
         {
             {
@@ -164,43 +165,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void ChangeStateForLockedEntityThrowsException()
         {
             // DFTODO Define which exception should be thrown (Adjust test method name)
-        }
-
-        [TestMethod]
-        [WorkItem(21)]
-        public void ChangeStateForNonLockedEntityLocksEntity()
-        {
-
-        }
-
-        [TestMethod]
-        public void ChangeStateForNonLockedEntityCallsCalloutDefinitionLoaderToLoadPreCalloutDefinition()
-        {
-
-        }
-
-        [TestMethod]
-        public void ChangeStateForNonLockedEntityAndPreCalloutDefinitionDoesPreCallout()
-        {
-
-        }
-
-        [TestMethod]
-        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionChangesState()
-        {
-
-        }
-
-        [TestMethod]
-        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionCallsCalloutDefinitionLoaderToLoadPostCalloutDefinition()
-        {
-
-        }
-
-        [TestMethod]
-        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionDoesPostCallout()
-        {
-
         }
     }
 }
