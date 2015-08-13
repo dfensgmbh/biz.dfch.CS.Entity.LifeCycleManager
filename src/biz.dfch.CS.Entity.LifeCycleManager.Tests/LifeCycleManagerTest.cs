@@ -182,7 +182,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
                 {
-                    CreateStateChangeLock(new Uri("http://test/api/EntityType(2)"), ENTITY_TYPE)
+                    CreateStateChangeLock(new Uri("http://test/api/EntityType(2)"))
                 } ))
                 .MustBeCalled();
 
@@ -200,7 +200,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
                 {
-                    CreateStateChangeLock(SAMPLE_ENTITY_URI, ENTITY_TYPE)
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI)
                 }))
                 .MustBeCalled();
 
@@ -329,9 +329,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         }
 
-        private StateChangeLock CreateStateChangeLock(Uri entityUri, string entityType)
+        private StateChangeLock CreateStateChangeLock(Uri entityUri)
         {
-            return new StateChangeLock { EntityId = entityUri.ToString(), EntityType = entityType};
+            return new StateChangeLock { EntityId = entityUri.ToString() };
         }
     }
 }
