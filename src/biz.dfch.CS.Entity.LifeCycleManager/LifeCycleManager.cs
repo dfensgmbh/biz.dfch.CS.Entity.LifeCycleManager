@@ -23,6 +23,7 @@ using System.Linq;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Newtonsoft.Json;
@@ -144,19 +145,36 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 .Where(l => l.EntityId.Equals(entityUri.ToString()) && l.EntityType == _entityType)
                 .FirstOrDefault();
 
-            if (null != scl)
-            {
-                throw new InvalidOperationException();
-            }
+            CheckForNull(scl);
+            LockEntity(entityUri);
 
-            // DFTODO lock entity
-            //_coreService.AddToStateChangeLocks();
             // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
             // DFTODO load callout definition
             // DFTODO execute Pre callout
             // DFTODO if no pre callout found -> call preCalloutCallback method
-            
+
             // DFTODO on callout -> if exception: job = failed, unlock
+        }
+
+        private void CheckForNull(StateChangeLock scl)
+        {
+            if (null == scl)
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        private void LockEntity(Uri entityUri)
+        {
+            _coreService.AddToStateChangeLocks(
+                new StateChangeLock
+                {
+                    EntityType = _entityType,
+                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    Created = DateTimeOffset.Now,
+                    EntityId = entityUri.ToString()
+                }
+            );
         }
 
         public void Next(Uri entityUri, string entity)
