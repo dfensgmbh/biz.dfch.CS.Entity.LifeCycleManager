@@ -42,6 +42,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String INVALID_ENTITY_ID = "test";
         private const String ENTITY = "{}";
         private const String CONTINUE_CONDITION = "Continue";
+        private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String LIFE_CYCLE_UPDATE_PERMISSION = "CumulusCore:LifeCycleCanUpdate";
         private const String LIFE_CYCLE_NEXT_PERMISSION = "CumulusCore:LifeCycleCanNext";
         private const String LIFE_CYCLE_CANCEL_PERMISSION = "CumulusCore:LifeCycleCanCancel";
@@ -873,6 +874,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             return new Job
             {
                 Id = 1,
+                Type = CALLOUT_JOB_TYPE,
                 State = "Running",
                 Parameters = JsonConvert.SerializeObject(calloutData)
             };

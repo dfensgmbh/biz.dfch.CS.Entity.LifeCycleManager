@@ -39,6 +39,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     {
         private const String _permissionInfix = "LifeCycle";
         private const String _permissionPrefix = "CumulusCore";
+        private const String CALLOUT_JOB_TYPE = "CalloutData";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
@@ -360,7 +361,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => j.Id == key && j.State.Equals(StateEnum.Running.ToString()))
+                var job = _coreService.Jobs.Where(j => j.Id == key &&
+                    CALLOUT_JOB_TYPE.Equals(j.Type) &&
+                    j.State.Equals(StateEnum.Running.ToString()))
                     .SingleOrDefault();
 
                 if (null == job)
@@ -404,7 +407,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => j.Id == key && j.State.Equals(StateEnum.Running.ToString()))
+                var job = _coreService.Jobs.Where(j => j.Id == key && 
+                    CALLOUT_JOB_TYPE.Equals(j.Type) &&
+                    j.State.Equals(StateEnum.Running.ToString()))
                     .SingleOrDefault();
 
                 if (null == job)
@@ -439,8 +444,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         {
             // DFTODO Check how to pass credentials used to authenticate when loading the entity
             // DFTODO Check if user is authorized to change the state of the entity with the given ID
-            var entityLoader = new EntityController(credentialProvider);
-            return entityLoader.LoadEntity(uri);
+            var entityController = new EntityController(credentialProvider);
+            return entityController.LoadEntity(uri);
         }
 
         private String ExtractTypeFromUriString(String key)
