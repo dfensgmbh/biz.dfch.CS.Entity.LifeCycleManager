@@ -29,21 +29,40 @@ namespace LifecycleManager.Extensions.Default.Executors
     [Export(typeof(ICalloutExecutor))]
     public class HttpCalloutExecutor : ICalloutExecutor
     {
-        private HttpClient _httpClient;
         private const String APPLICATION_JSON = "application/json";
-        private Uri _requestUrl;
 
         public HttpCalloutExecutor()
         {
-            Debug.Write("Initializing Http Client");
-            // DFTODO Authentication/Credentials?
-            _httpClient = new HttpClient();
         }
 
-        public void Configure(string definitionParameters)
+        public void ExecuteCallout(String definitionParameters, CalloutData data)
         {
-            _requestUrl = ExtractUrlFromDefinition(definitionParameters);
-            _httpClient.BaseAddress = _requestUrl;
+            var requestUri = ExtractUrlFromDefinition(definitionParameters);
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = requestUri;
+
+            if (null == data)
+            {
+                Debug.WriteLine("CalloutData parameter is null");
+                throw new ArgumentException("Callout data should not be null");
+            }
+            Debug.WriteLine("Executing callout to '{0}'", requestUri);
+            
+            SetHeaders(httpClient);
+            int _TimeoutSec = 90;
+            httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
+            HttpContent body = new StringContent(JsonConvert.SerializeObject(data));
+            body.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
+            HttpResponseMessage response = httpClient.PostAsync(requestUri, body).Result;
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.WriteLine("Error occurred while executing callout: {0}", e.Message);
+                throw new ArgumentException(String.Format("The callout request URL '{0}' is not valid", requestUri), e);
+            }
         }
 
         private Uri ExtractUrlFromDefinition(String definitionParameters)
@@ -52,35 +71,9 @@ namespace LifecycleManager.Extensions.Default.Executors
             return new Uri((String)obj["request-url"]);
         }
 
-        public void ExecuteCallout(CalloutData data)
+        private void SetHeaders(HttpClient httpClient)
         {
-            if (null == data)
-            {
-                Debug.WriteLine("CalloutData parameter is null");
-                throw new ArgumentException("Callout data should not be null");
-            }
-            Debug.WriteLine("Executing callout to '{0}'", _requestUrl);
-            
-            SetHeaders();
-            int _TimeoutSec = 90;
-            _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
-            HttpContent body = new StringContent(JsonConvert.SerializeObject(data));
-            body.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
-            HttpResponseMessage response = _httpClient.PostAsync(_requestUrl, body).Result;
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException e)
-            {
-                Debug.WriteLine("Error occurred while executing callout: {0}", e.Message);
-                throw new ArgumentException(String.Format("The callout request URL '{0}' is not valid", _requestUrl), e);
-            }
-        }
-
-        private void SetHeaders()
-        {
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
         }
     }
 }

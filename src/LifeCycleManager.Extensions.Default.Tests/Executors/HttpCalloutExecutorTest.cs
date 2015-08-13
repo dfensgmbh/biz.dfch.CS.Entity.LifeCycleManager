@@ -41,17 +41,9 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         }
 
         [TestMethod]
-        public void ConfigureWithInvalidUrlInDefinitionThrowsException()
+        public void ExecuteCalloutWithInvalidUrlInDefinitionThrowsUriFormatException()
         {
-            ThrowsAssert.Throws<UriFormatException>(() => _httpCalloutExecutor.Configure(INVALID_DEFINITION));
-        }
-
-        [TestMethod]
-        public void ConfigureExtractsRequestUrlFromDefinition()
-        {
-            _httpCalloutExecutor.Configure(VALID_DEFINITION);
-            var calloutExecutorWithPrivateAccess = new PrivateObject(_httpCalloutExecutor);
-            Assert.AreEqual(new Uri(SAMPLE_REQUEST_URL), calloutExecutorWithPrivateAccess.GetField(URI_FIELD));
+            ThrowsAssert.Throws<UriFormatException>(() => _httpCalloutExecutor.ExecuteCallout(INVALID_DEFINITION, new CalloutData()));
         }
 
         [TestMethod]
@@ -64,8 +56,7 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
                 .Returns(mockedResponseMessage)
                 .MustBeCalled();
 
-            _httpCalloutExecutor.Configure(VALID_DEFINITION);
-            _httpCalloutExecutor.ExecuteCallout(new CalloutData());
+            _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, new CalloutData());
 
             Mock.Assert(mockedHttpClient);
             Mock.Assert(mockedResponseMessage);
@@ -82,9 +73,7 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
                 .Returns(mockedResponseMessage)
                 .MustBeCalled();
 
-            _httpCalloutExecutor.Configure(VALID_DEFINITION);
-
-            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(new CalloutData()));
+            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, new CalloutData()));
 
             Mock.Assert(mockedHttpClient);
             Mock.Assert(mockedResponseMessage);
@@ -93,8 +82,7 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         [TestMethod]
         public void ExecuteCalloutWithNullThrowsArgumentException()
         {
-            _httpCalloutExecutor.Configure(VALID_DEFINITION);
-            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(null), "Callout data should not be null");
+            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, null), "Callout data should not be null");
         }
     }
 }

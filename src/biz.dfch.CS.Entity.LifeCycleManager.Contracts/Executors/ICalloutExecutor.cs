@@ -21,7 +21,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
 {
     public interface ICalloutExecutor
     {
-        void Configure(String definitionParameters);
-        void ExecuteCallout(CalloutData data);
+        void ExecuteCallout(String definitionParameters, CalloutData data);
     }
 }
