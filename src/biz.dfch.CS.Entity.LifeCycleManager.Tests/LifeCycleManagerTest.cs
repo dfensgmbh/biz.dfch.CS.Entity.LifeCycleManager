@@ -15,10 +15,12 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
+using biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
@@ -34,7 +36,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
+        private const String SAMPLE_ENTITY = "{}";
+        private const String CONTINUE_CONDITION = "Continue";
+
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
+        private CumulusCoreService.Core _coreService;
 
         private IStateMachineConfigLoader _stateMachineConfigLoader;
         private ICredentialProvider _credentialProvider;
@@ -49,6 +55,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
             _credentialProvider = Mock.Create<ICredentialProvider>();
+            _coreService = Mock.Create<CumulusCoreService.Core>();
         }
 
         [TestMethod]
@@ -61,6 +68,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                     .IgnoreInstance()
                     .CallOriginal()
                     .MustBeCalled();
+
                 var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
                 var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
                 var stateMachine =
@@ -76,6 +84,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                     .IgnoreInstance()
                     .CallOriginal()
                     .OccursNever();
+
                 var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
                 var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
                 var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
@@ -95,6 +104,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .Returns((String)null)
                 .MustBeCalled();
+
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
             var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
@@ -111,6 +121,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
                 .IgnoreInstance()
                 .MustBeCalled();
+
             new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
 
             Mock.Assert(_stateMachineConfigLoader);
@@ -124,6 +135,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .Returns(CUSTOM_STATE_MACHINE_CONFIG)
                 .MustBeCalled();
+
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
             var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
@@ -142,8 +154,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .Returns("Invalid state machine configuration")
                 .MustBeCalled();
+            
             ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(_credentialProvider, ENTITY_TYPE), "Invalid state machine configuration");
-
             Mock.Assert(_stateMachineConfigLoader);
         }
 
@@ -154,9 +166,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .Returns(CUSTOM_STATE_MACHINE_CONFIG)
                 .MustBeCalled();
+
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
             var entityController = (EntityController)lifecycleManager.GetField(ENTITY_CONTROLLER_FIELD);
+            
             Assert.IsNotNull(entityController);
         }
 
@@ -164,14 +178,45 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(21)]
         public void ChangeStateForLockedEntityThrowsInvalidOperationException()
         {
-            // DFTODO Define which exception should be thrown (Adjust test method name)
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    CreateStateChangeLock(new Uri("http://test/api/EntityType(2)"), ENTITY_TYPE)
+                } ))
+                .MustBeCalled();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
+            Mock.Assert(_coreService);
         }
 
         [TestMethod]
         [WorkItem(21)]
         public void ChangeStateForNonLockedEntityLocksEntity()
         {
-            
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI, ENTITY_TYPE)
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToStateChangeLocks(Arg.IsAny<StateChangeLock>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+
+            Mock.Assert(_coreService);
+        }
+
+        private StateChangeLock CreateStateChangeLock(Uri entityUri, string entityType)
+        {
+            return new StateChangeLock { EntityId = entityUri.ToString(), EntityType = entityType};
         }
     }
 }
