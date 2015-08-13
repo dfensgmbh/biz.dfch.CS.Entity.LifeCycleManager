@@ -155,14 +155,24 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(ENTITY)
                 .MustBeCalled();
 
+            var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
+            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+                .IgnoreInstance()
+                .MustBeCalled();
+
             var actionResult = _lifeCyclesController.Put(ENTITY_ID,
-                new LifeCycle { Id = ENTITY_ID })
+                new LifeCycle
+                {
+                    Id = ENTITY_ID,
+                    Condition = CONTINUE_CONDITION
+                })
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
             Mock.Assert(mockedEntityController);
+            Mock.Assert(mockedLifeCycleManager);
         }
 
         [TestMethod]
@@ -301,6 +311,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(ENTITY)
                 .OccursOnce();
 
+            var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
+            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+                .IgnoreInstance()
+                .MustBeCalled();
+
             var delta = new Delta<LifeCycle>(typeof(LifeCycle));
             delta.TrySetPropertyValue("Condition", CONTINUE_CONDITION);
             var actionResult = _lifeCyclesController.Patch(ENTITY_ID, delta)
@@ -310,6 +325,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
             Mock.Assert(mockedEntityController);
+            Mock.Assert(mockedLifeCycleManager);
         }
 
         [TestMethod]
@@ -444,6 +460,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(ENTITY)
                 .OccursOnce();
 
+            var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
+            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY))
+                .IgnoreInstance()
+                .MustBeCalled();
+
             var actionResult = _lifeCyclesController.Next(ENTITY_ID, null)
                 .Result;
 
@@ -451,6 +472,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
             Mock.Assert(mockedEntityController);
+            Mock.Assert(mockedLifeCycleManager);
         }
 
         [TestMethod]
@@ -572,6 +594,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(ENTITY)
                 .OccursOnce();
 
+            var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
+            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY))
+                .IgnoreInstance()
+                .MustBeCalled();
+
             var actionResult = _lifeCyclesController.Cancel(ENTITY_ID, null)
                 .Result;
 
@@ -579,6 +606,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
             Mock.Assert(mockedEntityController);
+            Mock.Assert(mockedLifeCycleManager);
         }
 
         [TestMethod]

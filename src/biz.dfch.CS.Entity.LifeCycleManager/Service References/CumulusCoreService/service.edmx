@@ -30,7 +30,7 @@
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
-        <Property Name="EntityId" Type="Edm.Int32" Nullable="false" />
+        <Property Name="EntityId" Type="Edm.String" Nullable="false" />
         <Property Name="EntityType" Type="Edm.String" Nullable="false" />
       </EntityType>
       <EntityType Name="CalloutDefinition">
@@ -42,6 +42,7 @@
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="CalloutType" Type="Edm.String" Nullable="false" />
         <Property Name="TenantId" Type="Edm.String" />
         <Property Name="EntityId" Type="Edm.String" />
         <Property Name="EntityType" Type="Edm.String" />
