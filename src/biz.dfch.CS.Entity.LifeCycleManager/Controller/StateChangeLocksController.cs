@@ -168,8 +168,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Debug.WriteLine(errorMsg);
                     return BadRequest(errorMsg);
                 }
-                Debug.WriteLine("Saving new StateChangeLock for entity of type '{0}' and id '{1}'...", 
-                    stateChangeLock.EntityType,
+                Debug.WriteLine("Saving new StateChangeLock for entity with id '{0}'...", 
                     stateChangeLock.EntityId);
 
                 var stateChangeLockEntity = new StateChangeLock()
@@ -177,12 +176,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
                     Created = DateTimeOffset.Now,
                     EntityId = stateChangeLock.EntityId,
-                    EntityType = stateChangeLock.EntityType,
                 };
                 stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
                 db.SaveChanges();
-                Debug.WriteLine("Saved StateChangeLock for entity of type '{0}' and id '{1}'", 
-                    stateChangeLockEntity.EntityType, 
+                Debug.WriteLine("Saved StateChangeLock for entity with id '{0}'", 
                     stateChangeLockEntity.EntityId);
                 return ResponseMessage(ODataControllerHelper.ResponseCreated(this, stateChangeLockEntity));
             }
@@ -244,8 +241,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 db.StateChangeLocks.Remove(stateChangeLock);
-                Debug.WriteLine("Deleted StateChangeLock for entity of type '{0}' with id '{1}'...",
-                    stateChangeLock.EntityType, stateChangeLock.EntityId);
+                Debug.WriteLine("Deleted StateChangeLock for entity with id '{0}'...",
+                    stateChangeLock.EntityId);
                 return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)

@@ -146,7 +146,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
-                    EntityType = ENTITY_TYPE,
                     EntityId = ENTITY_ID
                 }).Result;
 
@@ -185,14 +184,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
-                    EntityType = ENTITY_TYPE,
                     EntityId = ENTITY_ID
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdEntity.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdEntity.Created.Date);
             Assert.IsNull(createdEntity.ModifiedBy);
-            Assert.AreEqual(ENTITY_TYPE, createdEntity.EntityType);
             Assert.AreEqual(ENTITY_ID, createdEntity.EntityId);
             Assert.AreNotEqual(1, createdEntity.Id);
 
@@ -287,8 +284,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private IList<StateChangeLock> CreateSampleStateChangeLockDbSetForUser(String ownerId)
         {
             var dbSet = new List<StateChangeLock>();
-            dbSet.Add(new StateChangeLock { Id = 1, CreatedBy = ownerId, EntityType = "TestEntity", EntityId = ENTITY_ID });
-            dbSet.Add(new StateChangeLock { Id = 2, CreatedBy = ownerId, EntityType = "Test", EntityId = "http://test/api/ApplicationData.svc/Tests(1)" });
+            dbSet.Add(new StateChangeLock { Id = 1, CreatedBy = ownerId, EntityId = ENTITY_ID });
+            dbSet.Add(new StateChangeLock { Id = 2, CreatedBy = ownerId, EntityId = "http://test/api/ApplicationData.svc/Tests(1)" });
             return dbSet;
         }
     }

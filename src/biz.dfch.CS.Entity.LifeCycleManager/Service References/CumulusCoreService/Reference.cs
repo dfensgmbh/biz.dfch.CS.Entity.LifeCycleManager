@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // Original file name:
-// Generation date: 13.08.2015 07:21:42
+// Generation date: 13.08.2015 10:45:39
 namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
 {
     
@@ -176,47 +176,47 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
                 "\" Nullable=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Na" +
                 "me=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeO" +
                 "ffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nu" +
-                "llable=\"false\" /><Property Name=\"Parameters\" Type=\"Edm.String\" /></EntityType><E" +
-                "ntityType Name=\"LifeCycle\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"I" +
-                "d\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"Condition\" Type=\"Edm.Str" +
-                "ing\" Nullable=\"false\" /></EntityType><EntityType Name=\"StateChangeLock\"><Key><Pr" +
-                "opertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"false" +
-                "\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Name=\"ModifiedBy\" T" +
-                "ype=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeOffset\" Nullable=\"" +
-                "false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" />" +
-                "<Property Name=\"EntityId\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"E" +
-                "ntityType\" Type=\"Edm.String\" Nullable=\"false\" /></EntityType><EntityType Name=\"C" +
-                "alloutDefinition\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"" +
-                "Edm.Int32\" Nullable=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Pr" +
-                "operty Name=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm." +
-                "DateTimeOffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeO" +
-                "ffset\" Nullable=\"false\" /><Property Name=\"CalloutType\" Type=\"Edm.String\" Nullabl" +
-                "e=\"false\" /><Property Name=\"TenantId\" Type=\"Edm.String\" /><Property Name=\"Entity" +
-                "Id\" Type=\"Edm.String\" /><Property Name=\"EntityType\" Type=\"Edm.String\" /><Propert" +
-                "y Name=\"Parameters\" Type=\"Edm.String\" /></EntityType></Schema><Schema Namespace=" +
-                "\"Default\" xmlns=\"http://schemas.microsoft.com/ado/2009/11/edm\"><EntityContainer " +
-                "Name=\"Core\" m:IsDefaultEntityContainer=\"true\"><EntitySet Name=\"Jobs\" EntityType=" +
-                "\"biz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /><EntitySet Name=\"LifeCycles\" E" +
-                "ntityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /><EntitySet Nam" +
-                "e=\"StateChangeLocks\" EntityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.State" +
-                "ChangeLock\" /><EntitySet Name=\"CalloutDefinitions\" EntityType=\"biz.dfch.CS.Entit" +
-                "y.LifeCycleManager.Model.CalloutDefinition\" /><FunctionImport Name=\"Run\" ReturnT" +
-                "ype=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bi" +
-                "ndingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /></Functio" +
-                "nImport><FunctionImport Name=\"Finish\" ReturnType=\"Edm.String\" IsBindable=\"true\" " +
-                "m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.E" +
-                "ntity.LifeCycleManager.Model.Job\" /></FunctionImport><FunctionImport Name=\"Next\"" +
-                " ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter " +
-                "Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycl" +
-                "e\" /></FunctionImport><FunctionImport Name=\"Cancel\" ReturnType=\"Edm.String\" IsBi" +
-                "ndable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=" +
-                "\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImport><Functi" +
-                "onImport Name=\"Allow\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindab" +
-                "le=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleM" +
-                "anager.Model.LifeCycle\" /></FunctionImport><FunctionImport Name=\"Decline\" Return" +
-                "Type=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"b" +
-                "indingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></" +
-                "FunctionImport></EntityContainer></Schema></edmx:DataServices></edmx:Edmx>";
+                "llable=\"false\" /><Property Name=\"TenantId\" Type=\"Edm.String\" /><Property Name=\"P" +
+                "arameters\" Type=\"Edm.String\" /></EntityType><EntityType Name=\"LifeCycle\"><Key><P" +
+                "ropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.String\" Nullable=\"fal" +
+                "se\" /><Property Name=\"Condition\" Type=\"Edm.String\" Nullable=\"false\" /></EntityTy" +
+                "pe><EntityType Name=\"StateChangeLock\"><Key><PropertyRef Name=\"Id\" /></Key><Prope" +
+                "rty Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"false\" /><Property Name=\"CreatedBy\" Typ" +
+                "e=\"Edm.String\" /><Property Name=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=" +
+                "\"Created\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Property Name=\"Modified\"" +
+                " Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Property Name=\"EntityId\" Type=\"Ed" +
+                "m.String\" Nullable=\"false\" /></EntityType><EntityType Name=\"CalloutDefinition\"><" +
+                "Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable" +
+                "=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Name=\"Modifi" +
+                "edBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeOffset\" Nul" +
+                "lable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nullable=\"fa" +
+                "lse\" /><Property Name=\"CalloutType\" Type=\"Edm.String\" Nullable=\"false\" /><Proper" +
+                "ty Name=\"TenantId\" Type=\"Edm.String\" /><Property Name=\"EntityId\" Type=\"Edm.Strin" +
+                "g\" /><Property Name=\"EntityType\" Type=\"Edm.String\" /><Property Name=\"Parameters\"" +
+                " Type=\"Edm.String\" /></EntityType></Schema><Schema Namespace=\"Default\" xmlns=\"ht" +
+                "tp://schemas.microsoft.com/ado/2009/11/edm\"><EntityContainer Name=\"Core\" m:IsDef" +
+                "aultEntityContainer=\"true\"><EntitySet Name=\"Jobs\" EntityType=\"biz.dfch.CS.Entity" +
+                ".LifeCycleManager.Model.Job\" /><EntitySet Name=\"LifeCycles\" EntityType=\"biz.dfch" +
+                ".CS.Entity.LifeCycleManager.Model.LifeCycle\" /><EntitySet Name=\"StateChangeLocks" +
+                "\" EntityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.StateChangeLock\" /><Enti" +
+                "tySet Name=\"CalloutDefinitions\" EntityType=\"biz.dfch.CS.Entity.LifeCycleManager." +
+                "Model.CalloutDefinition\" /><FunctionImport Name=\"Run\" ReturnType=\"Edm.String\" Is" +
+                "Bindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Typ" +
+                "e=\"biz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /></FunctionImport><FunctionIm" +
+                "port Name=\"Finish\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=" +
+                "\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleMana" +
+                "ger.Model.Job\" /></FunctionImport><FunctionImport Name=\"Next\" ReturnType=\"Edm.St" +
+                "ring\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParame" +
+                "ter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImpo" +
+                "rt><FunctionImport Name=\"Cancel\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsA" +
+                "lwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity" +
+                ".LifeCycleManager.Model.LifeCycle\" /></FunctionImport><FunctionImport Name=\"Allo" +
+                "w\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Paramete" +
+                "r Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCy" +
+                "cle\" /></FunctionImport><FunctionImport Name=\"Decline\" ReturnType=\"Edm.String\" I" +
+                "sBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Ty" +
+                "pe=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImport></En" +
+                "tityContainer></Schema></edmx:DataServices></edmx:Edmx>";
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
             private static string GetConcatenatedEdmxString()
             {
@@ -432,6 +432,28 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         partial void OnModifiedChanging(global::System.DateTimeOffset value);
         partial void OnModifiedChanged();
         /// <summary>
+        /// There are no comments for Property TenantId in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string TenantId
+        {
+            get
+            {
+                return this._TenantId;
+            }
+            set
+            {
+                this.OnTenantIdChanging(value);
+                this._TenantId = value;
+                this.OnTenantIdChanged();
+                this.OnPropertyChanged("TenantId");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _TenantId;
+        partial void OnTenantIdChanging(string value);
+        partial void OnTenantIdChanged();
+        /// <summary>
         /// There are no comments for Property Parameters in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
@@ -559,16 +581,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         /// <param name="created">Initial value of Created.</param>
         /// <param name="modified">Initial value of Modified.</param>
         /// <param name="entityId">Initial value of EntityId.</param>
-        /// <param name="entityType">Initial value of EntityType.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public static StateChangeLock CreateStateChangeLock(int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified, string entityId, string entityType)
+        public static StateChangeLock CreateStateChangeLock(int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified, string entityId)
         {
             StateChangeLock stateChangeLock = new StateChangeLock();
             stateChangeLock.Id = ID;
             stateChangeLock.Created = created;
             stateChangeLock.Modified = modified;
             stateChangeLock.EntityId = entityId;
-            stateChangeLock.EntityType = entityType;
             return stateChangeLock;
         }
         /// <summary>
@@ -703,28 +723,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private string _EntityId;
         partial void OnEntityIdChanging(string value);
         partial void OnEntityIdChanged();
-        /// <summary>
-        /// There are no comments for Property EntityType in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string EntityType
-        {
-            get
-            {
-                return this._EntityType;
-            }
-            set
-            {
-                this.OnEntityTypeChanging(value);
-                this._EntityType = value;
-                this.OnEntityTypeChanged();
-                this.OnPropertyChanged("EntityType");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _EntityType;
-        partial void OnEntityTypeChanging(string value);
-        partial void OnEntityTypeChanged();
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]

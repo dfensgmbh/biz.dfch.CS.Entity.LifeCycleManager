@@ -29,8 +29,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public DateTimeOffset Modified { get; set; }
         [Required]
         public String EntityId { get; set; }
-        [Required]
-        public String EntityType { get; set; }
 
         public StateChangeLock()
         {

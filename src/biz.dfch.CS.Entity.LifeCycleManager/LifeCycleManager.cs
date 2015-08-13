@@ -135,25 +135,51 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         }
 
         // DFTODO Check where to get TenantId from to load calloutDefinition!
+        // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
+        // DFTODO Logging!!!
         public void RequestStateChange(Uri entityUri, String entity, String condition)
         {
-            Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
+            //Debug.WriteLine("Changing state for entity with Uri: '{0}' and condition: '{1}'", entityUri, condition);
             
-            // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
+            //CheckForExistingLock(entityUri);
+            //LockEntity(entityUri);
+            //var calloutDefinition = LoadCalloutDefinition(entityUri, Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString());
+            //if (null == calloutDefinition)
+            //{
+            //    try
+            //    {
+            //        ChangeState();
+            //        CreateJob()
+            //        ExecutePostCallout();
+            //    }
+            //    catch (Exception e)
+            //    {
+                    
+            //        throw
+            //    }
+            //}
+            //else
+            //{
+            //    try
+            //    {
+            //        CreateJob(entity);
+            //    }
+            //    catch (Exception)
+            //    {
+                    
+            //        throw;
+            //    }
+            //}
+        }
 
-
-
-            CheckForExistingLock(entityUri);
-            LockEntity(entityUri);
-
-            // DFTODO create job of type CalloutData (extract data from JSON) -> parse to CalloutData
-            // DFTODO load callout definition
-            // DFTODO execute Pre callout
-            // DFTODO if no pre callout found -> call postCalloutCallback method
-
-            // DFTODO on callout -> if exception: job = failed, unlock
-
-            // DFTODO update entity!!!
+        private CalloutDefinition LoadCalloutDefinition(Uri entityUri, String calloutType)
+        {
+            // DFTODO Extend search on tenantId
+            return _coreService.CalloutDefinitions.Where(
+                c =>
+                    (c.CalloutType.Equals(calloutType) ||
+                     c.CalloutType.Equals(Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString()))
+                    && (entityUri.ToString().Equals(c.EntityId) || (_entityType.Equals(c.EntityType)))).FirstOrDefault();
         }
 
         private void LockEntity(Uri entityUri)
@@ -167,6 +193,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     EntityId = entityUri.ToString()
                 }
             );
+            _coreService.SaveChanges();
         }
 
         public void Next(Uri entityUri, string entity)
@@ -201,6 +228,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             var scl = _coreService.StateChangeLocks
                 .Where(l => l.EntityId.Equals(entityUri.ToString())).Single();
             _coreService.DeleteObject(scl);
+            _coreService.SaveChanges();
         }
 
         private void CheckForExistingLock(Uri entityUri)

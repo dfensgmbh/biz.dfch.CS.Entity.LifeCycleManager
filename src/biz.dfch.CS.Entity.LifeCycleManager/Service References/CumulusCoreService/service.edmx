@@ -12,6 +12,7 @@
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="TenantId" Type="Edm.String" />
         <Property Name="Parameters" Type="Edm.String" />
       </EntityType>
       <EntityType Name="LifeCycle">
@@ -31,7 +32,6 @@
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="EntityId" Type="Edm.String" Nullable="false" />
-        <Property Name="EntityType" Type="Edm.String" Nullable="false" />
       </EntityType>
       <EntityType Name="CalloutDefinition">
         <Key>
