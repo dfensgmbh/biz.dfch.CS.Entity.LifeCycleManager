@@ -188,7 +188,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
 
-            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
             Mock.Assert(_coreService);
         }
 
@@ -209,9 +209,124 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .MustBeCalled();
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
-            lifeCycleManager.ChangeState(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
 
             Mock.Assert(_coreService);
+        }
+
+        [TestMethod]
+        [WorkItem(15)]
+        public void ChangeStateForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(17)]
+        [WorkItem(22)]
+        public void ChangeStateForNonLockedEntityWithCalloutDefinitionConfiguresCalloutExecutorAndDoesCallout()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(17)]
+        public void ChangeStateForNonLockedEntityThrowsInvalidOperationExceptionAndRevertsTransactionIfCalloutFails()
+        {
+
+        }
+
+        [TestMethod]
+        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionChangesStateAndExecutesPostCallout()
+        {
+            
+        }
+
+        [TestMethod]
+        [WorkItem(30)]
+        public void OnAllowCallbackWithNonRunningJobThrowsInvalidOperationException()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(30)]
+        public void OnDeclineCallbackWithNonRunningJobThrowsInvalidOperationException()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(15)]
+        public void OnAllowCallbackForRunningJobFinishesJob()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnDeclineCallbackForRunningJobCancelsJob()
+        {
+            
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnDeclineCallbackForPostCalloutRevertsActionAndUnlocksEntity()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnDeclineCallbackForPreCalloutUnlocksEntity()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(15)]
+        public void OnAllowCallbackForPreCalloutCreatesJob()
+        {
+            
+        }
+
+        [TestMethod]
+        [WorkItem(23)]
+        public void OnAllowCallbackForPreCalloutChangesState()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(23)]
+        [WorkItem(17)]
+        public void OnAllowCallbackForPreCalloutExecutesPostCalloutExecutor()
+        {
+
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfCalloutFails()
+        {
+            // CANCEL/DELETE JOB
+            // UNLOCK ENTITY
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfChangingStateFails()
+        {
+            // CANCEL/DELETE JOB
+            // UNLOCK ENTITY
+        }
+
+        [TestMethod]
+        [WorkItem(24)]
+        public void OnAllowCallbackForPostCalloutUnlocksEntity()
+        {
+
         }
 
         private StateChangeLock CreateStateChangeLock(Uri entityUri, string entityType)

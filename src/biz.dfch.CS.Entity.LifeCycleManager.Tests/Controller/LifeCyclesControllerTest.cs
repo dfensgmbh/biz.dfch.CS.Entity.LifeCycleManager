@@ -156,7 +156,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -189,7 +189,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -218,7 +218,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -312,7 +312,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .OccursOnce();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -342,7 +342,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -372,7 +372,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.ChangeState(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -707,7 +707,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void AllowWithValidKeyCreatesLifecycleManagerAndExecutesOnCallbackMethod()
+        public void AllowWithValidKeyCreatesLifecycleManagerAndExecutesOnAllowCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
                 .Returns(true)
@@ -719,7 +719,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.OnCallback(Arg.IsAny<Job>()))
+            Mock.Arrange(() => mockedLifeCycleManager.OnAllowCallback(Arg.IsAny<Job>()))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -734,6 +734,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(17)]
         [WorkItem(19)]
         [WorkItem(20)]
         public void AllowReturnsBadReuqestForFailingLifecycleManagerOperation()
@@ -748,7 +749,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.OnCallback(Arg.IsAny<Job>()))
+            Mock.Arrange(() => mockedLifeCycleManager.OnAllowCallback(Arg.IsAny<Job>()))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -804,7 +805,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void DeclinewWithValidKeyCreatesLifecycleManagerAndExecutesOnCallbackMethod()
+        public void DeclinewWithValidKeyCreatesLifecycleManagerAndExecutesOnDeclineCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
                 .Returns(true)
@@ -816,7 +817,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.OnCallback(Arg.IsAny<Job>()))
+            Mock.Arrange(() => mockedLifeCycleManager.OnDeclineCallback(Arg.IsAny<Job>()))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -831,6 +832,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
+        [WorkItem(17)]
         [WorkItem(19)]
         [WorkItem(20)]
         public void DeclineReturnsBadReuqestForFailingLifecycleManagerOperation()
@@ -845,7 +847,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.OnCallback(Arg.IsAny<Job>()))
+            Mock.Arrange(() => mockedLifeCycleManager.OnDeclineCallback(Arg.IsAny<Job>()))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();

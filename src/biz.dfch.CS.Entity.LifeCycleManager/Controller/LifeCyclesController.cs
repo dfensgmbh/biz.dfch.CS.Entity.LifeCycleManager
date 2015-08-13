@@ -144,7 +144,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Check what ICredentialProvider implementation to pass instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.ChangeState(entityUri, entity, lifeCycle.Condition);
+                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition);
 
                 return Ok();
             }
@@ -216,7 +216,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Check what ICredentialProvider implementation to pass instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.ChangeState(entityUri, entity, delta.GetEntity().Condition);
+                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition);
 
                 return Ok();
             }
@@ -369,7 +369,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 // DFTODO Check what ICredentialProvider implementation to pass instead of null
-                DelegateJobHandlingToLifeCycleManager(job);
+                var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
+                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                lifeCycleManager.OnAllowCallback(job);
 
                 return Ok();
             }
@@ -411,7 +413,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 // DFTODO Check what ICredentialProvider implementation to pass instead of null
-                DelegateJobHandlingToLifeCycleManager(job);
+                var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
+                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                lifeCycleManager.OnDeclineCallback(job);
 
                 return Ok();
             }
@@ -424,13 +428,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine(String.Format("{0}: {1}\r\n{2}", e.Source, e.Message, e.StackTrace));
                 throw;
             }
-        }
-
-        private void DelegateJobHandlingToLifeCycleManager(Job job)
-        {
-            var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
-            var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
-            lifeCycleManager.OnCallback(job);
         }
 
         private String CreatePermissionId(String permissionSuffix)
