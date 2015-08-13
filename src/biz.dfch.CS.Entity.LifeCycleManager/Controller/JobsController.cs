@@ -233,6 +233,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
+                    ReferencedItemId = job.ReferencedItemId
                 };
                 jobEntity = db.Jobs.Add(jobEntity);
                 db.SaveChanges();

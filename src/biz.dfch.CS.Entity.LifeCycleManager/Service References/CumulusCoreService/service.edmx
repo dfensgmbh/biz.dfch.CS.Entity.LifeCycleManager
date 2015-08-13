@@ -13,6 +13,7 @@
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="TenantId" Type="Edm.String" />
+        <Property Name="ReferencedItemId" Type="Edm.String" />
         <Property Name="Parameters" Type="Edm.String" />
       </EntityType>
       <EntityType Name="LifeCycle">

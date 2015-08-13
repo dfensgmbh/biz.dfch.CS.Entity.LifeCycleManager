@@ -38,6 +38,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset Modified { get; set; }
         public String TenantId { get; set; }
+        public String ReferencedItemId { get; set; }
 
         public String Parameters { get; set; }
 

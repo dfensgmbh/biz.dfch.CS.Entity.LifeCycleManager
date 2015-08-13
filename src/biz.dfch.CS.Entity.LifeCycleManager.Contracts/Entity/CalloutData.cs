@@ -23,9 +23,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
         public String EntityId { get; set; }
         public String EntityType { get; set; }
         public String Action { get; set; }
-        public String JobId { get; set; }
+        public String CallbackUrl { get; set; }
         public String UserId { get; set; }
         public String TenantId { get; set; }
         public String Type { get; set; }
+        public String OriginalState { get; set; }
     }
 }
