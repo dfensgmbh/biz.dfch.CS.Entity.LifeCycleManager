@@ -525,7 +525,40 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(24)]
         public void OnAllowCallbackForPostCalloutFinishesJobAndUnlocksEntity()
         {
+            Job updatedJob = null;
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .MustBeCalled();
 
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; });
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(2);
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString(), false));
+
+            Assert.AreEqual(JobStateEnum.Finished.ToString(), updatedJob.State);
+
+            Mock.Assert(_coreService);
         }
 
         [TestMethod]
