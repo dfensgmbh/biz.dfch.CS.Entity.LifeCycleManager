@@ -260,6 +260,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         [WorkItem(15)]
         [WorkItem(17)]
+        [WorkItem(22)]
         public void ChangeStateForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
         {
             Job createdJob = null;
