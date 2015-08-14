@@ -31,7 +31,6 @@ using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.Data.OData;
 using Newtonsoft.Json;
-using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
