@@ -18,12 +18,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
+using Microsoft.Data.OData.Query.SemanticAst;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Newtonsoft.Json;
@@ -325,9 +327,74 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(17)]
-        public void ChangeStateForNonLockedEntityThrowsInvalidOperationExceptionAndRevertsTransactionIfCalloutFails()
+        public void ChangeStateForNonLockedEntityRevertsTransactionAndThrowsInvalidOperationExceptionIfPreCalloutFails()
         {
-            
+            Job updatedJob = null;
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString())
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToStateChangeLocks(Arg.IsAny<StateChangeLock>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(4);
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .Throws<HttpRequestException>()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; });
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
+
+            Assert.AreEqual(JobStateEnum.Failed.ToString(), updatedJob.State);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
         }
 
         [TestMethod]
@@ -491,7 +558,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 Id = 1,
                 Type = CALLOUT_JOB_TYPE,
                 ReferencedItemId = entityId,
-                State = JobStateEnum.Running.ToString()
+                State = JobStateEnum.Running.ToString(),
+                Token = SAMPLE_TOKEN
             };
         }
 
