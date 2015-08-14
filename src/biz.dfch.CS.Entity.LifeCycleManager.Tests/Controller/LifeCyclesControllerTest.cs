@@ -687,6 +687,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
+        [WorkItem(30)]
         public void AllowWithTokenOfNonExistingJobReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))

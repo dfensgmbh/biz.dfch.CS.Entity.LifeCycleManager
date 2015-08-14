@@ -459,20 +459,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        [WorkItem(30)]
-        public void OnAllowCallbackWithNonRunningJobThrowsInvalidOperationException()
-        {
-
-        }
-
-        [TestMethod]
-        [WorkItem(30)]
-        public void OnDeclineCallbackWithNonRunningJobThrowsInvalidOperationException()
-        {
-            // DFTODO commit resolves #30
-        }
-
-        [TestMethod]
         [WorkItem(15)]
         public void OnAllowCallbackForRunningJobFinishesJob()
         {
@@ -551,15 +537,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             return new StateChangeLock { EntityId = entityUri.ToString() };
         }
 
-        private Job CreateJob(String entityId)
+        private Job CreateJob(String entityId, Boolean preCalloutJob = true)
         {
+            String parameters = preCalloutJob ? EXPECTED_PRE_CALLOUT_DATA : EXPECTED_POST_CALLOUT_DATA;
+
             return new Job
             {
                 Id = 1,
                 Type = CALLOUT_JOB_TYPE,
                 ReferencedItemId = entityId,
                 State = JobStateEnum.Running.ToString(),
-                Token = SAMPLE_TOKEN
+                Token = SAMPLE_TOKEN,
+                Parameters = parameters
             };
         }
 
