@@ -158,7 +158,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             {
                 try
                 {
-                    var calloutData = CreatePostCalloutData(entityUri, entity, condition);
+                    var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     CreateJob(entityUri, entity, calloutData);
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                     _coreService.SaveChanges();
