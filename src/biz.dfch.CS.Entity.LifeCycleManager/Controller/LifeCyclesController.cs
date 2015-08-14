@@ -344,7 +344,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Allow([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Allow([FromODataUri] String token, ODataActionParameters parameters)
         {
             // DFTODO Check how to avoid that remote apps can allow jobs of another user
             String fn = String.Format("{0}:{1}",
@@ -361,9 +361,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => j.Id == key &&
+                var job = _coreService.Jobs.Where(j => token.Equals(j.Token) &&
                     CALLOUT_JOB_TYPE.Equals(j.Type) &&
-                    j.State.Equals(StateEnum.Running.ToString()))
+                    j.State.Equals(JobStateEnum.Running.ToString()))
                     .SingleOrDefault();
 
                 if (null == job)
@@ -380,7 +380,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (InvalidOperationException e)
             {
-                return BadRequest(String.Format("Allow job with id: '{0} not possible", key));
+                return BadRequest(String.Format("Allow job with token: '{0}' not possible", token));
             }
             catch (Exception e)
             {
@@ -390,7 +390,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Decline([FromODataUri] int key, ODataActionParameters parameters)
+        public async Task<IHttpActionResult> Decline([FromODataUri] String token, ODataActionParameters parameters)
         {
             // DFTODO Check how to avoid that remote apps can decline jobs of another user
             String fn = String.Format("{0}:{1}",
@@ -407,9 +407,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => j.Id == key && 
+                var job = _coreService.Jobs.Where(j => token.Equals(j.Token) && 
                     CALLOUT_JOB_TYPE.Equals(j.Type) &&
-                    j.State.Equals(StateEnum.Running.ToString()))
+                    j.State.Equals(JobStateEnum.Running.ToString()))
                     .SingleOrDefault();
 
                 if (null == job)
@@ -426,7 +426,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (InvalidOperationException e)
             {
-                return BadRequest(String.Format("Decline job with id: '{0} not possible", key));
+                return BadRequest(String.Format("Decline job with token: '{0} not possible", token));
             }
             catch (Exception e)
             {

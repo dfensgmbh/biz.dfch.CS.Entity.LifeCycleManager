@@ -233,7 +233,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
-                    ReferencedItemId = job.ReferencedItemId
+                    ReferencedItemId = job.ReferencedItemId,
+                    Token = job.Token
                 };
                 jobEntity = db.Jobs.Add(jobEntity);
                 db.SaveChanges();
@@ -366,7 +367,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Run job with id '{0}'", key);
                 job.Modified = DateTimeOffset.Now;
                 job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                job.State = StateEnum.Running.ToString();
+                job.State = JobStateEnum.Running.ToString();
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
@@ -408,7 +409,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Finish job with id '{0}'", key);
                 job.Modified = DateTimeOffset.Now;
                 job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
-                job.State = StateEnum.Finished.ToString();
+                job.State = JobStateEnum.Finished.ToString();
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();

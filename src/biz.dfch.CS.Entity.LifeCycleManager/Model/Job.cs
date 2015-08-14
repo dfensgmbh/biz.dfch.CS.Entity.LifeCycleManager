@@ -23,13 +23,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
     {
         [Key]
         public int Id { get; set; }
-        private StateEnum _State { get; set; }
+        private JobStateEnum _State { get; set; }
 
         [Required]
         public String State 
         {
             get { return _State.ToString(); }
-            set { _State = EnumUtil.Parse<StateEnum>(value, true); }
+            set { _State = EnumUtil.Parse<JobStateEnum>(value, true); }
         }
         [Required]
         public String Type { get; set; }
@@ -39,6 +39,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public DateTimeOffset Modified { get; set; }
         public String TenantId { get; set; }
         public String ReferencedItemId { get; set; }
+        public String Token { get; set; }
 
         public String Parameters { get; set; }
 
@@ -47,7 +48,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         }
     }
 
-    public enum StateEnum
+    public enum JobStateEnum
     {
         Configuring
         ,

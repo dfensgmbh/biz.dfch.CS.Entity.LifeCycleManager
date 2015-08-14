@@ -48,6 +48,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String LIFE_CYCLE_CANCEL_PERMISSION = "CumulusCore:LifeCycleCanCancel";
         private const String LIFE_CYCLE_ALLOW_PERMISSION = "CumulusCore:LifeCycleCanAllow";
         private const String LIFE_CYCLE_DECLINE_PERMISSION = "CumulusCore:LifeCycleCanDecline";
+        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -676,7 +677,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(false)
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Allow(1, null)
+            var actionResult = _lifeCyclesController.Allow(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
@@ -686,7 +687,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void AllowWithKeyOfNonExistingJobReturnsNotFound()
+        public void AllowWithTokenOfNonExistingJobReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
                 .Returns(true)
@@ -697,7 +698,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(new List<Job>(new List<CumulusCoreService.Job>()))
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Allow(1, null)
+            var actionResult = _lifeCyclesController.Allow(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
@@ -708,7 +709,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void AllowWithValidKeyCreatesLifecycleManagerAndExecutesOnAllowCallbackMethod()
+        public void AllowWithValidTokenCreatesLifecycleManagerAndExecutesOnAllowCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
                 .Returns(true)
@@ -724,7 +725,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .IgnoreInstance()
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Allow(1, null)
+            var actionResult = _lifeCyclesController.Allow(SAMPLE_TOKEN, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
@@ -755,7 +756,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Allow(1, null)
+            var actionResult = _lifeCyclesController.Allow(SAMPLE_TOKEN, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
@@ -774,7 +775,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(false)
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Decline(1, null)
+            var actionResult = _lifeCyclesController.Decline(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
@@ -784,7 +785,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void DeclineWithKeyOfNonExistingJobReturnsNotFound()
+        public void DeclineWithTokenOfNonExistingJobReturnsNotFound()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
                 .Returns(true)
@@ -795,7 +796,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .ReturnsCollection(new List<Job>(new List<CumulusCoreService.Job>()))
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Decline(1, null)
+            var actionResult = _lifeCyclesController.Decline(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
@@ -806,7 +807,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         [WorkItem(19)]
         [WorkItem(20)]
-        public void DeclinewWithValidKeyCreatesLifecycleManagerAndExecutesOnDeclineCallbackMethod()
+        public void DeclinewWithValidTokenCreatesLifecycleManagerAndExecutesOnDeclineCallbackMethod()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
                 .Returns(true)
@@ -822,7 +823,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .IgnoreInstance()
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Decline(1, null)
+            var actionResult = _lifeCyclesController.Decline(SAMPLE_TOKEN, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof (OkResult));
@@ -853,7 +854,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
 
-            var actionResult = _lifeCyclesController.Decline(1, null)
+            var actionResult = _lifeCyclesController.Decline(SAMPLE_TOKEN, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
@@ -875,8 +876,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             {
                 Id = 1,
                 Type = CALLOUT_JOB_TYPE,
-                State = "Running",
-                Parameters = JsonConvert.SerializeObject(calloutData)
+                State = JobStateEnum.Running.ToString(),
+                Parameters = JsonConvert.SerializeObject(calloutData),
+                Token = SAMPLE_TOKEN
             };
         }
 

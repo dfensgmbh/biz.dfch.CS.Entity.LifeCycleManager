@@ -18,13 +18,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
-using biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService;
+using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
+using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
+using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
+using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.StateChangeLock;
 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "App.config", Watch = true)]
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
@@ -36,12 +41,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
-        private const String SAMPLE_ENTITY = "{}";
+        private const String SAMPLE_ENTITY = "{\"State\":\"Created\"}";
         private const String CONTINUE_CONDITION = "Continue";
+        private const String CALLOUT_DEFINITION = "{\"callout-url\":\"test.com/callout\"}";
+        private const String CALLOUT_JOB_TYPE = "CalloutData";
+        private const String EXPECTED_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(1)\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
 
-        private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
+        private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/ApplicationData.svc/EntityType(1)");
+        private Uri SAMPLE_ENTITY_URI_2 = new Uri("http://test/api/ApplicationData.svc/EntityType(2)");
+        
         private CumulusCoreService.Core _coreService;
-
+        private ICalloutExecutor _calloutExecutor;
         private IStateMachineConfigLoader _stateMachineConfigLoader;
         private ICredentialProvider _credentialProvider;
 
@@ -56,6 +66,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
             _credentialProvider = Mock.Create<ICredentialProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
+            _calloutExecutor = Mock.Create<ICalloutExecutor>();
         }
 
         [TestMethod]
@@ -200,7 +211,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
                 {
-                    CreateStateChangeLock(SAMPLE_ENTITY_URI)
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString())
                 }))
                 .MustBeCalled();
 
@@ -208,17 +228,84 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .MustBeCalled();
 
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job>{CreateJob(SAMPLE_ENTITY_URI.ToString())}))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .MustBeCalled();
+
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
             lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
 
             Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
         }
 
         [TestMethod]
         [WorkItem(15)]
         public void ChangeStateForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
         {
+            Job createdJob = null;
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
+                }))
+                .MustBeCalled();
 
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString())
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToStateChangeLocks(Arg.IsAny<StateChangeLock>()))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { createdJob = j; })
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .MustBeCalled();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+
+            Assert.AreEqual(EXPECTED_CALLOUT_DATA, createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_ENTITY_URI.ToString() ,createdJob.ReferencedItemId);
+            Assert.AreEqual(JobStateEnum.Running, createdJob.State);
+            Assert.AreEqual(CALLOUT_JOB_TYPE ,createdJob.Type);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
         }
 
         [TestMethod]
@@ -332,6 +419,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private StateChangeLock CreateStateChangeLock(Uri entityUri)
         {
             return new StateChangeLock { EntityId = entityUri.ToString() };
+        }
+
+        private Job CreateJob(String entityId)
+        {
+            return new Job
+            {
+                Id = 1,
+                Type = CALLOUT_JOB_TYPE,
+                ReferencedItemId = entityId,
+                State = JobStateEnum.Running.ToString()
+            };
+        }
+
+        private CalloutDefinition CreateCalloutDefinition(String entityId, String type)
+        {
+            return new CalloutDefinition { EntityId = entityId, CalloutType = type, Parameters = CALLOUT_DEFINITION };
         }
     }
 }

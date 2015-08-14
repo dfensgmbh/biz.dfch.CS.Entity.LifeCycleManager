@@ -45,6 +45,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String DEFAULT_JOB_TYPE = "Default";
         private const String CURRENT_USER_ID = "currentUser";
         private const String ANOTHER_USER_ID = "anotherUser";
+        private const String SAMPLE_PARAMETERS = "{}";
+        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -267,8 +269,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Created = DateTimeOffset.Parse("05/01/2008"),
                     ModifiedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Parse("05/01/2008"),
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
+                    Token = SAMPLE_TOKEN
                 }).Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<Job>));
@@ -281,8 +284,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), job.Created);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), job.Modified);
-            Assert.AreEqual(StateEnum.Canceled.ToString(), job.State);
-            Assert.AreEqual("testparameters", job.Parameters);
+            Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
+            Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
+            Assert.AreEqual(SAMPLE_TOKEN, job.Token);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -330,8 +334,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Created = DateTimeOffset.Parse("05/01/2008"),
                     ModifiedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Parse("05/01/2008"),
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
                 }).Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
@@ -371,8 +375,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 {
                     Id = 1,
                     Type = "Test",
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
                 }).Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<Job>));
@@ -383,7 +387,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
-            Assert.AreEqual(StateEnum.Canceled.ToString(), job.State);
+            Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
             Assert.AreEqual("Test", job.Type);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
@@ -408,8 +412,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 {
                     Id = 1,
                     Type = "Test",
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
                 }).Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
@@ -427,8 +431,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 {
                     Id = 1,
                     Type = "Test",
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
                 }).Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestResult));
@@ -447,8 +451,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 {
                     Id = 1,
                     Type = "Test",
-                    State = StateEnum.Canceled.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Canceled.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
+                    Token = SAMPLE_TOKEN
                 }).Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
@@ -488,16 +493,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
                     Type = "Test",
-                    State = StateEnum.Running.ToString(),
-                    Parameters = "testparameters",
+                    State = JobStateEnum.Running.ToString(),
+                    Parameters = SAMPLE_PARAMETERS,
+                    Token = SAMPLE_TOKEN
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdJob.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Date);
             Assert.IsNull(createdJob.ModifiedBy);
-            Assert.AreEqual(StateEnum.Running.ToString(), createdJob.State);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual("Test", createdJob.Type);
-            Assert.AreEqual("testparameters", createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_PARAMETERS, createdJob.Parameters);
 
             Assert.IsTrue(actionResult.GetType() == typeof(ResponseMessageResult));
             var response = actionResult as ResponseMessageResult;
@@ -539,15 +545,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
-                    Parameters = "testparameters",
+                    Parameters = SAMPLE_PARAMETERS,
+                    Token = SAMPLE_TOKEN
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdJob.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Date);
             Assert.IsNull(createdJob.ModifiedBy);
-            Assert.AreEqual(StateEnum.Configuring.ToString(), createdJob.State);
+            Assert.AreEqual(JobStateEnum.Configuring.ToString(), createdJob.State);
             Assert.AreEqual(DEFAULT_JOB_TYPE, createdJob.Type);
-            Assert.AreEqual("testparameters", createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_PARAMETERS, createdJob.Parameters);
 
             Assert.IsTrue(actionResult.GetType() == typeof(ResponseMessageResult));
             var response = actionResult as ResponseMessageResult;
@@ -587,8 +594,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             delta.TrySetPropertyValue("Id", "3");
             delta.TrySetPropertyValue("CreatedBy", ANOTHER_USER_ID);
             delta.TrySetPropertyValue("ModifiedBy", ANOTHER_USER_ID);
-            delta.TrySetPropertyValue("Parameters", "testparameters");
+            delta.TrySetPropertyValue("Parameters", SAMPLE_PARAMETERS);
             delta.TrySetPropertyValue("State", "Canceled");
+            delta.TrySetPropertyValue("Token", SAMPLE_TOKEN);
 
             var actionResult = _jobsController.Patch(1, delta).Result;
 
@@ -600,8 +608,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
-            Assert.AreEqual("testparameters", job.Parameters);
-            Assert.AreEqual(StateEnum.Canceled.ToString(), job.State);
+            Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
+            Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
+            Assert.AreEqual(SAMPLE_TOKEN, job.Token);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -637,7 +646,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             delta.TrySetPropertyValue("Id", "3");
             delta.TrySetPropertyValue("CreatedBy", ANOTHER_USER_ID);
             delta.TrySetPropertyValue("ModifiedBy", ANOTHER_USER_ID);
-            delta.TrySetPropertyValue("Parameters", "testparameters");
+            delta.TrySetPropertyValue("Parameters", SAMPLE_PARAMETERS);
             var actionResult = _jobsController.Patch(1, delta).Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<Job>));
@@ -648,8 +657,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
-            Assert.AreEqual("testparameters", job.Parameters);
-            Assert.AreEqual(StateEnum.Running.ToString(), job.State);
+            Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), job.State);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -886,7 +895,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var response = actionResult as OkNegotiatedContentResult<String>;
             var jobState = response.Content;
-            Assert.AreEqual(StateEnum.Running.ToString(), jobState);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), jobState);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -983,7 +992,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             var response = actionResult as OkNegotiatedContentResult<String>;
             var jobState = response.Content;
-            Assert.AreEqual(StateEnum.Finished.ToString(), jobState);
+            Assert.AreEqual(JobStateEnum.Finished.ToString(), jobState);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -993,8 +1002,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private IList<Job> CreateSampleJobDbSetForUser(String ownerId)
         {
             var dbSet = new List<Job>();
-            dbSet.Add(new Job { Id = 1, CreatedBy = ownerId, State = StateEnum.Running.ToString(), Type = DEFAULT_JOB_TYPE });
-            dbSet.Add(new Job { Id = 2, CreatedBy = ownerId, State = StateEnum.Canceled.ToString(), Type = DEFAULT_JOB_TYPE });
+            dbSet.Add(new Job { Id = 1, CreatedBy = ownerId, State = JobStateEnum.Running.ToString(), Type = DEFAULT_JOB_TYPE });
+            dbSet.Add(new Job { Id = 2, CreatedBy = ownerId, State = JobStateEnum.Canceled.ToString(), Type = DEFAULT_JOB_TYPE });
             return dbSet;
         }
     }
