@@ -181,13 +181,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        private String CreateCallbackUrl()
-        {
-            // DFTODO Check if token generation is ok
-            String token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); ;
-            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["Core.Endpoint"], token);
-        }
-
         private void DoPostCallout(Uri entityUri, String entity, String condition)
         {
             CalloutData postCalloutData = null;
@@ -367,6 +360,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 UserId = CurrentUserDataProvider.GetCurrentUserId(),
                 CallbackUrl = CreateCallbackUrl()
             };
+        }
+
+        private String CreateCallbackUrl()
+        {
+            // DFTODO Check if token generation is ok
+            String token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); ;
+            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["Core.Endpoint"], token);
         }
 
         private void ChangeEntityState(Uri entityUri, String entity, String condition)
