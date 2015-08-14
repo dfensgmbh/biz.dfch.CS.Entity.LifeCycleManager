@@ -371,7 +371,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
                 .IgnoreInstance()
-                .DoInstead((Job j) => { updatedJob = j; });
+                .DoInstead((Job j) => { updatedJob = j; })
+                .MustBeCalled();
 
             var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
             Mock.Arrange(() => _coreService.StateChangeLocks)
@@ -473,7 +474,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
                 .IgnoreInstance()
-                .DoInstead((Job j) => { updatedJob = j; });
+                .DoInstead((Job j) => { updatedJob = j; })
+                .MustBeCalled();
 
             Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
                 .IgnoreInstance()
@@ -533,7 +535,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
                 .IgnoreInstance()
-                .DoInstead((Job j) => { updatedJob = j; });
+                .DoInstead((Job j) => { updatedJob = j; })
+                .MustBeCalled();
 
             Mock.Arrange(() => _coreService.SaveChanges())
                 .IgnoreInstance()
@@ -563,40 +566,250 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(14)]
-        public void OnDeclineCallbackForRunningJobCancelsJob()
+        public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfPostCalloutFails()
         {
-            
-        }
+            Job createdJob = null;
+            Job updatedJob = null;
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .InSequence()
+                .OccursOnce();
 
-        [TestMethod]
-        [WorkItem(14)]
-        public void OnDeclineCallbackForPostCalloutRevertsActionAndUnlocksEntity()
-        {
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .InSequence()
+                .OccursOnce();
 
-        }
+            Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
+                .IgnoreInstance()
+                .Returns(SAMPLE_ENTITY)
+                .MustBeCalled();
 
-        [TestMethod]
-        [WorkItem(14)]
-        public void OnDeclineCallbackForPreCalloutUnlocksEntity()
-        {
-            // DFTODO commit resolves #14
-        }
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
+                }))
+                .MustBeCalled();
 
-        [TestMethod]
-        [WorkItem(14)]
-        public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfCalloutFails()
-        {
-            // CANCEL/DELETE JOB
-            // UNLOCK ENTITY
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(4);
+
+            Mock.Arrange(() => _entityController.UpdateEntity(SAMPLE_ENTITY_URI, UPDATED_ENTITY))
+                .IgnoreInstance()
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { createdJob = j; })
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .Throws<HttpRequestException>()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString(), false) }))
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; })
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => _entityController.UpdateEntity(SAMPLE_ENTITY_URI, SAMPLE_ENTITY))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString())));
+
+            Assert.AreEqual(JobStateEnum.Failed.ToString(), updatedJob.State);
+
+            Assert.AreEqual(EXPECTED_POST_CALLOUT_DATA, createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
+            Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
+            Mock.Assert(_entityController);
         }
 
         [TestMethod]
         [WorkItem(14)]
         public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfChangingStateFails()
         {
-            // CANCEL/DELETE JOB
-            // UNLOCK ENTITY
-            // DFTODO commit resolves #30
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
+                .IgnoreInstance()
+                .Returns(UPDATED_ENTITY)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(3);
+
+            Mock.Arrange(() => _entityController.UpdateEntity(SAMPLE_ENTITY_URI, UPDATED_ENTITY))
+                .IgnoreInstance()
+                .Throws<HttpRequestException>()
+                .OccursOnce();
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString())));
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
+            Mock.Assert(_entityController);
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnDeclineCallbackForPreCalloutSetsJobToCanceledAndUnlocksEntity()
+        {
+            Job updatedJob = null;
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; })
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(2);
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager.OnDeclineCallback(CreateJob(SAMPLE_ENTITY_URI.ToString()));
+
+            Assert.AreEqual(JobStateEnum.Canceled.ToString(), updatedJob.State);
+
+            Mock.Assert(_coreService);
+        }
+
+        [TestMethod]
+        [WorkItem(14)]
+        public void OnDeclineCallbackForPostCalloutRevertsActionSetsJobToCanceledAndUnlocksEntity()
+        {
+            Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
+                .IgnoreInstance()
+                .Returns(UPDATED_ENTITY)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _entityController.UpdateEntity(SAMPLE_ENTITY_URI, SAMPLE_ENTITY))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            Job updatedJob = null;
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString(), false) }))
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; })
+                .OccursOnce();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(2);
+
+            var stateChangeLockToBeDeleted = CreateStateChangeLock(SAMPLE_ENTITY_URI);
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    stateChangeLockToBeDeleted
+                }))
+                .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.DeleteObject(stateChangeLockToBeDeleted))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager.OnDeclineCallback(CreateJob(SAMPLE_ENTITY_URI.ToString(), false));
+
+            Assert.AreEqual(JobStateEnum.Canceled.ToString(), updatedJob.State);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_entityController);
         }
 
         private StateChangeLock CreateStateChangeLock(Uri entityUri)
