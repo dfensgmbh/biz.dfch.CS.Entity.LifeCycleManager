@@ -159,7 +159,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 try
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
-                    CreateJob(entityUri, entity, calloutData);
+                    var jobId = CreateJob(entityUri, entity, calloutData);
+                    calloutData.CallbackUrl = CreateCallbackUrl(jobId);
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                     _coreService.SaveChanges();
                 }
@@ -172,6 +173,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     throw;
                 }
             }
+        }
+
+        private String CreateCallbackUrl(int jobId)
+        {
+            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["Core.Endpoint"], jobId);
         }
 
         private void DoPostCallout(Uri entityUri, String entity, String condition)
@@ -187,7 +193,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
                     jobId = CreateJob(entityUri, newEntity, postCalloutData);
-                    // DFTODO create Url for callback including jobId
+                    postCalloutData.CallbackUrl = CreateCallbackUrl(jobId);
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
             }
