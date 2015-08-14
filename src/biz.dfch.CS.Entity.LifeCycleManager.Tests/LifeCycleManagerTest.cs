@@ -26,6 +26,7 @@ using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
+using Newtonsoft.Json;
 using Telerik.JustMock;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
@@ -45,7 +46,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_DEFINITION = "{\"callout-url\":\"test.com/callout\"}";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
-        private const String EXPECTED_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(1)\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
+        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
+        private const String EXPECTED_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
 
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/ApplicationData.svc/EntityType(1)");
         private Uri SAMPLE_ENTITY_URI_2 = new Uri("http://test/api/ApplicationData.svc/EntityType(2)");
@@ -67,6 +69,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             _credentialProvider = Mock.Create<ICredentialProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
             _calloutExecutor = Mock.Create<ICalloutExecutor>();
+            Mock.SetupStatic(typeof(Convert));
+            Mock.Arrange(() => Convert.ToBase64String(Arg.IsAny<byte[]>()))
+                .Returns(SAMPLE_TOKEN);
         }
 
         [TestMethod]
@@ -254,6 +259,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(15)]
+        [WorkItem(17)]
         public void ChangeStateForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
         {
             Job createdJob = null;
@@ -301,7 +307,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Assert.AreEqual(EXPECTED_CALLOUT_DATA, createdJob.Parameters);
             Assert.AreEqual(SAMPLE_ENTITY_URI.ToString() ,createdJob.ReferencedItemId);
-            Assert.AreEqual(JobStateEnum.Running, createdJob.State);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual(CALLOUT_JOB_TYPE ,createdJob.Type);
 
             Mock.Assert(_coreService);
@@ -310,23 +316,64 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(17)]
-        [WorkItem(22)]
-        public void ChangeStateForNonLockedEntityWithCalloutDefinitionConfiguresCalloutExecutorAndDoesCallout()
-        {
-
-        }
-
-        [TestMethod]
-        [WorkItem(17)]
         public void ChangeStateForNonLockedEntityThrowsInvalidOperationExceptionAndRevertsTransactionIfCalloutFails()
         {
-
+            
         }
 
         [TestMethod]
         public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionChangesStateAndExecutesPostCallout()
         {
-            
+            Job createdJob = null;
+            Mock.Arrange(() => _coreService.StateChangeLocks)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
+                {
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
+                }))
+                .MustBeCalled();
+
+            //Mock.Arrange(() => _coreService.AddToStateChangeLocks(Arg.IsAny<StateChangeLock>()))
+            //    .IgnoreInstance()
+            //    .MustBeCalled();
+
+            //Mock.Arrange(() => _coreService.SaveChanges())
+            //    .IgnoreInstance()
+            //    .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { createdJob = j; })
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .MustBeCalled();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+
+            Assert.AreEqual(EXPECTED_CALLOUT_DATA, createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
+            Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
         }
 
         [TestMethod]
@@ -340,7 +387,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(30)]
         public void OnDeclineCallbackWithNonRunningJobThrowsInvalidOperationException()
         {
-
+            // DFTODO commit resolves #30
         }
 
         [TestMethod]
@@ -390,7 +437,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(17)]
         public void OnAllowCallbackForPreCalloutExecutesPostCalloutExecutor()
         {
-
+            // DFTODO commit resolves #30
         }
 
         [TestMethod]
@@ -407,6 +454,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             // CANCEL/DELETE JOB
             // UNLOCK ENTITY
+            // DFTODO commit resolves #30
         }
 
         [TestMethod]
