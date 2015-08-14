@@ -460,7 +460,70 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(15)]
-        public void OnAllowCallbackForRunningJobFinishesJob()
+        [WorkItem(17)]
+        [WorkItem(23)]
+        public void OnAllowCallbackForRunningPreCalloutJobFinishesJobChangesEntityStateCreatesPostCalloutJobAndExecutesPostCallout()
+        {
+            Job updatedJob = null;
+            Job createdJob = null;
+            Mock.Arrange(() => _coreService.Jobs)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.UpdateObject(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { updatedJob = j; });
+
+            Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
+                .IgnoreInstance()
+                .Returns(SAMPLE_ENTITY)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.CalloutDefinitions)
+                .IgnoreInstance()
+                .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
+                {
+                    CreateCalloutDefinition(SAMPLE_ENTITY_URI.ToString(), 
+                    Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
+                }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.SaveChanges())
+                .IgnoreInstance()
+                .Occurs(2);
+
+            Mock.Arrange(() => _entityController.UpdateEntity(SAMPLE_ENTITY_URI, UPDATED_ENTITY))
+                .IgnoreInstance()
+                .MustBeCalled();
+
+            Mock.Arrange(() => _coreService.AddToJobs(Arg.IsAny<Job>()))
+                .IgnoreInstance()
+                .DoInstead((Job j) => { createdJob = j; })
+                .MustBeCalled();
+
+            Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
+                .MustBeCalled();
+
+            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            lifeCycleManager._calloutExecutor = _calloutExecutor;
+            lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString()));
+
+            Assert.AreEqual(JobStateEnum.Finished.ToString(), updatedJob.State);
+
+            Assert.AreEqual(EXPECTED_POST_CALLOUT_DATA, createdJob.Parameters);
+            Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
+            Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
+            Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+
+            Mock.Assert(_coreService);
+            Mock.Assert(_calloutExecutor);
+            Mock.Assert(_entityController);
+        }
+
+        [TestMethod]
+        [WorkItem(24)]
+        public void OnAllowCallbackForPostCalloutFinishesJobAndUnlocksEntity()
         {
 
         }
@@ -487,28 +550,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        [WorkItem(15)]
-        public void OnAllowCallbackForPreCalloutCreatesJob()
-        {
-            // DFTODO commit resolves #15
-        }
-
-        [TestMethod]
-        [WorkItem(23)]
-        public void OnAllowCallbackForPreCalloutChangesState()
-        {
-
-        }
-
-        [TestMethod]
-        [WorkItem(23)]
-        [WorkItem(17)]
-        public void OnAllowCallbackForPreCalloutExecutesPostCalloutExecutor()
-        {
-            // DFTODO commit resolves #30 and resolves #17
-        }
-
-        [TestMethod]
         [WorkItem(14)]
         public void OnAllowCallbackForPreCalloutRevertsTransactionAndThrowsInvalidOperationExceptionIfCalloutFails()
         {
@@ -523,13 +564,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             // CANCEL/DELETE JOB
             // UNLOCK ENTITY
             // DFTODO commit resolves #30
-        }
-
-        [TestMethod]
-        [WorkItem(24)]
-        public void OnAllowCallbackForPostCalloutUnlocksEntity()
-        {
-
         }
 
         private StateChangeLock CreateStateChangeLock(Uri entityUri)
