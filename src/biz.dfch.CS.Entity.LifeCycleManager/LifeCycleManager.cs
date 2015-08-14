@@ -176,7 +176,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                         ChangeJobState(token, JobStateEnum.Failed);
                     }
                     DeleteStateChangeLockOfEntity(entityUri);
-                    throw;
+                    throw new InvalidOperationException(e.Message);
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
             }
-            catch
+            catch (Exception e)
             {
                 Debug.WriteLine("An error occurred while preparing or executing post '{0}' callout for entity with id '{1}'",
                     condition,
@@ -218,7 +218,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     SetEntityState(entityUri, entity, postCalloutData.OriginalState);
                 }
                 DeleteStateChangeLockOfEntity(entityUri);
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
