@@ -28,8 +28,8 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
     public class HttpCalloutExecutorTest
     {
         private const String SAMPLE_REQUEST_URL = "http://test/api/callout";
-        private const String VALID_DEFINITION = "{\"request-url\":\"" + SAMPLE_REQUEST_URL + "\"}";
-        private const String INVALID_DEFINITION = "{\"request-url\":\"test/test\"}";
+        private const String VALID_DEFINITION = "{\"callout-url\":\"" + SAMPLE_REQUEST_URL + "\"}";
+        private const String INVALID_DEFINITION = "{\"callout-url\":\"test/test\"}";
         private const String URI_FIELD = "_requestUrl";
 
         private HttpCalloutExecutor _httpCalloutExecutor = new HttpCalloutExecutor();

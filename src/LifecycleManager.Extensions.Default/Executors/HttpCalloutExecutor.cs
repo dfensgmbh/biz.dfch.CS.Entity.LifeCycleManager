@@ -30,6 +30,7 @@ namespace LifecycleManager.Extensions.Default.Executors
     public class HttpCalloutExecutor : ICalloutExecutor
     {
         private const String APPLICATION_JSON = "application/json";
+        private const String CALLOUT_URL = "callout-url";
 
         public HttpCalloutExecutor()
         {
@@ -68,7 +69,7 @@ namespace LifecycleManager.Extensions.Default.Executors
         private Uri ExtractUrlFromDefinition(String definitionParameters)
         {
             var obj = JObject.Parse(definitionParameters);
-            return new Uri((String)obj["request-url"]);
+            return new Uri((String)obj[CALLOUT_URL]);
         }
 
         private void SetHeaders(HttpClient httpClient)
