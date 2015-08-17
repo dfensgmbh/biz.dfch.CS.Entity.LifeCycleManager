@@ -23,7 +23,7 @@ namespace LifeCycleManager.Extensions.Default.Loaders
     [Export(typeof(IStateMachineConfigLoader))]
     public class DefaultStateMachineConfigLoader : IStateMachineConfigLoader
     {
-        // DFTODO load configuration from elsewhere?!
+        // DFTODO load configuration from db over service reference of StateMachineConfigurationsController
         public String LoadConfiguration(String entityType)
         {
             if (entityType.Equals("EntityType"))

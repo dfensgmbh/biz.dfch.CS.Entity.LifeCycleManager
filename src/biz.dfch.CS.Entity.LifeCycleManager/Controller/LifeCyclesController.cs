@@ -154,7 +154,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                // DFTODO Check if this state has to be replaced by parsing the exception msg
                 return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
             }
             catch (InvalidOperationException e)
@@ -226,7 +225,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                // DFTODO Check if this state has to be replaced by parsing the exception msg
                 return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
             }
             catch (InvalidOperationException e)
@@ -283,7 +281,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                // DFTODO Check if this state has to be replaced by parsing the exception msg
                 return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
             }
             catch (InvalidOperationException e)
@@ -328,7 +325,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             }
             catch (HttpRequestException e)
             {
-                // DFTODO Check if this state has to be replaced by parsing the exception msg
                 return BadRequest("Loading entity from passed Uri failed (Either not found or not authorized)");
             }
             catch (InvalidOperationException e)
@@ -345,7 +341,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Allow([FromODataUri] String token, ODataActionParameters parameters)
         {
-            // DFTODO Check how to avoid that remote apps can allow jobs of another user
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -391,7 +386,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Decline([FromODataUri] String token, ODataActionParameters parameters)
         {
-            // DFTODO Check how to avoid that remote apps can decline jobs of another user
             String fn = String.Format("{0}:{1}",
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
                 System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
@@ -442,7 +436,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private String LoadEntity(ICredentialProvider credentialProvider, Uri uri)
         {
             // DFTODO Check how to pass credentials used to authenticate when loading the entity
-            // DFTODO Check if user is authorized to change the state of the entity with the given ID
             var entityController = new EntityController(credentialProvider);
             return entityController.LoadEntity(uri);
         }
