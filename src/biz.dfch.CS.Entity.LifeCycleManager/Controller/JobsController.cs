@@ -36,7 +36,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class JobsController : ODataController
     {
         private const String _permissionInfix = "Job";
-        private const String _permissionPrefix = "CumulusCore";
+        private const String _permissionPrefix = "LightSwitchApplication";
         private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
@@ -81,6 +81,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRead");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -88,7 +91,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var jobs = from job in db.Jobs
-                    where job.CreatedBy == currentUserId
+                    where CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job)
                     select job;
                     
                 return Ok<IEnumerable<Job>>(jobs);
@@ -121,6 +124,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRead");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -131,7 +137,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -165,7 +172,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             try
             {
                 Debug.WriteLine(fn);
-                
+
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -176,7 +186,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(original.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, original))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -184,6 +195,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 job.CreatedBy = original.CreatedBy;
                 job.Modified = DateTimeOffset.Now;
                 job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.Tid = original.Tid;
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
@@ -213,6 +225,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
+
                 var permissionId = CreatePermissionId("CanCreate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -226,10 +241,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine("Saving new job...");
 
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var jobEntity = new Job()
                 {
                     Created = DateTimeOffset.Now,
-                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    CreatedBy = currentUserId,
+                    Tid = tenantId,
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
@@ -266,6 +283,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -276,7 +296,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -284,12 +305,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 var id = job.Id;
                 var created = job.Created;
                 var createdBy = job.CreatedBy;
+                var tId = job.Tid;
                 delta.Patch(job);
                 job.Id = id;
                 job.Created = created;
                 job.CreatedBy = createdBy;
                 job.Modified = DateTimeOffset.Now;
                 job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.Tid = tId;
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();
@@ -314,6 +337,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanDelete");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -324,7 +350,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -349,6 +376,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRun");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -360,7 +390,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -391,6 +422,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRun");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -402,7 +436,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(job.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

@@ -36,7 +36,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class CalloutDefinitionsController : ODataController
     {
         private const String _permissionInfix = "CalloutDefinition";
-        private const String _permissionPrefix = "CumulusCore";
+        private const String _permissionPrefix = "LightSwitchApplication";
         private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
@@ -78,6 +78,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRead");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -85,7 +88,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var calloutDefinitions = from calloutDefinition in db.CalloutDefinitions
-                           where calloutDefinition.CreatedBy == currentUserId
+                           where CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, calloutDefinition)
                            select calloutDefinition;
 
                 return Ok<IEnumerable<CalloutDefinition>>(calloutDefinitions);
@@ -116,6 +119,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 Debug.WriteLine(fn);
 
                 var permissionId = CreatePermissionId("CanRead");
@@ -128,7 +134,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -163,6 +170,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -173,14 +183,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(original.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 calloutDefinition.Created = original.Created;
                 calloutDefinition.CreatedBy = original.CreatedBy;
                 calloutDefinition.Modified = DateTimeOffset.Now;
-                calloutDefinition.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                calloutDefinition.ModifiedBy = currentUserId;
+                calloutDefinition.Tid = original.Tid;
                 db.CalloutDefinitions.Attach(calloutDefinition);
                 db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
@@ -210,6 +222,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
+
                 var permissionId = CreatePermissionId("CanCreate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -223,15 +238,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine("Saving new CalloutDefinition...");
 
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var calloutDefinitionEntity = new CalloutDefinition()
                 {
                     Created = DateTimeOffset.Now,
-                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    CreatedBy = currentUserId,
                     CalloutType = calloutDefinition.CalloutType,
+                    Tid = tenantId,
                     TenantId = calloutDefinition.TenantId,
                     EntityType = calloutDefinition.EntityType,
                     EntityId = calloutDefinition.EntityId,
-                    Parameters = calloutDefinition.Parameters,
+                    Condition = calloutDefinition.Condition,
+                    Parameters = calloutDefinition.Parameters
                 };
                 calloutDefinitionEntity = db.CalloutDefinitions.Add(calloutDefinitionEntity);
                 db.SaveChanges();
@@ -263,6 +281,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -273,7 +294,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -281,12 +303,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 var id = calloutDefinition.Id;
                 var created = calloutDefinition.Created;
                 var createdBy = calloutDefinition.CreatedBy;
+                var tId = calloutDefinition.Tid;
                 delta.Patch(calloutDefinition);
                 calloutDefinition.Id = id;
                 calloutDefinition.Created = created;
                 calloutDefinition.CreatedBy = createdBy;
                 calloutDefinition.Modified = DateTimeOffset.Now;
-                calloutDefinition.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                calloutDefinition.ModifiedBy = currentUserId;
+                calloutDefinition.Tid = tId;
                 db.CalloutDefinitions.Attach(calloutDefinition);
                 db.Entry(calloutDefinition).State = EntityState.Modified;
                 db.SaveChanges();
@@ -311,6 +335,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanDelete");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -321,7 +348,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(calloutDefinition.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

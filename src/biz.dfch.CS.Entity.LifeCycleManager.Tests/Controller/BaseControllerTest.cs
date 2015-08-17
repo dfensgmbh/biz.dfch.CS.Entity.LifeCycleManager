@@ -29,6 +29,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
     public class BaseControllerTest<T>
     {
+        protected const String CURRENT_USER_ID = "currentUser";
+        protected const String ANOTHER_USER_ID = "anotherUser";
+        protected const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
+        protected const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
+
         protected ODataQueryOptions<T> CreateODataQueryOptions(String uri)
         {
             var context = new ODataQueryContext(GetBuilder(typeof(T)).GetEdmModel(), typeof(T));

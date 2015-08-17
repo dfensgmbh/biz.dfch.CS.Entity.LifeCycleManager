@@ -21,6 +21,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
@@ -37,8 +39,6 @@ using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.S
 [assembly: InternalsVisibleTo("biz.dfch.CS.Entity.LifeCycleManager.Tests")]
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    // DFTODO Check how to access entitites like job, calloutDefinition, etc in general if the actual user is not the owner
-    // DFTODO Check how to avoid allow/deny jobs of another user/tenant (secure token?)
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
@@ -46,6 +46,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
+        // DFTODO set credentials and root tenant in headers!
         private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
             new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
 
@@ -59,6 +60,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private EntityController _entityController;
         private String _entityType;
 
+        // DFTODO set credentials and tenant for service ref (service user)
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
@@ -142,14 +144,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        // DFTODO Check where to get TenantId from to load calloutDefinition!
-        // DFTODO Check how to pass credentials to service reference (Cumulus problem) -> do it with system user
         public void RequestStateChange(Uri entityUri, String entity, String condition)
         {
             Debug.WriteLine("Got state change request for entity with URI: '{0}' and condition: '{1}'", entityUri, condition);
             
             CheckForExistingStateChangeLock(entityUri);
-            var preCalloutDefinition = LoadCalloutDefinition(entityUri, 
+            // DFTODO set tenantId
+            var preCalloutDefinition = LoadCalloutDefinition(entityUri, "",
                 Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString());
             CreateStateChangeLockForEntity(entityUri);
 
@@ -164,6 +165,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, calloutData);
+                    // DFTODO pass credentials (header?)
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                 }
                 catch (Exception e)
@@ -187,13 +189,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             String token = null;
             try
             {
-                var postCalloutDefinition = LoadCalloutDefinition(entityUri,
+                // DFTODO set tenantId
+                var postCalloutDefinition = LoadCalloutDefinition(entityUri, "",
                     Model.CalloutDefinition.CalloutDefinitionType.Post.ToString());
                 ChangeEntityState(entityUri, entity, condition);
                 if (null != postCalloutDefinition)
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, postCalloutData);
+                    // DFTODO pass credentials
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
             }
@@ -250,13 +254,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _entityController.UpdateEntity(entityUri, JsonConvert.SerializeObject(obj));
         }
 
-        public void Next(Uri entityUri, string entity)
+        public void Next(Uri entityUri, String entity)
         {
             Debug.WriteLine("Request next state for entity with Uri: '{0}", entityUri);
             RequestStateChange(entityUri, entity, _stateMachine.ContinueCondition);
         }
 
-        public void Cancel(Uri entityUri, string entity)
+        public void Cancel(Uri entityUri, String entity)
         {
             Debug.WriteLine("Request cancel condition for entity with Uri: '{0}", entityUri);
             RequestStateChange(entityUri, entity, _stateMachine.CancelCondition);
@@ -318,18 +322,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             Debug.WriteLine("StateChangeLock for entity with id '{0}' deleted", entityUriAsString);
         }
 
-        private CalloutDefinition LoadCalloutDefinition(Uri entityUri, String calloutType)
+        private CalloutDefinition LoadCalloutDefinition(Uri entityUri, String tenantId, String calloutType)
         {
-            // DFTODO Extend search on tenantId
             Debug.WriteLine("Loading {0} callout definition for entity of type '{1}' with id '{2}'",
                 calloutType,
                 _entityType,
                 entityUri.ToString());
+            // DFTODO rewrite loading according explanation from Ronald (action, tenant, entity type, entityId)
+            // DFTODO action/condition could be regexp
             return _coreService.CalloutDefinitions.Where(
                 c =>
                     (c.CalloutType.Equals(calloutType) ||
                      c.CalloutType.Equals(Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString()))
-                    && (entityUri.ToString().Equals(c.EntityId) || (_entityType.Equals(c.EntityType)))).FirstOrDefault();
+                    && (entityUri.ToString().Equals(c.EntityId)
+                    || _entityType.Equals(c.EntityType)
+                    || tenantId.Equals(c.TenantId))).FirstOrDefault();
         }
 
         private CalloutData CreatePreCalloutData(Uri entityUri, String entity, String condition)
@@ -358,14 +365,25 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 EntityId = entityUri.ToString(),
                 OriginalState = originalState,
                 UserId = CurrentUserDataProvider.GetCurrentUserId(),
-                CallbackUrl = CreateCallbackUrl()
+                CallbackUrl = CreateCallbackUrl(entityUri.ToString())
             };
         }
 
-        private String CreateCallbackUrl()
+        private String CreateCallbackUrl(String entityUri)
         {
-            // DFTODO Check if token generation is ok
-            String token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); ;
+            StringBuilder sb = new StringBuilder();
+
+            using (SHA256 hash = SHA256Managed.Create())
+            {
+                Encoding enc = Encoding.UTF8;
+                Byte[] result = hash.ComputeHash(enc.GetBytes(entityUri));
+
+                foreach (Byte b in result)
+                    sb.Append(b.ToString("x2"));
+            }
+
+            var token = sb.ToString();
+
             return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["Core.Endpoint"], token);
         }
 
@@ -380,14 +398,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private String CreateJob(Uri entityUri, CalloutData calloutData)
         {
-            // DFTODO set TenantId
             var token = calloutData.CallbackUrl.Split('(', ')')[1];
             _coreService.AddToJobs(new Job
             {
+                State = JobStateEnum.Running.ToString(),
+                Type = CALLOUT_JOB_TYPE,
                 Parameters = JsonConvert.SerializeObject(calloutData),
                 ReferencedItemId = entityUri.ToString(),
-                Type = CALLOUT_JOB_TYPE,
-                State = JobStateEnum.Running.ToString(),
                 Token = token
             });
             _coreService.SaveChanges();

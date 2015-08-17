@@ -35,7 +35,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class StateChangeLocksController : ODataController
     {
         private const String _permissionInfix = "StateChangeLock";
-        private const String _permissionPrefix = "CumulusCore";
+        private const String _permissionPrefix = "LightSwitchApplication";
         private LifeCycleContext db = new LifeCycleContext();
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
@@ -76,6 +76,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanRead");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -83,7 +86,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var stateChangeLocks = from stateChangeLock in db.StateChangeLocks
-                           where stateChangeLock.CreatedBy == currentUserId
+                           where CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, stateChangeLock)
                            select stateChangeLock;
                 return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
             }
@@ -157,6 +160,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
+
                 var permissionId = CreatePermissionId("CanCreate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -171,10 +177,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Saving new StateChangeLock for entity with id '{0}'...", 
                     stateChangeLock.EntityId);
 
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var stateChangeLockEntity = new StateChangeLock()
                 {
-                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
+                    CreatedBy = currentUserId,
                     Created = DateTimeOffset.Now,
+                    Tid = tenantId,
                     EntityId = stateChangeLock.EntityId,
                 };
                 stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
@@ -226,6 +234,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanDelete");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -236,7 +247,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.GetCurrentUserId().Equals(stateChangeLock.CreatedBy))
+                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
+                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, stateChangeLock))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

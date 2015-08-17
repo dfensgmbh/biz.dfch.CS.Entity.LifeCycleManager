@@ -16,19 +16,13 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Util;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
-    public class CalloutDefinition
+    public class CalloutDefinition : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        public String CreatedBy { get; set; }
-        public String ModifiedBy { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
-
         private CalloutDefinitionType _CalloutType { get; set; }
 
         [Required]
@@ -37,9 +31,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
             get { return _CalloutType.ToString(); }
             set { _CalloutType = EnumUtil.Parse<CalloutDefinitionType>(value, true); }
         }
+        [Required]
         public String TenantId { get; set; }
         public String EntityId { get; set; }
         public String EntityType { get; set; }
+        [Required]
+        public String Condition { get; set; }
         public String Parameters { get; set; }
 
         public CalloutDefinition()
@@ -50,7 +47,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         {
             PreAndPost,
             Pre,
-            Post,
+            Post
         }
     }
 }

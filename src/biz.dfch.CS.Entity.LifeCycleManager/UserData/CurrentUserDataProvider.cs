@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 ﻿using System;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
@@ -24,12 +26,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             return "Administrator";
         }
 
-        public static String GetCurrentUserName()
+        public static Boolean HasCurrentUserPermission(String permissionId)
         {
-            return "TestUser";
+            return true;
         }
 
-        public static Boolean HasCurrentUserPermission(String permissionId)
+        public static Boolean IsUserAuthorized(String currentUserId, String tenantId, BaseEntity entity)
         {
             return true;
         }

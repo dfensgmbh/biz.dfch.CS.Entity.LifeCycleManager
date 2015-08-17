@@ -15,14 +15,13 @@
  */
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Util;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
-    public class Job
+    public class Job : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         private JobStateEnum _State { get; set; }
 
         [Required]
@@ -33,11 +32,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         }
         [Required]
         public String Type { get; set; }
-        public String CreatedBy { get; set; }
-        public String ModifiedBy { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
-        public String TenantId { get; set; }
         public String ReferencedItemId { get; set; }
         public String Token { get; set; }
 

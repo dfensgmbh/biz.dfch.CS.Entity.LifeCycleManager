@@ -18,17 +18,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.Model;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
-using Microsoft.Data.OData.Query.SemanticAst;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
-using Newtonsoft.Json;
 using Telerik.JustMock;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
@@ -51,7 +51,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_DEFINITION = "{\"callout-url\":\"test.com/callout\"}";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
-        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
+        private const String SAMPLE_TOKEN = "2ea77c09068ef6406b9c51a76d59b9b7c68208ee17d0d4e19d607e0310d581f3";
+        private const String TENANT_ID = "";
         private const String EXPECTED_PRE_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
         private const String EXPECTED_POST_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Post\",\"OriginalState\":\"Created\"}";
 
@@ -62,7 +63,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private ICalloutExecutor _calloutExecutor;
         private IStateMachineConfigLoader _stateMachineConfigLoader;
         private ICredentialProvider _credentialProvider;
-        private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
 
         [ClassInitialize]
@@ -77,11 +77,23 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             _credentialProvider = Mock.Create<ICredentialProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
             _calloutExecutor = Mock.Create<ICalloutExecutor>();
-            _stateMachine = Mock.Create<StateMachine.StateMachine>();
             _entityController = Mock.Create<EntityController>();
-            Mock.SetupStatic(typeof(Convert));
-            Mock.Arrange(() => Convert.ToBase64String(Arg.IsAny<byte[]>()))
-                .Returns(SAMPLE_TOKEN);
+
+            var hashGenerator = Mock.Create<SHA256>();
+            Mock.Arrange(() => hashGenerator.ComputeHash(Arg.IsAny<byte[]>()))
+                .IgnoreInstance()
+                .Returns(StringToByteArray(SAMPLE_TOKEN));
+        }
+
+        private byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+            return bytes;
         }
 
         [TestMethod]
@@ -834,7 +846,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         private CalloutDefinition CreateCalloutDefinition(String entityId, String type)
         {
-            return new CalloutDefinition { EntityId = entityId, CalloutType = type, Parameters = CALLOUT_DEFINITION };
+            return new CalloutDefinition { EntityId = entityId, TenantId = TENANT_ID, CalloutType = type, Parameters = CALLOUT_DEFINITION };
         }
     }
 }

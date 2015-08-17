@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // Original file name:
-// Generation date: 14.08.2015 11:08:55
+// Generation date: 17.08.2015 15:55:59
 namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
 {
     
@@ -171,53 +171,55 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
                 "mlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\"><Schema " +
                 "Namespace=\"biz.dfch.CS.Entity.LifeCycleManager.Model\" xmlns=\"http://schemas.micr" +
                 "osoft.com/ado/2009/11/edm\"><EntityType Name=\"Job\"><Key><PropertyRef Name=\"Id\" />" +
-                "</Key><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"false\" /><Property Name=\"St" +
-                "ate\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"Type\" Type=\"Edm.String" +
-                "\" Nullable=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Na" +
-                "me=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeO" +
-                "ffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nu" +
-                "llable=\"false\" /><Property Name=\"TenantId\" Type=\"Edm.String\" /><Property Name=\"R" +
-                "eferencedItemId\" Type=\"Edm.String\" /><Property Name=\"Token\" Type=\"Edm.String\" />" +
-                "<Property Name=\"Parameters\" Type=\"Edm.String\" /></EntityType><EntityType Name=\"L" +
-                "ifeCycle\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.Stri" +
-                "ng\" Nullable=\"false\" /><Property Name=\"Condition\" Type=\"Edm.String\" Nullable=\"fa" +
-                "lse\" /></EntityType><EntityType Name=\"StateChangeLock\"><Key><PropertyRef Name=\"I" +
-                "d\" /></Key><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"false\" /><Property Nam" +
-                "e=\"CreatedBy\" Type=\"Edm.String\" /><Property Name=\"ModifiedBy\" Type=\"Edm.String\" " +
-                "/><Property Name=\"Created\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Propert" +
-                "y Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Property Name=\"E" +
-                "ntityId\" Type=\"Edm.String\" Nullable=\"false\" /></EntityType><EntityType Name=\"Cal" +
-                "loutDefinition\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Ed" +
-                "m.Int32\" Nullable=\"false\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Prop" +
-                "erty Name=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.Da" +
-                "teTimeOffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOff" +
-                "set\" Nullable=\"false\" /><Property Name=\"CalloutType\" Type=\"Edm.String\" Nullable=" +
-                "\"false\" /><Property Name=\"TenantId\" Type=\"Edm.String\" /><Property Name=\"EntityId" +
-                "\" Type=\"Edm.String\" /><Property Name=\"EntityType\" Type=\"Edm.String\" /><Property " +
-                "Name=\"Parameters\" Type=\"Edm.String\" /></EntityType></Schema><Schema Namespace=\"D" +
-                "efault\" xmlns=\"http://schemas.microsoft.com/ado/2009/11/edm\"><EntityContainer Na" +
-                "me=\"Core\" m:IsDefaultEntityContainer=\"true\"><EntitySet Name=\"Jobs\" EntityType=\"b" +
-                "iz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /><EntitySet Name=\"LifeCycles\" Ent" +
-                "ityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /><EntitySet Name=" +
-                "\"StateChangeLocks\" EntityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.StateCh" +
-                "angeLock\" /><EntitySet Name=\"CalloutDefinitions\" EntityType=\"biz.dfch.CS.Entity." +
-                "LifeCycleManager.Model.CalloutDefinition\" /><FunctionImport Name=\"Run\" ReturnTyp" +
-                "e=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bind" +
-                "ingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /></FunctionI" +
-                "mport><FunctionImport Name=\"Finish\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:" +
-                "IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Ent" +
-                "ity.LifeCycleManager.Model.Job\" /></FunctionImport><FunctionImport Name=\"Next\" R" +
-                "eturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Na" +
-                "me=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\"" +
-                " /></FunctionImport><FunctionImport Name=\"Cancel\" ReturnType=\"Edm.String\" IsBind" +
-                "able=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"b" +
-                "iz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImport><Function" +
-                "Import Name=\"Allow\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable" +
-                "=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleMan" +
-                "ager.Model.LifeCycle\" /></FunctionImport><FunctionImport Name=\"Decline\" ReturnTy" +
-                "pe=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bin" +
-                "dingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></Fu" +
-                "nctionImport></EntityContainer></Schema></edmx:DataServices></edmx:Edmx>";
+                "</Key><Property Name=\"State\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name" +
+                "=\"Type\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"ReferencedItemId\" T" +
+                "ype=\"Edm.String\" /><Property Name=\"Token\" Type=\"Edm.String\" /><Property Name=\"Pa" +
+                "rameters\" Type=\"Edm.String\" /><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"fal" +
+                "se\" /><Property Name=\"Tid\" Type=\"Edm.String\" /><Property Name=\"CreatedBy\" Type=\"" +
+                "Edm.String\" /><Property Name=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Cr" +
+                "eated\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Property Name=\"Modified\" Ty" +
+                "pe=\"Edm.DateTimeOffset\" Nullable=\"false\" /></EntityType><EntityType Name=\"LifeCy" +
+                "cle\"><Key><PropertyRef Name=\"Id\" /></Key><Property Name=\"Id\" Type=\"Edm.String\" N" +
+                "ullable=\"false\" /><Property Name=\"Condition\" Type=\"Edm.String\" Nullable=\"false\" " +
+                "/></EntityType><EntityType Name=\"StateChangeLock\"><Key><PropertyRef Name=\"Id\" />" +
+                "</Key><Property Name=\"EntityId\" Type=\"Edm.String\" Nullable=\"false\" /><Property N" +
+                "ame=\"Id\" Type=\"Edm.Int32\" Nullable=\"false\" /><Property Name=\"Tid\" Type=\"Edm.Stri" +
+                "ng\" /><Property Name=\"CreatedBy\" Type=\"Edm.String\" /><Property Name=\"ModifiedBy\"" +
+                " Type=\"Edm.String\" /><Property Name=\"Created\" Type=\"Edm.DateTimeOffset\" Nullable" +
+                "=\"false\" /><Property Name=\"Modified\" Type=\"Edm.DateTimeOffset\" Nullable=\"false\" " +
+                "/></EntityType><EntityType Name=\"CalloutDefinition\"><Key><PropertyRef Name=\"Id\" " +
+                "/></Key><Property Name=\"CalloutType\" Type=\"Edm.String\" Nullable=\"false\" /><Prope" +
+                "rty Name=\"TenantId\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"EntityI" +
+                "d\" Type=\"Edm.String\" /><Property Name=\"EntityType\" Type=\"Edm.String\" /><Property" +
+                " Name=\"Condition\" Type=\"Edm.String\" Nullable=\"false\" /><Property Name=\"Parameter" +
+                "s\" Type=\"Edm.String\" /><Property Name=\"Id\" Type=\"Edm.Int32\" Nullable=\"false\" /><" +
+                "Property Name=\"Tid\" Type=\"Edm.String\" /><Property Name=\"CreatedBy\" Type=\"Edm.Str" +
+                "ing\" /><Property Name=\"ModifiedBy\" Type=\"Edm.String\" /><Property Name=\"Created\" " +
+                "Type=\"Edm.DateTimeOffset\" Nullable=\"false\" /><Property Name=\"Modified\" Type=\"Edm" +
+                ".DateTimeOffset\" Nullable=\"false\" /></EntityType></Schema><Schema Namespace=\"Def" +
+                "ault\" xmlns=\"http://schemas.microsoft.com/ado/2009/11/edm\"><EntityContainer Name" +
+                "=\"Core\" m:IsDefaultEntityContainer=\"true\"><EntitySet Name=\"Jobs\" EntityType=\"biz" +
+                ".dfch.CS.Entity.LifeCycleManager.Model.Job\" /><EntitySet Name=\"LifeCycles\" Entit" +
+                "yType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /><EntitySet Name=\"S" +
+                "tateChangeLocks\" EntityType=\"biz.dfch.CS.Entity.LifeCycleManager.Model.StateChan" +
+                "geLock\" /><EntitySet Name=\"CalloutDefinitions\" EntityType=\"biz.dfch.CS.Entity.Li" +
+                "feCycleManager.Model.CalloutDefinition\" /><FunctionImport Name=\"Run\" ReturnType=" +
+                "\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindin" +
+                "gParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.Job\" /></FunctionImp" +
+                "ort><FunctionImport Name=\"Finish\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:Is" +
+                "AlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entit" +
+                "y.LifeCycleManager.Model.Job\" /></FunctionImport><FunctionImport Name=\"Next\" Ret" +
+                "urnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name" +
+                "=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /" +
+                "></FunctionImport><FunctionImport Name=\"Cancel\" ReturnType=\"Edm.String\" IsBindab" +
+                "le=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindingParameter\" Type=\"biz" +
+                ".dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></FunctionImport><FunctionIm" +
+                "port Name=\"Allow\" ReturnType=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"" +
+                "true\"><Parameter Name=\"bindingParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManag" +
+                "er.Model.LifeCycle\" /></FunctionImport><FunctionImport Name=\"Decline\" ReturnType" +
+                "=\"Edm.String\" IsBindable=\"true\" m:IsAlwaysBindable=\"true\"><Parameter Name=\"bindi" +
+                "ngParameter\" Type=\"biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle\" /></Func" +
+                "tionImport></EntityContainer></Schema></edmx:DataServices></edmx:Edmx>";
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
             private static string GetConcatenatedEdmxString()
             {
@@ -262,44 +264,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         /// <summary>
         /// Create a new Job object.
         /// </summary>
-        /// <param name="ID">Initial value of Id.</param>
         /// <param name="state">Initial value of State.</param>
         /// <param name="type">Initial value of Type.</param>
+        /// <param name="ID">Initial value of Id.</param>
         /// <param name="created">Initial value of Created.</param>
         /// <param name="modified">Initial value of Modified.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public static Job CreateJob(int ID, string state, string type, global::System.DateTimeOffset created, global::System.DateTimeOffset modified)
+        public static Job CreateJob(string state, string type, int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified)
         {
             Job job = new Job();
-            job.Id = ID;
             job.State = state;
             job.Type = type;
+            job.Id = ID;
             job.Created = created;
             job.Modified = modified;
             return job;
         }
-        /// <summary>
-        /// There are no comments for Property Id in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public int Id
-        {
-            get
-            {
-                return this._Id;
-            }
-            set
-            {
-                this.OnIdChanging(value);
-                this._Id = value;
-                this.OnIdChanged();
-                this.OnPropertyChanged("Id");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private int _Id;
-        partial void OnIdChanging(int value);
-        partial void OnIdChanged();
         /// <summary>
         /// There are no comments for Property State in the schema.
         /// </summary>
@@ -344,6 +324,116 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private string _Type;
         partial void OnTypeChanging(string value);
         partial void OnTypeChanged();
+        /// <summary>
+        /// There are no comments for Property ReferencedItemId in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string ReferencedItemId
+        {
+            get
+            {
+                return this._ReferencedItemId;
+            }
+            set
+            {
+                this.OnReferencedItemIdChanging(value);
+                this._ReferencedItemId = value;
+                this.OnReferencedItemIdChanged();
+                this.OnPropertyChanged("ReferencedItemId");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _ReferencedItemId;
+        partial void OnReferencedItemIdChanging(string value);
+        partial void OnReferencedItemIdChanged();
+        /// <summary>
+        /// There are no comments for Property Token in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Token
+        {
+            get
+            {
+                return this._Token;
+            }
+            set
+            {
+                this.OnTokenChanging(value);
+                this._Token = value;
+                this.OnTokenChanged();
+                this.OnPropertyChanged("Token");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Token;
+        partial void OnTokenChanging(string value);
+        partial void OnTokenChanged();
+        /// <summary>
+        /// There are no comments for Property Parameters in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Parameters
+        {
+            get
+            {
+                return this._Parameters;
+            }
+            set
+            {
+                this.OnParametersChanging(value);
+                this._Parameters = value;
+                this.OnParametersChanged();
+                this.OnPropertyChanged("Parameters");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Parameters;
+        partial void OnParametersChanging(string value);
+        partial void OnParametersChanged();
+        /// <summary>
+        /// There are no comments for Property Id in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public int Id
+        {
+            get
+            {
+                return this._Id;
+            }
+            set
+            {
+                this.OnIdChanging(value);
+                this._Id = value;
+                this.OnIdChanged();
+                this.OnPropertyChanged("Id");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private int _Id;
+        partial void OnIdChanging(int value);
+        partial void OnIdChanged();
+        /// <summary>
+        /// There are no comments for Property Tid in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Tid
+        {
+            get
+            {
+                return this._Tid;
+            }
+            set
+            {
+                this.OnTidChanging(value);
+                this._Tid = value;
+                this.OnTidChanged();
+                this.OnPropertyChanged("Tid");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Tid;
+        partial void OnTidChanging(string value);
+        partial void OnTidChanged();
         /// <summary>
         /// There are no comments for Property CreatedBy in the schema.
         /// </summary>
@@ -432,94 +522,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private global::System.DateTimeOffset _Modified;
         partial void OnModifiedChanging(global::System.DateTimeOffset value);
         partial void OnModifiedChanged();
-        /// <summary>
-        /// There are no comments for Property TenantId in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string TenantId
-        {
-            get
-            {
-                return this._TenantId;
-            }
-            set
-            {
-                this.OnTenantIdChanging(value);
-                this._TenantId = value;
-                this.OnTenantIdChanged();
-                this.OnPropertyChanged("TenantId");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _TenantId;
-        partial void OnTenantIdChanging(string value);
-        partial void OnTenantIdChanged();
-        /// <summary>
-        /// There are no comments for Property ReferencedItemId in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string ReferencedItemId
-        {
-            get
-            {
-                return this._ReferencedItemId;
-            }
-            set
-            {
-                this.OnReferencedItemIdChanging(value);
-                this._ReferencedItemId = value;
-                this.OnReferencedItemIdChanged();
-                this.OnPropertyChanged("ReferencedItemId");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _ReferencedItemId;
-        partial void OnReferencedItemIdChanging(string value);
-        partial void OnReferencedItemIdChanged();
-        /// <summary>
-        /// There are no comments for Property Token in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string Token
-        {
-            get
-            {
-                return this._Token;
-            }
-            set
-            {
-                this.OnTokenChanging(value);
-                this._Token = value;
-                this.OnTokenChanged();
-                this.OnPropertyChanged("Token");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _Token;
-        partial void OnTokenChanging(string value);
-        partial void OnTokenChanged();
-        /// <summary>
-        /// There are no comments for Property Parameters in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string Parameters
-        {
-            get
-            {
-                return this._Parameters;
-            }
-            set
-            {
-                this.OnParametersChanging(value);
-                this._Parameters = value;
-                this.OnParametersChanged();
-                this.OnPropertyChanged("Parameters");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _Parameters;
-        partial void OnParametersChanging(string value);
-        partial void OnParametersChanged();
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
@@ -622,20 +624,42 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         /// <summary>
         /// Create a new StateChangeLock object.
         /// </summary>
+        /// <param name="entityId">Initial value of EntityId.</param>
         /// <param name="ID">Initial value of Id.</param>
         /// <param name="created">Initial value of Created.</param>
         /// <param name="modified">Initial value of Modified.</param>
-        /// <param name="entityId">Initial value of EntityId.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public static StateChangeLock CreateStateChangeLock(int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified, string entityId)
+        public static StateChangeLock CreateStateChangeLock(string entityId, int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified)
         {
             StateChangeLock stateChangeLock = new StateChangeLock();
+            stateChangeLock.EntityId = entityId;
             stateChangeLock.Id = ID;
             stateChangeLock.Created = created;
             stateChangeLock.Modified = modified;
-            stateChangeLock.EntityId = entityId;
             return stateChangeLock;
         }
+        /// <summary>
+        /// There are no comments for Property EntityId in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string EntityId
+        {
+            get
+            {
+                return this._EntityId;
+            }
+            set
+            {
+                this.OnEntityIdChanging(value);
+                this._EntityId = value;
+                this.OnEntityIdChanged();
+                this.OnPropertyChanged("EntityId");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _EntityId;
+        partial void OnEntityIdChanging(string value);
+        partial void OnEntityIdChanged();
         /// <summary>
         /// There are no comments for Property Id in the schema.
         /// </summary>
@@ -658,6 +682,28 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private int _Id;
         partial void OnIdChanging(int value);
         partial void OnIdChanged();
+        /// <summary>
+        /// There are no comments for Property Tid in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Tid
+        {
+            get
+            {
+                return this._Tid;
+            }
+            set
+            {
+                this.OnTidChanging(value);
+                this._Tid = value;
+                this.OnTidChanged();
+                this.OnPropertyChanged("Tid");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Tid;
+        partial void OnTidChanging(string value);
+        partial void OnTidChanged();
         /// <summary>
         /// There are no comments for Property CreatedBy in the schema.
         /// </summary>
@@ -746,28 +792,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private global::System.DateTimeOffset _Modified;
         partial void OnModifiedChanging(global::System.DateTimeOffset value);
         partial void OnModifiedChanged();
-        /// <summary>
-        /// There are no comments for Property EntityId in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string EntityId
-        {
-            get
-            {
-                return this._EntityId;
-            }
-            set
-            {
-                this.OnEntityIdChanging(value);
-                this._EntityId = value;
-                this.OnEntityIdChanged();
-                this.OnPropertyChanged("EntityId");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _EntityId;
-        partial void OnEntityIdChanging(string value);
-        partial void OnEntityIdChanged();
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
@@ -792,130 +816,24 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         /// <summary>
         /// Create a new CalloutDefinition object.
         /// </summary>
+        /// <param name="calloutType">Initial value of CalloutType.</param>
+        /// <param name="tenantId">Initial value of TenantId.</param>
+        /// <param name="condition">Initial value of Condition.</param>
         /// <param name="ID">Initial value of Id.</param>
         /// <param name="created">Initial value of Created.</param>
         /// <param name="modified">Initial value of Modified.</param>
-        /// <param name="calloutType">Initial value of CalloutType.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public static CalloutDefinition CreateCalloutDefinition(int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified, string calloutType)
+        public static CalloutDefinition CreateCalloutDefinition(string calloutType, string tenantId, string condition, int ID, global::System.DateTimeOffset created, global::System.DateTimeOffset modified)
         {
             CalloutDefinition calloutDefinition = new CalloutDefinition();
+            calloutDefinition.CalloutType = calloutType;
+            calloutDefinition.TenantId = tenantId;
+            calloutDefinition.Condition = condition;
             calloutDefinition.Id = ID;
             calloutDefinition.Created = created;
             calloutDefinition.Modified = modified;
-            calloutDefinition.CalloutType = calloutType;
             return calloutDefinition;
         }
-        /// <summary>
-        /// There are no comments for Property Id in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public int Id
-        {
-            get
-            {
-                return this._Id;
-            }
-            set
-            {
-                this.OnIdChanging(value);
-                this._Id = value;
-                this.OnIdChanged();
-                this.OnPropertyChanged("Id");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private int _Id;
-        partial void OnIdChanging(int value);
-        partial void OnIdChanged();
-        /// <summary>
-        /// There are no comments for Property CreatedBy in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string CreatedBy
-        {
-            get
-            {
-                return this._CreatedBy;
-            }
-            set
-            {
-                this.OnCreatedByChanging(value);
-                this._CreatedBy = value;
-                this.OnCreatedByChanged();
-                this.OnPropertyChanged("CreatedBy");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _CreatedBy;
-        partial void OnCreatedByChanging(string value);
-        partial void OnCreatedByChanged();
-        /// <summary>
-        /// There are no comments for Property ModifiedBy in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public string ModifiedBy
-        {
-            get
-            {
-                return this._ModifiedBy;
-            }
-            set
-            {
-                this.OnModifiedByChanging(value);
-                this._ModifiedBy = value;
-                this.OnModifiedByChanged();
-                this.OnPropertyChanged("ModifiedBy");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private string _ModifiedBy;
-        partial void OnModifiedByChanging(string value);
-        partial void OnModifiedByChanged();
-        /// <summary>
-        /// There are no comments for Property Created in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public global::System.DateTimeOffset Created
-        {
-            get
-            {
-                return this._Created;
-            }
-            set
-            {
-                this.OnCreatedChanging(value);
-                this._Created = value;
-                this.OnCreatedChanged();
-                this.OnPropertyChanged("Created");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private global::System.DateTimeOffset _Created;
-        partial void OnCreatedChanging(global::System.DateTimeOffset value);
-        partial void OnCreatedChanged();
-        /// <summary>
-        /// There are no comments for Property Modified in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        public global::System.DateTimeOffset Modified
-        {
-            get
-            {
-                return this._Modified;
-            }
-            set
-            {
-                this.OnModifiedChanging(value);
-                this._Modified = value;
-                this.OnModifiedChanged();
-                this.OnPropertyChanged("Modified");
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
-        private global::System.DateTimeOffset _Modified;
-        partial void OnModifiedChanging(global::System.DateTimeOffset value);
-        partial void OnModifiedChanged();
         /// <summary>
         /// There are no comments for Property CalloutType in the schema.
         /// </summary>
@@ -1005,6 +923,28 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         partial void OnEntityTypeChanging(string value);
         partial void OnEntityTypeChanged();
         /// <summary>
+        /// There are no comments for Property Condition in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Condition
+        {
+            get
+            {
+                return this._Condition;
+            }
+            set
+            {
+                this.OnConditionChanging(value);
+                this._Condition = value;
+                this.OnConditionChanged();
+                this.OnPropertyChanged("Condition");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Condition;
+        partial void OnConditionChanging(string value);
+        partial void OnConditionChanged();
+        /// <summary>
         /// There are no comments for Property Parameters in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
@@ -1026,6 +966,138 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
         private string _Parameters;
         partial void OnParametersChanging(string value);
         partial void OnParametersChanged();
+        /// <summary>
+        /// There are no comments for Property Id in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public int Id
+        {
+            get
+            {
+                return this._Id;
+            }
+            set
+            {
+                this.OnIdChanging(value);
+                this._Id = value;
+                this.OnIdChanged();
+                this.OnPropertyChanged("Id");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private int _Id;
+        partial void OnIdChanging(int value);
+        partial void OnIdChanged();
+        /// <summary>
+        /// There are no comments for Property Tid in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string Tid
+        {
+            get
+            {
+                return this._Tid;
+            }
+            set
+            {
+                this.OnTidChanging(value);
+                this._Tid = value;
+                this.OnTidChanged();
+                this.OnPropertyChanged("Tid");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _Tid;
+        partial void OnTidChanging(string value);
+        partial void OnTidChanged();
+        /// <summary>
+        /// There are no comments for Property CreatedBy in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string CreatedBy
+        {
+            get
+            {
+                return this._CreatedBy;
+            }
+            set
+            {
+                this.OnCreatedByChanging(value);
+                this._CreatedBy = value;
+                this.OnCreatedByChanged();
+                this.OnPropertyChanged("CreatedBy");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _CreatedBy;
+        partial void OnCreatedByChanging(string value);
+        partial void OnCreatedByChanged();
+        /// <summary>
+        /// There are no comments for Property ModifiedBy in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public string ModifiedBy
+        {
+            get
+            {
+                return this._ModifiedBy;
+            }
+            set
+            {
+                this.OnModifiedByChanging(value);
+                this._ModifiedBy = value;
+                this.OnModifiedByChanged();
+                this.OnPropertyChanged("ModifiedBy");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private string _ModifiedBy;
+        partial void OnModifiedByChanging(string value);
+        partial void OnModifiedByChanged();
+        /// <summary>
+        /// There are no comments for Property Created in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public global::System.DateTimeOffset Created
+        {
+            get
+            {
+                return this._Created;
+            }
+            set
+            {
+                this.OnCreatedChanging(value);
+                this._Created = value;
+                this.OnCreatedChanged();
+                this.OnPropertyChanged("Created");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private global::System.DateTimeOffset _Created;
+        partial void OnCreatedChanging(global::System.DateTimeOffset value);
+        partial void OnCreatedChanged();
+        /// <summary>
+        /// There are no comments for Property Modified in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        public global::System.DateTimeOffset Modified
+        {
+            get
+            {
+                return this._Modified;
+            }
+            set
+            {
+                this.OnModifiedChanging(value);
+                this._Modified = value;
+                this.OnModifiedChanged();
+                this.OnPropertyChanged("Modified");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
+        private global::System.DateTimeOffset _Modified;
+        partial void OnModifiedChanging(global::System.DateTimeOffset value);
+        partial void OnModifiedChanged();
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Services.Design", "1.0.0")]

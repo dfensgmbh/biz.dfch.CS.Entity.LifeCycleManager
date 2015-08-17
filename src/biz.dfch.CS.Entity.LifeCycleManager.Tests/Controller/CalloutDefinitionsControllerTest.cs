@@ -37,16 +37,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     {
         private CalloutDefinitionsController _calloutDefinitionsController;
         private LifeCycleContext _lifeCycleContext;
-        private const String CALLOUT_DEFINITION_READ_PERMISSION = "CumulusCore:CalloutDefinitionCanRead";
-        private const String CALLOUT_DEFINITION_UPDATE_PERMISSION = "CumulusCore:CalloutDefinitionCanUpdate";
-        private const String CALLOUT_DEFINITION_CREATE_PERMISSION = "CumulusCore:CalloutDefinitionCanCreate";
-        private const String CALLOUT_DEFINITION_DELETE_PERMISSION = "CumulusCore:CalloutDefinitionCanDelete";
-        private const String CURRENT_USER_ID = "currentUser";
-        private const String ANOTHER_USER_ID = "anotherUser";
+        private const String CALLOUT_DEFINITION_READ_PERMISSION = "LightSwitchApplication:CalloutDefinitionCanRead";
+        private const String CALLOUT_DEFINITION_UPDATE_PERMISSION = "LightSwitchApplication:CalloutDefinitionCanUpdate";
+        private const String CALLOUT_DEFINITION_CREATE_PERMISSION = "LightSwitchApplication:CalloutDefinitionCanCreate";
+        private const String CALLOUT_DEFINITION_DELETE_PERMISSION = "LightSwitchApplication:CalloutDefinitionCanDelete";
         private const String SAMPLE_ENTITY_TYPE = "User";
-        private const String TENANT_ID = "Tenant1";
         private const String ENTITY_ID_1 = "1";
-
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -63,7 +59,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void GetCalloutDefinitionsForUserWithReadPermissionReturnsHisCalloutDefinitions()
+        public void GetCalloutDefinitionsForUserWithReadPermissionReturnsCalloutDefinitionsTheUserIsAuthorizedFor()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION))
                 .Returns(true)
@@ -71,9 +67,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions)
                 .IgnoreInstance()
-                .ReturnsCollection(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID))
+                .ReturnsCollection(CreateSampleCalloutDefinitionDbSet())
                 .MustBeCalled();
 
             var actionResult = _calloutDefinitionsController.GetCalloutDefinitions(
@@ -87,6 +86,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(2, response.Content.Count());
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
             Mock.Assert(_lifeCycleContext);
         }
@@ -113,12 +113,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(false)
+                .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions)
                 .IgnoreInstance()
-                .ReturnsCollection(CreateSampleCalloutDefinitionDbSetForUser(ANOTHER_USER_ID))
+                .ReturnsCollection(CreateSampleCalloutDefinitionDbSet())
                 .MustBeCalled();
 
             var actionResult = _calloutDefinitionsController.GetCalloutDefinitions(
@@ -132,14 +135,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(0, response.Content.Count());
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
-        public void GetCalloutDefinitionByIdForUserWithOwnershipAndReadPermissionReturnsRequestedCalloutDefinition()
+        public void GetCalloutDefinitionByIdForAuthorizedUserWithReadPermissionReturnsRequestedCalloutDefinition()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION))
+                .Returns(true)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
@@ -147,7 +154,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _calloutDefinitionsController.GetCalloutDefinition(1,
@@ -162,22 +169,26 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.CreatedBy);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
-        public void GetCalloutDefinitionByIdForUserWithoutOwnershipReturnsForbidden()
+        public void GetCalloutDefinitionByIdForUnAuthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _calloutDefinitionsController.GetCalloutDefinition(1,
@@ -187,6 +198,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_READ_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
             Mock.Assert(_lifeCycleContext);
         }
@@ -229,7 +241,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PutCalloutDefinitionForUserWithUpdatePermissionAndOwnershipUpdatesCalloutDefinition()
+        public void PutCalloutDefinitionForAuthorizedUserWithUpdatePermissionUpdatesCalloutDefinition()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION))
                 .Returns(true)
@@ -237,9 +249,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Attach(Arg.IsAny<CalloutDefinition>()))
                 .IgnoreInstance()
@@ -282,6 +297,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -302,17 +318,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PutCalloutDefinitionForUserWithoutOwnershipReturnsForbidden()
+        public void PutCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _calloutDefinitionsController.Put(1,
@@ -333,6 +352,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -345,9 +365,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Attach(Arg.IsAny<CalloutDefinition>()))
                 .IgnoreInstance()
@@ -384,6 +407,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -485,7 +509,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     EntityType = SAMPLE_ENTITY_TYPE,
                     EntityId = ENTITY_ID_1,
                     TenantId = TENANT_ID,
-                    Parameters = "testparameters",
+                    Parameters = "testparameters"
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdCalloutDefinition.CreatedBy);
@@ -506,7 +530,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PatchCalloutDefinitionForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields()
+        public void PatchCalloutDefinitionForAuthorizedUserWithUpdatePermissionUpdatesDeliveredFields()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION))
                 .Returns(true)
@@ -514,9 +538,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Attach(Arg.IsAny<CalloutDefinition>()))
                 .IgnoreInstance()
@@ -551,6 +578,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -569,17 +597,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void PatchCalloutDefinitionForUserWithoutOwnershipReturnsForbidden()
+        public void PatchCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             var actionResult = _calloutDefinitionsController.Patch(1, new Delta<CalloutDefinition>()).Result;
 
@@ -587,6 +618,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -609,27 +641,31 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void DeleteCalloutDefinitionForUserWithDeletePermissionAndOwnershipDeletesCalloutDefinition()
+        public void DeleteCalloutDefinitionForAuthorizedUserWithDeletePermissionDeletesCalloutDefinition()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_DELETE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Remove(Arg.IsAny<CalloutDefinition>()))
                 .IgnoreInstance()
                 .MustBeCalled();
             var actionResult = _calloutDefinitionsController.Delete(1).Result;
 
-            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NoContent);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -648,17 +684,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void DeleteCalloutDefinitionForUserWithoutOwnershipReturnsForbidden()
+        public void DeleteCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_DELETE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleCalloutDefinitionDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleCalloutDefinitionDbSet()[0])
                 .MustBeCalled();
             var actionResult = _calloutDefinitionsController.Delete(1).Result;
 
@@ -666,6 +705,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(CALLOUT_DEFINITION_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -687,11 +727,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Assert(_lifeCycleContext);
         }
 
-        private IList<CalloutDefinition> CreateSampleCalloutDefinitionDbSetForUser(String ownerId)
+        private IList<CalloutDefinition> CreateSampleCalloutDefinitionDbSet()
         {
             var dbSet = new List<CalloutDefinition>();
-            dbSet.Add(new CalloutDefinition { Id = 1, CreatedBy = ownerId, EntityType = SAMPLE_ENTITY_TYPE });
-            dbSet.Add(new CalloutDefinition { Id = 2, CreatedBy = ownerId, EntityId = ENTITY_ID_1});
+            dbSet.Add(new CalloutDefinition { Id = 1, Tid = TENANT_ID, CreatedBy = CURRENT_USER_ID, EntityType = SAMPLE_ENTITY_TYPE });
+            dbSet.Add(new CalloutDefinition { Id = 2, Tid = TENANT_ID, CreatedBy = CURRENT_USER_ID, EntityId = ENTITY_ID_1});
             return dbSet;
         }
     }

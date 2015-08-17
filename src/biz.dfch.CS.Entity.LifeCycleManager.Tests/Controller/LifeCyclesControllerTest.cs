@@ -43,12 +43,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String ENTITY = "{}";
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
-        private const String LIFE_CYCLE_UPDATE_PERMISSION = "CumulusCore:LifeCycleCanUpdate";
-        private const String LIFE_CYCLE_NEXT_PERMISSION = "CumulusCore:LifeCycleCanNext";
-        private const String LIFE_CYCLE_CANCEL_PERMISSION = "CumulusCore:LifeCycleCanCancel";
-        private const String LIFE_CYCLE_ALLOW_PERMISSION = "CumulusCore:LifeCycleCanAllow";
-        private const String LIFE_CYCLE_DECLINE_PERMISSION = "CumulusCore:LifeCycleCanDecline";
-        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
+        private const String LIFE_CYCLE_UPDATE_PERMISSION = "LightSwitchApplication:LifeCycleCanUpdate";
+        private const String LIFE_CYCLE_NEXT_PERMISSION = "LightSwitchApplication:LifeCycleCanNext";
+        private const String LIFE_CYCLE_CANCEL_PERMISSION = "LightSwitchApplication:LifeCycleCanCancel";
+        private const String LIFE_CYCLE_ALLOW_PERMISSION = "LightSwitchApplication:LifeCycleCanAllow";
+        private const String LIFE_CYCLE_DECLINE_PERMISSION = "LightSwitchApplication:LifeCycleCanDecline";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)

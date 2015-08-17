@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Model
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
 {
-    public class StateChangeLock : BaseEntity
+    public class BaseEntity
     {
-        [Required]
-        public String EntityId { get; set; }
-
-        public StateChangeLock()
+        [Key]
+        public int Id { get; set; }
+        private Guid _Tid { get; set; }
+        public String Tid
         {
+            get { return _Tid.ToString(); }
+            set { _Tid = Guid.Parse(value); }
         }
+        public String CreatedBy { get; set; }
+        public String ModifiedBy { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Modified { get; set; }
     }
 }

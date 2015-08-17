@@ -37,7 +37,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class LifeCyclesController : ODataController
     {
         private const String _permissionInfix = "LifeCycle";
-        private const String _permissionPrefix = "CumulusCore";
+        private const String _permissionPrefix = "LightSwitchApplication";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
@@ -134,6 +134,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -141,7 +144,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition);
@@ -205,6 +208,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -212,7 +218,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition);
@@ -261,6 +267,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanNext");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -268,7 +277,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.Next(entityUri, entity);
@@ -305,6 +314,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+
                 var permissionId = CreatePermissionId("CanCancel");
                 if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
                 {
@@ -312,7 +324,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.Cancel(entityUri, entity);
@@ -365,7 +377,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnAllowCallback(job);
@@ -410,7 +422,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Check what ICredentialProvider implementation to pass instead of null
+                // DFTODO Pass ICredentialProvider implementation instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnDeclineCallback(job);
@@ -435,7 +447,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private String LoadEntity(ICredentialProvider credentialProvider, Uri uri)
         {
-            // DFTODO Check how to pass credentials used to authenticate when loading the entity
             var entityController = new EntityController(credentialProvider);
             return entityController.LoadEntity(uri);
         }

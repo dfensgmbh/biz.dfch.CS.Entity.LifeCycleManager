@@ -5,17 +5,17 @@
         <Key>
           <PropertyRef Name="Id" />
         </Key>
-        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
         <Property Name="State" Type="Edm.String" Nullable="false" />
         <Property Name="Type" Type="Edm.String" Nullable="false" />
+        <Property Name="ReferencedItemId" Type="Edm.String" />
+        <Property Name="Token" Type="Edm.String" />
+        <Property Name="Parameters" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
-        <Property Name="TenantId" Type="Edm.String" />
-        <Property Name="ReferencedItemId" Type="Edm.String" />
-        <Property Name="Token" Type="Edm.String" />
-        <Property Name="Parameters" Type="Edm.String" />
       </EntityType>
       <EntityType Name="LifeCycle">
         <Key>
@@ -28,27 +28,30 @@
         <Key>
           <PropertyRef Name="Id" />
         </Key>
+        <Property Name="EntityId" Type="Edm.String" Nullable="false" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
-        <Property Name="EntityId" Type="Edm.String" Nullable="false" />
       </EntityType>
       <EntityType Name="CalloutDefinition">
         <Key>
           <PropertyRef Name="Id" />
         </Key>
+        <Property Name="CalloutType" Type="Edm.String" Nullable="false" />
+        <Property Name="TenantId" Type="Edm.String" Nullable="false" />
+        <Property Name="EntityId" Type="Edm.String" />
+        <Property Name="EntityType" Type="Edm.String" />
+        <Property Name="Condition" Type="Edm.String" Nullable="false" />
+        <Property Name="Parameters" Type="Edm.String" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
         <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
-        <Property Name="CalloutType" Type="Edm.String" Nullable="false" />
-        <Property Name="TenantId" Type="Edm.String" />
-        <Property Name="EntityId" Type="Edm.String" />
-        <Property Name="EntityType" Type="Edm.String" />
-        <Property Name="Parameters" Type="Edm.String" />
       </EntityType>
     </Schema>
     <Schema Namespace="Default" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">

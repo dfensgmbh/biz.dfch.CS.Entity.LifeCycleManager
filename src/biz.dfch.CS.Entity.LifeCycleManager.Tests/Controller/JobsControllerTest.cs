@@ -37,16 +37,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     {
         private JobsController _jobsController;
         private LifeCycleContext _lifeCycleContext;
-        private const String JOB_READ_PERMISSION = "CumulusCore:JobCanRead";
-        private const String JOB_UPDATE_PERMISSION = "CumulusCore:JobCanUpdate";
-        private const String JOB_CREATE_PERMISSION = "CumulusCore:JobCanCreate";
-        private const String JOB_DELETE_PERMISSION = "CumulusCore:JobCanDelete";
-        private const String JOB_RUN_PERMISSION = "CumulusCore:JobCanRun";
+        private const String JOB_READ_PERMISSION = "LightSwitchApplication:JobCanRead";
+        private const String JOB_UPDATE_PERMISSION = "LightSwitchApplication:JobCanUpdate";
+        private const String JOB_CREATE_PERMISSION = "LightSwitchApplication:JobCanCreate";
+        private const String JOB_DELETE_PERMISSION = "LightSwitchApplication:JobCanDelete";
+        private const String JOB_RUN_PERMISSION = "LightSwitchApplication:JobCanRun";
         private const String DEFAULT_JOB_TYPE = "Default";
-        private const String CURRENT_USER_ID = "currentUser";
-        private const String ANOTHER_USER_ID = "anotherUser";
         private const String SAMPLE_PARAMETERS = "{}";
-        private const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -64,7 +61,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void GetJobsForUserWithReadPermissionReturnsHisJobs()
+        public void GetJobsForUserWithReadPermissionReturnsJobsTheUserIsAuthorizedFor()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
                 .Returns(true)
@@ -72,9 +69,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs)
                 .IgnoreInstance()
-                .ReturnsCollection(CreateSampleJobDbSetForUser(CURRENT_USER_ID))
+                .ReturnsCollection(CreateSampleJobDbSet())
                 .MustBeCalled();
 
             var actionResult = _jobsController.GetJobs(
@@ -89,6 +89,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -111,7 +112,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void GetJobsWithNonExistingJobsForCurrentUserReturnsEmptyList()
+        public void GetJobsForUserNotAuthorizedForAnyJobReturnsEmptyList()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
                 .Returns(true)
@@ -119,9 +120,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs)
                 .IgnoreInstance()
-                .ReturnsCollection(CreateSampleJobDbSetForUser(ANOTHER_USER_ID))
+                .ReturnsCollection(CreateSampleJobDbSet())
                 .MustBeCalled();
 
             var actionResult = _jobsController.GetJobs(
@@ -141,7 +145,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void GetJobByIdForUserWithOwnershipAndReadPermissionReturnsRequestedJob()
+        public void GetJobByIdForAuthorizedUserWithReadPermissionReturnsRequestedJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
                 .Returns(true)
@@ -149,9 +153,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _jobsController.GetJob(1, 
@@ -167,22 +174,26 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         [WorkItem(16)]
-        public void GetJobByIdForUserWithoutOwnershipReturnsForbidden()
+        public void GetJobByIdForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _jobsController.GetJob(1,
@@ -193,6 +204,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_READ_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -237,7 +249,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void PutJobForUserWithUpdatePermissionAndOwnershipUpdatesJob()
+        public void PutJobForAuthorizedUserWithUpdatePermissionUpdatesJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
                 .Returns(true)
@@ -245,9 +257,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -290,6 +305,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -312,17 +328,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void PutJobForUserWithoutOwnershipReturnsForbidden()
+        public void PutJobForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _jobsController.Put(1,
@@ -342,6 +361,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -355,9 +375,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -392,6 +415,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -567,7 +591,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void PatchJobForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields()
+        public void PatchJobForAuthorizedUserWithUpdatePermissionUpdatesDeliveredFields()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
                 .Returns(true)
@@ -575,9 +599,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -614,12 +641,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         [WorkItem(16)]
-        public void PatchJobForUserWithUpdatePermissionAndOwnershipUpdatesDeliveredFields2()
+        public void PatchJobForAuthorizedUserWithUpdatePermissionUpdatesDeliveredFields2()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
                 .Returns(true)
@@ -627,9 +655,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -662,6 +693,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -682,17 +714,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void PatchJobForUserWithoutOwnershipReturnsForbidden()
+        public void PatchJobForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             var actionResult = _jobsController.Patch(1, new Delta<Job>()).Result;
 
@@ -700,6 +735,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -724,27 +760,31 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void DeleteJobForUserWithDeletePermissionAndOwnershipDeletesJob()
+        public void DeleteJobForAuthorizedUserWithDeletePermissionDeletesJob()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Remove(Arg.IsAny<Job>()))
                 .IgnoreInstance()
                 .MustBeCalled();
             var actionResult = _jobsController.Delete(1).Result;
 
-            AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
+            AssertStatusCodeResult(actionResult, HttpStatusCode.NoContent);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -765,17 +805,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void DeleteJobForUserWithoutOwnershipReturnsForbidden()
+        public void DeleteJobForUnauthorizedUserpReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
             var actionResult = _jobsController.Delete(1).Result;
 
@@ -783,6 +826,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_DELETE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -822,17 +866,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void RunForUserWithoutOwnerShipReturnsForbidden()
+        public void RunForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _jobsController.Run(1, null).Result;
@@ -841,6 +888,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -866,7 +914,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void RunForUserWithPermissionAndOwnershipSetsStateToRunningAndReturnsOk()
+        public void RunForAuthorizedUserWithPermissionSetsStateToRunningAndReturnsOk()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
                 .Returns(true)
@@ -874,9 +922,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(2))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[1])
+                .Returns(CreateSampleJobDbSet()[1])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -899,6 +950,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -919,17 +971,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void FinishForUserWithoutOwnerShipReturnsForbidden()
+        public void FinishForUnauthorizedUserReturnsForbidden()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
-                .Returns(ANOTHER_USER_ID)
+                .Returns(CURRENT_USER_ID)
+                .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(1))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[0])
+                .Returns(CreateSampleJobDbSet()[0])
                 .MustBeCalled();
 
             var actionResult = _jobsController.Finish(1, null).Result;
@@ -938,6 +993,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -963,7 +1019,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void FinishForUserWithPermissionAndOwnershipSetsStateToFinishedAndReturnsOk()
+        public void FinishForAuthorizedUserWithPermissionSetsStateToFinishedAndReturnsOk()
         {
             Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION))
                 .Returns(true)
@@ -971,9 +1027,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
                 .Returns(CURRENT_USER_ID)
                 .MustBeCalled();
+            Mock.Arrange(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
+                .Returns(true)
+                .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Find(2))
                 .IgnoreInstance()
-                .Returns(CreateSampleJobDbSetForUser(CURRENT_USER_ID)[1])
+                .Returns(CreateSampleJobDbSet()[1])
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs.Attach(Arg.IsAny<Job>()))
                 .IgnoreInstance()
@@ -996,14 +1055,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_RUN_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.IsUserAuthorized(CURRENT_USER_ID, "", Arg.IsAny<Job>()));
             Mock.Assert(_lifeCycleContext);
         }
 
-        private IList<Job> CreateSampleJobDbSetForUser(String ownerId)
+        private IList<Job> CreateSampleJobDbSet()
         {
             var dbSet = new List<Job>();
-            dbSet.Add(new Job { Id = 1, CreatedBy = ownerId, State = JobStateEnum.Running.ToString(), Type = DEFAULT_JOB_TYPE });
-            dbSet.Add(new Job { Id = 2, CreatedBy = ownerId, State = JobStateEnum.Canceled.ToString(), Type = DEFAULT_JOB_TYPE });
+            dbSet.Add(new Job { Id = 1, CreatedBy = CURRENT_USER_ID, Tid = TENANT_ID, State = JobStateEnum.Running.ToString(), Type = DEFAULT_JOB_TYPE });
+            dbSet.Add(new Job { Id = 2, CreatedBy = CURRENT_USER_ID, Tid = TENANT_ID, State = JobStateEnum.Canceled.ToString(), Type = DEFAULT_JOB_TYPE });
             return dbSet;
         }
     }
