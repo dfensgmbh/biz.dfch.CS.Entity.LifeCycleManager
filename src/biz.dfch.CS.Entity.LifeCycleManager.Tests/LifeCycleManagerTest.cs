@@ -18,7 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Configuration;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Cryptography;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
@@ -43,6 +45,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_TYPE = "EntityType";
         private const String STATE_MACHINE_FIELD = "_stateMachine";
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
+        private const String CORE_SERVICE_FIELD = "_coreService";
         private const String ENTITY_STATE_CREATED = "Created";
         private const String ENTITY_STATE_RUNNING = "Running";
         private const String SAMPLE_ENTITY = "{\"State\":\"" + ENTITY_STATE_CREATED + "\",\"Tid\":\"" + TENANT_ID + "\"}";
@@ -143,8 +146,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .MustBeCalled();
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
-            var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
-            var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
+            var lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivateAccess.GetField(STATE_MACHINE_FIELD);
 
             Assert.IsNotNull(stateMachine);
             Assert.AreEqual(new StateMachine.StateMachine().GetStringRepresentation(), stateMachine.GetStringRepresentation());
@@ -174,8 +177,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .MustBeCalled();
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
-            PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
-            var stateMachine = (StateMachine.StateMachine)lifecycleManager.GetField(STATE_MACHINE_FIELD);
+            PrivateObject lifecycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
+            var stateMachine = (StateMachine.StateMachine)lifecycleManagerWithPrivateAccess.GetField(STATE_MACHINE_FIELD);
 
             Assert.IsNotNull(stateMachine);
             Assert.AreEqual(CUSTOM_STATE_MACHINE_CONFIG, stateMachine.GetStringRepresentation());
@@ -205,10 +208,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .MustBeCalled();
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
-            PrivateObject lifecycleManager = new PrivateObject(lifeCycleManager);
-            var entityController = (EntityController)lifecycleManager.GetField(ENTITY_CONTROLLER_FIELD);
+            PrivateObject lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
+            var entityController = (EntityController)lifeCycleManagerWithPrivateAccess.GetField(ENTITY_CONTROLLER_FIELD);
             
             Assert.IsNotNull(entityController);
+        }
+
+        [TestMethod]
+        public void LifeCycleManagerConstructorSetsCoreServiceCredentialsBasedOnConfigValues()
+        {
+            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
+                .IgnoreInstance()
+                .Returns((String)null)
+                .MustBeCalled();
+
+            new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+
+            Type type = typeof(LifeCycleManager);
+            FieldInfo fieldInfo = type.GetField(CORE_SERVICE_FIELD, BindingFlags.NonPublic | BindingFlags.Static);
+            CumulusCoreService.Core coreService = (CumulusCoreService.Core)fieldInfo.GetValue(null);
+
+            Assert.IsNotNull(coreService.Credentials);
         }
 
         [TestMethod]
@@ -855,7 +875,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             return new CalloutDefinition { EntityId = entityId,
                 TenantId = TENANT_ID,
                 CalloutType = type,
-                Condition = ".*",
+                Condition = "Continue",
                 Parameters = CALLOUT_DEFINITION };
         }
     }

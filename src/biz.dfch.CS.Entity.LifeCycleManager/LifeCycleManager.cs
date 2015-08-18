@@ -20,6 +20,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -48,7 +49,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
-        // DFTODO set credentials and root tenant in headers! (service user)
         private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
             new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
 
@@ -74,6 +74,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     LoadAndComposeParts();
                     _staticStateMachineConfigLoader = _stateMachineConfigLoader;
                     _staticCalloutExecutor = _calloutExecutor;
+                    SetCoreServiceCredentialsBasedOnConfigValues();
                 }
                 else
                 {
@@ -118,6 +119,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             {
                 Trace.WriteLine(compositionException.ToString());
             }
+        }
+
+        private void SetCoreServiceCredentialsBasedOnConfigValues()
+        {
+            var username = ConfigurationManager.AppSettings["Core.Service.User"];
+            var password = ConfigurationManager.AppSettings["Core.Service.Password"];
+            _coreService.Credentials = new NetworkCredential(username, password);
         }
 
         private void ConfigureStateMachine(String entityType)
@@ -165,7 +173,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, calloutData);
-                    // DFTODO pass credentials (header?)
+                    // DFTODO pass credentials (api-key header?)
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                 }
                 catch (Exception e)
