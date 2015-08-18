@@ -236,7 +236,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 new StateChangeLock
                 {
                     // DFTODO Adjust parentId data assignment
-                    ParentId = 1,
+                    ParentId = 0,
                     EntityId = entityUri.ToString()
                 }
             );
@@ -401,7 +401,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _coreService.AddToJobs(new Job
             {
                 // DFTODO Adjust parentId assignment
-                ParentId = 1,
+                ParentId = 0,
                 State = JobStateEnum.Running.ToString(),
                 Type = CALLOUT_JOB_TYPE,
                 Parameters = JsonConvert.SerializeObject(calloutData),
