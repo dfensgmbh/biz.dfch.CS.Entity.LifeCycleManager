@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+using System.Net;
+
 namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
     public interface ICredentialProvider
     {
-        System.Net.ICredentials GetCredentials();
+        NetworkCredential GetCredential();
     }
 }
