@@ -23,6 +23,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
@@ -149,7 +150,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             Debug.WriteLine("Got state change request for entity with URI: '{0}' and condition: '{1}'", entityUri, condition);
             
             CheckForExistingStateChangeLock(entityUri);
-            var preCalloutDefinition = LoadCalloutDefinition(entityUri, tenantId,
+            var preCalloutDefinition = LoadCalloutDefinition(condition, entityUri, tenantId,
                 Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString());
             CreateStateChangeLockForEntity(entityUri);
 
@@ -188,7 +189,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             String token = null;
             try
             {
-                var postCalloutDefinition = LoadCalloutDefinition(entityUri, tenantId,
+                var postCalloutDefinition = LoadCalloutDefinition(condition, entityUri, tenantId,
                     Model.CalloutDefinition.CalloutDefinitionType.Post.ToString());
                 ChangeEntityState(entityUri, entity, condition);
                 if (null != postCalloutDefinition)
@@ -320,21 +321,23 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             Debug.WriteLine("StateChangeLock for entity with id '{0}' deleted", entityUriAsString);
         }
 
-        private CalloutDefinition LoadCalloutDefinition(Uri entityUri, String tenantId, String calloutType)
+        private CalloutDefinition LoadCalloutDefinition(String condition, Uri entityUri, String tenantId, String calloutType)
         {
-            Debug.WriteLine("Loading {0} callout definition for entity of type '{1}' with id '{2}'",
+            Debug.WriteLine("Loading {0} callout definition of tenant '{1}' for condition '{2}' and entity of type '{3}' with id '{4}'",
                 calloutType,
+                tenantId,
+                condition,
                 _entityType,
                 entityUri.ToString());
-            // DFTODO rewrite loading according explanation from Ronald (action, tenant, entity type, entityId)
-            // DFTODO action/condition could be regexp
+            
             return _coreService.CalloutDefinitions.Where(
                 c =>
-                    (c.CalloutType.Equals(calloutType) ||
-                     c.CalloutType.Equals(Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString()))
+                    (c.CalloutType.Equals(calloutType)
+                    || c.CalloutType.Equals(Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString()))
+                    && tenantId.Equals(c.TenantId)
                     && (entityUri.ToString().Equals(c.EntityId)
-                    || _entityType.Equals(c.EntityType)
-                    || tenantId.Equals(c.TenantId))).FirstOrDefault();
+                    || _entityType.Equals(c.EntityType))
+                    && new Regex(c.Condition).IsMatch(condition)).FirstOrDefault();
         }
 
         private CalloutData CreatePreCalloutData(Uri entityUri, String entity, String condition)

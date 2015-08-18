@@ -219,7 +219,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
                 {
-                    CreateStateChangeLock(new Uri("http://test/api/EntityType(2)"))
+                    CreateStateChangeLock(SAMPLE_ENTITY_URI)
                 } ))
                 .MustBeCalled();
 
@@ -852,7 +852,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         private CalloutDefinition CreateCalloutDefinition(String entityId, String type)
         {
-            return new CalloutDefinition { EntityId = entityId, TenantId = TENANT_ID, CalloutType = type, Parameters = CALLOUT_DEFINITION };
+            return new CalloutDefinition { EntityId = entityId,
+                TenantId = TENANT_ID,
+                CalloutType = type,
+                Condition = ".*",
+                Parameters = CALLOUT_DEFINITION };
         }
     }
 }
