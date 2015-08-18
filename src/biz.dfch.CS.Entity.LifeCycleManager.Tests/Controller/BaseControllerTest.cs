@@ -19,8 +19,8 @@ using System;
 ﻿using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
-﻿using System.Web.Http.OData;
-﻿using System.Web.Http.OData.Query;
+using System.Web.Http.OData;
+using System.Web.Http.OData.Query;
 using System.Web.Http.OData.Builder;
 ﻿using System.Web.Http.Results;
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,6 +29,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
     public class BaseControllerTest<T>
     {
+
         protected const String CURRENT_USER_ID = "currentUser";
         protected const String ANOTHER_USER_ID = "anotherUser";
         protected const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
