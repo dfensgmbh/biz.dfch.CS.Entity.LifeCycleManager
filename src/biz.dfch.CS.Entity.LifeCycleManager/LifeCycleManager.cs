@@ -47,7 +47,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
-        // DFTODO set credentials and root tenant in headers!
+        // DFTODO set credentials and root tenant in headers! (service user)
         private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
             new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
 
@@ -61,7 +61,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private EntityController _entityController;
         private String _entityType;
 
-        // DFTODO set credentials and tenant for service ref (service user)
         public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
@@ -145,27 +144,26 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        public void RequestStateChange(Uri entityUri, String entity, String condition)
+        public void RequestStateChange(Uri entityUri, String entity, String condition, String tenantId)
         {
             Debug.WriteLine("Got state change request for entity with URI: '{0}' and condition: '{1}'", entityUri, condition);
             
             CheckForExistingStateChangeLock(entityUri);
-            // DFTODO set tenantId
-            var preCalloutDefinition = LoadCalloutDefinition(entityUri, "",
+            var preCalloutDefinition = LoadCalloutDefinition(entityUri, tenantId,
                 Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString());
             CreateStateChangeLockForEntity(entityUri);
 
             String token = null;
             if (null == preCalloutDefinition)
             {
-                DoPostCallout(entityUri, entity, condition);
+                DoPostCallout(entityUri, entity, condition, tenantId);
             }
             else
             {
                 try
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
-                    token = CreateJob(entityUri, calloutData);
+                    token = CreateJob(entityUri, tenantId, calloutData);
                     // DFTODO pass credentials (header?)
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                 }
@@ -184,20 +182,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
         }
 
-        private void DoPostCallout(Uri entityUri, String entity, String condition)
+        private void DoPostCallout(Uri entityUri, String entity, String condition, String tenantId)
         {
             CalloutData postCalloutData = null;
             String token = null;
             try
             {
-                // DFTODO set tenantId
-                var postCalloutDefinition = LoadCalloutDefinition(entityUri, "",
+                var postCalloutDefinition = LoadCalloutDefinition(entityUri, tenantId,
                     Model.CalloutDefinition.CalloutDefinitionType.Post.ToString());
                 ChangeEntityState(entityUri, entity, condition);
                 if (null != postCalloutDefinition)
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
-                    token = CreateJob(entityUri, postCalloutData);
+                    token = CreateJob(entityUri, tenantId, postCalloutData);
                     // DFTODO pass credentials
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
@@ -255,16 +252,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _entityController.UpdateEntity(entityUri, JsonConvert.SerializeObject(obj));
         }
 
-        public void Next(Uri entityUri, String entity)
+        public void Next(Uri entityUri, String entity, String tenantId)
         {
             Debug.WriteLine("Request next state for entity with Uri: '{0}", entityUri);
-            RequestStateChange(entityUri, entity, _stateMachine.ContinueCondition);
+            RequestStateChange(entityUri, entity, _stateMachine.ContinueCondition, tenantId);
         }
 
-        public void Cancel(Uri entityUri, String entity)
+        public void Cancel(Uri entityUri, String entity, String tenantId)
         {
             Debug.WriteLine("Request cancel condition for entity with Uri: '{0}", entityUri);
-            RequestStateChange(entityUri, entity, _stateMachine.CancelCondition);
+            RequestStateChange(entityUri, entity, _stateMachine.CancelCondition, tenantId);
         }
 
         public void OnAllowCallback(Job job)
@@ -277,7 +274,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString()))
             {
                 Debug.WriteLine("Process allow POST action callback for job with id '{0}'", job.Id);
-                DoPostCallout(entityUri, LoadEntity(entityUri), parameters.Action);
+                DoPostCallout(entityUri, LoadEntity(entityUri), parameters.Action, job.TenantId);
             }
             else if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Post.ToString()))
             {
@@ -356,12 +353,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         {
             var obj = JObject.Parse(entity);
             var originalState = (String)obj["State"];
+            var tenantId = (String) obj["Tid"];
 
-            // DFTODO set tenantId
             return new CalloutData
             {
                 Type = calloutType,
                 EntityType = _entityType,
+                TenantId = tenantId,
                 Action = condition,
                 EntityId = entityUri.ToString(),
                 OriginalState = originalState,
@@ -397,7 +395,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             SetEntityState(entityUri, entity, newState);
         }
 
-        private String CreateJob(Uri entityUri, CalloutData calloutData)
+        private String CreateJob(Uri entityUri, String tenantId, CalloutData calloutData)
         {
             var token = calloutData.CallbackUrl.Split('(', ')')[1];
             _coreService.AddToJobs(new Job
@@ -406,6 +404,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 Type = CALLOUT_JOB_TYPE,
                 Parameters = JsonConvert.SerializeObject(calloutData),
                 ReferencedItemId = entityUri.ToString(),
+                TenantId = tenantId,
                 Token = token
             });
             _coreService.SaveChanges();

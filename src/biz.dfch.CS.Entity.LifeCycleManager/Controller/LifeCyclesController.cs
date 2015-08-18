@@ -147,7 +147,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition);
+                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, tenantId);
 
                 return Ok();
             }
@@ -221,7 +221,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition);
+                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, tenantId);
 
                 return Ok();
             }
@@ -280,7 +280,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Next(entityUri, entity);
+                lifeCycleManager.Next(entityUri, entity, tenantId);
 
                 return Ok();
             }
@@ -327,7 +327,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass ICredentialProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Cancel(entityUri, entity);
+                lifeCycleManager.Cancel(entityUri, entity, tenantId);
 
                 return Ok();
             }

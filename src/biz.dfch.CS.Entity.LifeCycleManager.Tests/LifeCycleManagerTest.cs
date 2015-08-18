@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
@@ -46,15 +45,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private const String ENTITY_CONTROLLER_FIELD = "_entityController";
         private const String ENTITY_STATE_CREATED = "Created";
         private const String ENTITY_STATE_RUNNING = "Running";
-        private const String SAMPLE_ENTITY = "{\"State\":\""+ ENTITY_STATE_CREATED + "\"}";
-        private const String UPDATED_ENTITY = "{\"State\":\""+ ENTITY_STATE_RUNNING + "\"}";
+        private const String SAMPLE_ENTITY = "{\"State\":\"" + ENTITY_STATE_CREATED + "\",\"Tid\":\"" + TENANT_ID + "\"}";
+        private const String UPDATED_ENTITY = "{\"State\":\"" + ENTITY_STATE_RUNNING + "\",\"Tid\":\"" + TENANT_ID + "\"}";
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_DEFINITION = "{\"callout-url\":\"test.com/callout\"}";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String SAMPLE_TOKEN = "2ea77c09068ef6406b9c51a76d59b9b7c68208ee17d0d4e19d607e0310d581f3";
-        private const String TENANT_ID = "";
-        private const String EXPECTED_PRE_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
-        private const String EXPECTED_POST_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":null,\"Type\":\"Post\",\"OriginalState\":\"Created\"}";
+        private const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
+        private const String EXPECTED_PRE_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":\"" + TENANT_ID + "\",\"Type\":\"Pre\",\"OriginalState\":\"Created\"}";
+        private const String EXPECTED_POST_CALLOUT_DATA = "{\"EntityId\":\"http://test/api/ApplicationData.svc/EntityType(1)\",\"EntityType\":\"EntityType\",\"Action\":\"Continue\",\"CallbackUrl\":\"http://test/api/Core.svc/Jobs(" + SAMPLE_TOKEN + ")\",\"UserId\":\"Administrator\",\"TenantId\":\"" + TENANT_ID + "\",\"Type\":\"Post\",\"OriginalState\":\"Created\"}";
 
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/ApplicationData.svc/EntityType(1)");
         private Uri SAMPLE_ENTITY_URI_2 = new Uri("http://test/api/ApplicationData.svc/EntityType(2)");
@@ -226,7 +225,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
 
-            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.
+                RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID));
             Mock.Assert(_coreService);
         }
 
@@ -273,7 +273,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
-            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
@@ -326,12 +326,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
-            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
             Assert.AreEqual(EXPECTED_PRE_CALLOUT_DATA, createdJob.Parameters);
             Assert.AreEqual(SAMPLE_ENTITY_URI.ToString() ,createdJob.ReferencedItemId);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual(CALLOUT_JOB_TYPE ,createdJob.Type);
+            Assert.AreEqual(TENANT_ID, createdJob.TenantId);
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
@@ -402,7 +403,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
-            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION));
+            ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.
+                RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID));
 
             Assert.AreEqual(JobStateEnum.Failed.ToString(), updatedJob.State);
 
@@ -459,12 +461,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
-            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION);
+            lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
             Assert.AreEqual(EXPECTED_POST_CALLOUT_DATA, createdJob.Parameters);
             Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+            Assert.AreEqual(TENANT_ID, createdJob.TenantId);
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
@@ -529,6 +532,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+            Assert.AreEqual(TENANT_ID, createdJob.TenantId);
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
@@ -665,6 +669,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Assert.AreEqual(SAMPLE_ENTITY_URI.ToString(), createdJob.ReferencedItemId);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual(CALLOUT_JOB_TYPE, createdJob.Type);
+            Assert.AreEqual(TENANT_ID, createdJob.TenantId);
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
@@ -838,6 +843,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 Id = 1,
                 Type = CALLOUT_JOB_TYPE,
                 ReferencedItemId = entityId,
+                TenantId = TENANT_ID,
                 State = JobStateEnum.Running.ToString(),
                 Token = SAMPLE_TOKEN,
                 Parameters = parameters

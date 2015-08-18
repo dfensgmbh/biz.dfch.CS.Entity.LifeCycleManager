@@ -41,6 +41,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String ENTITY_ID = "http://test/api/ApplicationData.svc/Users(1)";
         private const String INVALID_ENTITY_ID = "test";
         private const String ENTITY = "{}";
+        private const String TENANT_ID_STUB = "";
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String LIFE_CYCLE_UPDATE_PERMISSION = "LightSwitchApplication:LifeCycleCanUpdate";
@@ -157,7 +158,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -190,7 +191,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -219,7 +220,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -313,7 +314,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .OccursOnce();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -343,7 +344,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -373,7 +374,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION))
+            Mock.Arrange(() => mockedLifeCycleManager.RequestStateChange(new Uri(ENTITY_ID), ENTITY, CONTINUE_CONDITION, TENANT_ID))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -462,7 +463,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .OccursOnce();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -490,7 +491,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -518,7 +519,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Next(new Uri(ENTITY_ID), ENTITY, TENANT_ID))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
@@ -596,7 +597,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .OccursOnce();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -624,7 +625,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY, TENANT_ID_STUB))
                 .IgnoreInstance()
                 .MustBeCalled();
 
@@ -652,7 +653,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .MustBeCalled();
 
             var mockedLifeCycleManager = Mock.Create<LifeCycleManager>();
-            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY))
+            Mock.Arrange(() => mockedLifeCycleManager.Cancel(new Uri(ENTITY_ID), ENTITY, TENANT_ID))
                 .IgnoreInstance()
                 .Throws<InvalidOperationException>()
                 .MustBeCalled();
