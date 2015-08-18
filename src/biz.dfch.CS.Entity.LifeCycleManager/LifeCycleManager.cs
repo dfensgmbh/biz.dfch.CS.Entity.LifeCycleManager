@@ -235,8 +235,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _coreService.AddToStateChangeLocks(
                 new StateChangeLock
                 {
-                    CreatedBy = CurrentUserDataProvider.GetCurrentUserId(),
-                    Created = DateTimeOffset.Now,
+                    // DFTODO Adjust parentId data assignment
+                    ParentId = 1,
                     EntityId = entityUri.ToString()
                 }
             );
@@ -400,6 +400,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             var token = calloutData.CallbackUrl.Split('(', ')')[1];
             _coreService.AddToJobs(new Job
             {
+                // DFTODO Adjust parentId assignment
+                ParentId = 1,
                 State = JobStateEnum.Running.ToString(),
                 Type = CALLOUT_JOB_TYPE,
                 Parameters = JsonConvert.SerializeObject(calloutData),

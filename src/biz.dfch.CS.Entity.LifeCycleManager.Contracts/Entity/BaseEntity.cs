@@ -23,6 +23,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
     {
         [Key]
         public int Id { get; set; }
+        [Required]
+        public int ParentId { get; set; }
         private Guid _Tid { get; set; }
         public String Tid
         {

@@ -12,6 +12,7 @@
         <Property Name="TenantId" Type="Edm.String" />
         <Property Name="Parameters" Type="Edm.String" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ParentId" Type="Edm.Int32" Nullable="false" />
         <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />
@@ -31,6 +32,7 @@
         </Key>
         <Property Name="EntityId" Type="Edm.String" Nullable="false" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ParentId" Type="Edm.Int32" Nullable="false" />
         <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />
@@ -48,6 +50,7 @@
         <Property Name="Condition" Type="Edm.String" Nullable="false" />
         <Property Name="Parameters" Type="Edm.String" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ParentId" Type="Edm.Int32" Nullable="false" />
         <Property Name="Tid" Type="Edm.String" />
         <Property Name="CreatedBy" Type="Edm.String" />
         <Property Name="ModifiedBy" Type="Edm.String" />

@@ -377,7 +377,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass ICredentialProvider implementation for entity loading instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnAllowCallback(job);
@@ -422,7 +422,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass ICredentialProvider implementation for entity loading instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnDeclineCallback(job);
