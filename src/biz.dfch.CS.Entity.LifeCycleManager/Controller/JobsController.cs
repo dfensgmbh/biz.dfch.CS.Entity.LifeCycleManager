@@ -244,6 +244,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var jobEntity = new Job()
                 {
+                    ParentId = job.ParentId,
                     Created = DateTimeOffset.Now,
                     CreatedBy = currentUserId,
                     Tid = tenantId,

@@ -241,6 +241,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var calloutDefinitionEntity = new CalloutDefinition()
                 {
+                    ParentId = calloutDefinition.ParentId,
                     Created = DateTimeOffset.Now,
                     CreatedBy = currentUserId,
                     CalloutType = calloutDefinition.CalloutType,

@@ -180,6 +180,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var stateChangeLockEntity = new StateChangeLock()
                 {
+                    ParentId = stateChangeLock.ParentId,
                     CreatedBy = currentUserId,
                     Created = DateTimeOffset.Now,
                     Tid = tenantId,
