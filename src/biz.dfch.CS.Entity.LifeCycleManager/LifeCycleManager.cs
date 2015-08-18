@@ -39,6 +39,7 @@ using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.S
 [assembly: InternalsVisibleTo("biz.dfch.CS.Entity.LifeCycleManager.Tests")]
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
+    // DFTODO implement hierarchy of objects and ACL!
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";

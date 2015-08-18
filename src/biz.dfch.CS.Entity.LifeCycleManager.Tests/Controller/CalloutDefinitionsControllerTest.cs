@@ -275,6 +275,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Created = DateTimeOffset.Parse("05/01/2008"),
                     ModifiedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Parse("05/01/2008"),
+                    Tid = ANOTHER_TENANT_ID,
                     EntityType = SAMPLE_ENTITY_TYPE,
                     EntityId = ENTITY_ID_1,
                     TenantId = TENANT_ID,
@@ -290,6 +291,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), calloutDefinition.Created);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.ModifiedBy);
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), calloutDefinition.Modified);
+            Assert.AreEqual(TENANT_ID, calloutDefinition.Tid);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, calloutDefinition.EntityType);
             Assert.AreEqual(ENTITY_ID_1, calloutDefinition.EntityId);
             Assert.AreEqual(TENANT_ID, calloutDefinition.TenantId);
@@ -468,7 +470,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     EntityType = SAMPLE_ENTITY_TYPE,
                     EntityId = ENTITY_ID_1,
                     TenantId = TENANT_ID,
-                    Parameters = "testparameters",
+                    Parameters = "testparameters"
                 }).Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
@@ -505,6 +507,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Id = 1,
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
+                    Tid = ANOTHER_TENANT_ID,
                     ModifiedBy = CURRENT_USER_ID,
                     EntityType = SAMPLE_ENTITY_TYPE,
                     EntityId = ENTITY_ID_1,
@@ -515,6 +518,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(CURRENT_USER_ID, createdCalloutDefinition.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdCalloutDefinition.Created.Date);
             Assert.IsNull(createdCalloutDefinition.ModifiedBy);
+            Assert.AreEqual(TENANT_ID, createdCalloutDefinition.Tid);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, createdCalloutDefinition.EntityType);
             Assert.AreEqual(ENTITY_ID_1, createdCalloutDefinition.EntityId);
             Assert.AreEqual(TENANT_ID, createdCalloutDefinition.TenantId);
@@ -560,6 +564,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             delta.TrySetPropertyValue("Id", "3");
             delta.TrySetPropertyValue("CreatedBy", ANOTHER_USER_ID);
             delta.TrySetPropertyValue("ModifiedBy", ANOTHER_USER_ID);
+            delta.TrySetPropertyValue("Tid", ANOTHER_TENANT_ID);
             delta.TrySetPropertyValue("Parameters", "testparameters");
             delta.TrySetPropertyValue("EntityType", SAMPLE_ENTITY_TYPE);
 
@@ -573,6 +578,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(DateTimeOffset.Now.Date, calloutDefinition.Modified.Date);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.ModifiedBy);
+            Assert.AreEqual(TENANT_ID, calloutDefinition.Tid);
             Assert.AreEqual("testparameters", calloutDefinition.Parameters);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, calloutDefinition.EntityType);
 

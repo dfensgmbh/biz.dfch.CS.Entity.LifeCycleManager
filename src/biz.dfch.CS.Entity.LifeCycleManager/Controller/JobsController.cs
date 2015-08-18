@@ -251,7 +251,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     State = job.State,
                     Parameters = job.Parameters,
                     ReferencedItemId = job.ReferencedItemId,
-                    Token = job.Token
+                    Token = job.Token,
+                    TenantId = job.TenantId
                 };
                 jobEntity = db.Jobs.Add(jobEntity);
                 db.SaveChanges();

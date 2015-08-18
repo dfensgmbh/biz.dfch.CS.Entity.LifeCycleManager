@@ -34,6 +34,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Model
         public String Type { get; set; }
         public String ReferencedItemId { get; set; }
         public String Token { get; set; }
+        public String TenantId { get; set; }
 
         public String Parameters { get; set; }
 

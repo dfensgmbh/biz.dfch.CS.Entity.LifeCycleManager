@@ -284,9 +284,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Created = DateTimeOffset.Parse("05/01/2008"),
                     ModifiedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Parse("05/01/2008"),
+                    Tid = ANOTHER_TENANT_ID,
                     State = JobStateEnum.Canceled.ToString(),
                     Parameters = SAMPLE_PARAMETERS,
-                    Token = SAMPLE_TOKEN
+                    Token = SAMPLE_TOKEN,
+                    TenantId = ANOTHER_TENANT_ID
                 }).Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkNegotiatedContentResult<Job>));
@@ -299,9 +301,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), job.Created);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
             Assert.AreNotEqual(DateTimeOffset.Parse("05/01/2008"), job.Modified);
+            Assert.AreEqual(TENANT_ID, job.Tid);
             Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
             Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
             Assert.AreEqual(SAMPLE_TOKEN, job.Token);
+            Assert.AreEqual(ANOTHER_TENANT_ID, job.TenantId);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
@@ -516,18 +520,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
+                    Tid = TENANT_ID,
                     Type = "Test",
                     State = JobStateEnum.Running.ToString(),
                     Parameters = SAMPLE_PARAMETERS,
-                    Token = SAMPLE_TOKEN
+                    Token = SAMPLE_TOKEN,
+                    TenantId = ANOTHER_TENANT_ID
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdJob.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Date);
             Assert.IsNull(createdJob.ModifiedBy);
+            Assert.AreEqual(TENANT_ID, createdJob.Tid);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
             Assert.AreEqual("Test", createdJob.Type);
             Assert.AreEqual(SAMPLE_PARAMETERS, createdJob.Parameters);
+            Assert.AreEqual(ANOTHER_TENANT_ID, createdJob.TenantId);
 
             Assert.IsTrue(actionResult.GetType() == typeof(ResponseMessageResult));
             var response = actionResult as ResponseMessageResult;
@@ -621,9 +629,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             delta.TrySetPropertyValue("Id", "3");
             delta.TrySetPropertyValue("CreatedBy", ANOTHER_USER_ID);
             delta.TrySetPropertyValue("ModifiedBy", ANOTHER_USER_ID);
+            delta.TrySetPropertyValue("Tid", ANOTHER_TENANT_ID);
             delta.TrySetPropertyValue("Parameters", SAMPLE_PARAMETERS);
             delta.TrySetPropertyValue("State", "Canceled");
             delta.TrySetPropertyValue("Token", SAMPLE_TOKEN);
+            delta.TrySetPropertyValue("TenantId", ANOTHER_TENANT_ID);
 
             var actionResult = _jobsController.Patch(1, delta).Result;
 
@@ -635,9 +645,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
+            Assert.AreEqual(TENANT_ID, job.Tid);
             Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
             Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
             Assert.AreEqual(SAMPLE_TOKEN, job.Token);
+            Assert.AreEqual(ANOTHER_TENANT_ID, job.TenantId);
 
             Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(JOB_UPDATE_PERMISSION));
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());

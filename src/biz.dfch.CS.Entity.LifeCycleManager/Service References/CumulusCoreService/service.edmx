@@ -9,6 +9,7 @@
         <Property Name="Type" Type="Edm.String" Nullable="false" />
         <Property Name="ReferencedItemId" Type="Edm.String" />
         <Property Name="Token" Type="Edm.String" />
+        <Property Name="TenantId" Type="Edm.String" />
         <Property Name="Parameters" Type="Edm.String" />
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
         <Property Name="Tid" Type="Edm.String" />

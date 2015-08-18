@@ -189,12 +189,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     CreatedBy = ANOTHER_USER_ID,
                     Modified = DateTimeOffset.Now,
                     ModifiedBy = CURRENT_USER_ID,
+                    Tid = ANOTHER_TENANT_ID,
                     EntityId = ENTITY_ID
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdEntity.CreatedBy);
             Assert.AreEqual(DateTimeOffset.Now.Date, createdEntity.Created.Date);
             Assert.IsNull(createdEntity.ModifiedBy);
+            Assert.AreEqual(TENANT_ID, createdEntity.Tid);
             Assert.AreEqual(ENTITY_ID, createdEntity.EntityId);
             Assert.AreNotEqual(1, createdEntity.Id);
 
