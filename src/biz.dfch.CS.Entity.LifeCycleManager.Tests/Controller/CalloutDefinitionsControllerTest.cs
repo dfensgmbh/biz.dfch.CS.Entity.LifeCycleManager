@@ -47,13 +47,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            Mock.SetupStatic(typeof(ODataControllerHelper));
-            Mock.SetupStatic(typeof(CurrentUserDataProvider));
+
         }
 
         [TestInitialize]
         public void TestInitialize()
         {
+            Mock.SetupStatic(typeof(ODataControllerHelper));
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
+
             _calloutDefinitionsController = new CalloutDefinitionsController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
         }
