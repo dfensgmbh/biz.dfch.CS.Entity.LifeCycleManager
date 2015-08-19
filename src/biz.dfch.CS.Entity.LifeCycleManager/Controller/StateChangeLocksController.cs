@@ -85,8 +85,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                var stateChangeLocks =
-                    db.StateChangeLocks.ToList()
+                // DFTODO check if from memory point of view this could be a problem (where Tid = tenantId ?)
+                var stateChangeLocks = db.StateChangeLocks.ToList()
                         .Where(s => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, s));
                 
                 return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);

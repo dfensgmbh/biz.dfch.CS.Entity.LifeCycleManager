@@ -87,9 +87,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                var calloutDefinitions =
-                    db.CalloutDefinitions.ToList().Where(
-                        c => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, c));
+                // DFTODO check if from memory point of view this could be a problem (where Tid = tenantId ?)
+                var calloutDefinitions = db.CalloutDefinitions.ToList()
+                    .Where(c => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, c));
 
                 return Ok<IEnumerable<CalloutDefinition>>(calloutDefinitions);
             }
