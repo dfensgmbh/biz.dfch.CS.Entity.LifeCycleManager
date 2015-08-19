@@ -222,6 +222,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var entityController = (EntityController)lifeCycleManagerWithPrivateAccess.GetField(ENTITY_CONTROLLER_FIELD);
             
             Assert.IsNotNull(entityController);
+            Mock.Assert(_stateMachineConfigLoader);
         }
 
         [TestMethod]
@@ -239,6 +240,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             CumulusCoreService.Core coreService = (CumulusCoreService.Core)fieldInfo.GetValue(null);
 
             Assert.IsNotNull(coreService.Credentials);
+            Mock.Assert(_stateMachineConfigLoader);
         }
 
         [TestMethod]
