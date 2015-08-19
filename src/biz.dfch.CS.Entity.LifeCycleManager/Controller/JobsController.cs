@@ -90,9 +90,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                var jobs = from job in db.Jobs
-                    where CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job)
-                    select job;
+                var jobs =
+                    db.Jobs.ToList().Where(j => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, j));
                     
                 return Ok<IEnumerable<Job>>(jobs);
             }
