@@ -44,18 +44,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String SAMPLE_ENTITY_TYPE = "User";
         private const String ENTITY_ID_1 = "1";
 
-        [ClassInitialize]
+        [ClassInitialize()]
         public static void ClassInitialize(TestContext testContext)
         {
-
+            Mock.SetupStatic(typeof(ODataControllerHelper));
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
         }
 
         [TestInitialize]
         public void TestInitialize()
         {
-            Mock.SetupStatic(typeof(ODataControllerHelper));
-            Mock.SetupStatic(typeof(CurrentUserDataProvider));
-
             _calloutDefinitionsController = new CalloutDefinitionsController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
         }
