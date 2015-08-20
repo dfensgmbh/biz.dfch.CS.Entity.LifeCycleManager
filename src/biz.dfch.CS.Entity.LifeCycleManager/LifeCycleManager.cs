@@ -99,6 +99,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 if (!Path.IsPathRooted(folder))
                 {
                     folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
+                    throw new ArgumentException("folder = " + folder);
                 }
                 assemblyCatalog.Catalogs.Add(new DirectoryCatalog(folder));
             }
