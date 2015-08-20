@@ -33,7 +33,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var clientHandler = new HttpClientHandler();
             if (null != credentialProvider)
             {
-                clientHandler.Credentials = credentialProvider.GetCredential();
+                clientHandler.Credentials = credentialProvider.GetCredentials();
             }
             _httpClient = new HttpClient(clientHandler);
         }

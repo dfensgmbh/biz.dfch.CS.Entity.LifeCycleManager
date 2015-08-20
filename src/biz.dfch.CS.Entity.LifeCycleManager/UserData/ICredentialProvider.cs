@@ -20,6 +20,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
     public interface ICredentialProvider
     {
-        NetworkCredential GetCredential();
+        ICredentials GetCredentials();
     }
 }

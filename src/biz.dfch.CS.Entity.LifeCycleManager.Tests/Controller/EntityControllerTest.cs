@@ -41,7 +41,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void EntityControllerConstructorReadsCredentialsFromCredentialsProviderIfNotNull()
         {
-            Mock.Arrange(() => _credentialProvider.GetCredential())
+            Mock.Arrange(() => _credentialProvider.GetCredentials())
                 .Returns(CredentialCache.DefaultNetworkCredentials)
                 .MustBeCalled();
             new EntityController(_credentialProvider);
