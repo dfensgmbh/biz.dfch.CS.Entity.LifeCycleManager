@@ -15,27 +15,33 @@
  */
 
 ﻿using System;
+﻿using System.Collections.Generic;
 ﻿using System.Net.Http;
-﻿using System.Net.Http.Headers;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.UserData;
+﻿using biz.dfch.CS.Utilities.Rest;
+﻿using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class EntityController
     {
-        private HttpClient _httpClient;
-        private const String APPLICATION_JSON = "application/json";
+        private RestCallExecutor _restCallExecutor;
+        private IDictionary<String, String> _headers;
+        private String _authType;
 
-        public EntityController(ICredentialProvider credentialProvider)
+        public EntityController(IAuthenticationProvider authenticationProvider)
         {
-            Debug.Write("Initializing Http Client");
-            var clientHandler = new HttpClientHandler();
-            if (null != credentialProvider)
+            if (null != authenticationProvider)
             {
-                clientHandler.Credentials = credentialProvider.GetCredentials();
+                _headers = new Dictionary<String, String>();
+                _headers.Add("Authorization", authenticationProvider.GetAuthHeaderValue());
+                _authType = authenticationProvider.GetAuthTypeValue();
             }
-            _httpClient = new HttpClient(clientHandler);
+
+            Debug.Write("Initializing RestCallExecutor");
+            _restCallExecutor = new RestCallExecutor(true);
+            _restCallExecutor.AuthScheme = _authType;
         }
 
         public String LoadEntity(Uri entityUri)
@@ -43,23 +49,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             Debug.WriteLine("Loading entity with Uri: '{0}'", entityUri);
             CheckEntityUri(entityUri);
 
-            SetHeaders();
-            _httpClient.BaseAddress = entityUri;
-            int _TimeoutSec = 90;
-            _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
-
-            HttpResponseMessage response = _httpClient.GetAsync(entityUri).Result;
             try
             {
-                response.EnsureSuccessStatusCode();
+                return _restCallExecutor.Invoke(entityUri.ToString(), _headers);
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error occurred while fetching entity from '{0}'", e.Message);
+                Debug.WriteLine("Error occurred while fetching entity from '{0}': {1}", entityUri.ToString(), e.Message);
                 throw;
             }
-            
-            return response.Content.ReadAsStringAsync().Result;
         }
 
         public void UpdateEntity(Uri entityUri, String entity)
@@ -67,21 +65,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             Debug.WriteLine("Updating entity with Uri: '{0}'", entityUri);
             CheckEntityUri(entityUri);
 
-            SetHeaders();
-            _httpClient.BaseAddress = entityUri;
-            int _TimeoutSec = 90;
-            _httpClient.Timeout = new TimeSpan(0, 0, _TimeoutSec);
-            new StringContent(entity);
-            HttpContent body = new StringContent(entity);
-            body.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
-            HttpResponseMessage response = _httpClient.PutAsync(entityUri, body).Result;
             try
             {
-                response.EnsureSuccessStatusCode();
+                _restCallExecutor.Invoke(HttpMethod.Put, entityUri.ToString(), _headers, entity);
             }
             catch (HttpRequestException e)
             {
-                Debug.WriteLine("Error occurred while updating entity '{0}'", e.Message);
+                Debug.WriteLine("Error occurred while updating entity '{0}': {1}", entityUri.ToString(), e.Message);
                 throw;
             }
         }
@@ -93,11 +83,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Entity Uri passed to LoadEntity method is null");
                 throw new ArgumentNullException("entityUri");
             }
-        }
-
-        private void SetHeaders()
-        {
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
         }
     }
 }

@@ -62,7 +62,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private EntityController _entityController;
         private String _entityType;
 
-        public LifeCycleManager(ICredentialProvider credentialProvider, String entityType)
+        public LifeCycleManager(IAuthenticationProvider authenticationProvider, String entityType)
         {
             Debug.WriteLine("Create new instance of LifeCycleManager for entityType '{0}'", entityType);
             _entityType = entityType;
@@ -82,7 +82,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     _calloutExecutor = _staticCalloutExecutor;
                 }
             }
-            _entityController = new EntityController(credentialProvider);
+            _entityController = new EntityController(authenticationProvider);
             _stateMachine = new StateMachine.StateMachine();
             ConfigureStateMachine(entityType);
         }
@@ -173,7 +173,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, calloutData);
-                    // DFTODO pass credentials (api-key header?)
+                    // DFTODO pass authorization or api-key in header?
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                 }
                 catch (Exception e)
@@ -204,7 +204,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, postCalloutData);
-                    // DFTODO pass credentials
+                    // DFTODO pass credentials/authorization header
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
             }

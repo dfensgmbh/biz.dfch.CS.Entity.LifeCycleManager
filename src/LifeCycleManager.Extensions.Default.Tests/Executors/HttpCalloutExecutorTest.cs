@@ -17,10 +17,13 @@
 using System;
 using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+using biz.dfch.CS.Utilities.Rest;
 using LifecycleManager.Extensions.Default.Executors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
+using Telerik.JustMock.Helpers;
+using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace LifeCycleManager.Extensions.Default.Tests.Executors
 {
@@ -30,7 +33,6 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         private const String SAMPLE_REQUEST_URL = "http://test/api/callout";
         private const String VALID_DEFINITION = "{\"callout-url\":\"" + SAMPLE_REQUEST_URL + "\"}";
         private const String INVALID_DEFINITION = "{\"callout-url\":\"test/test\"}";
-        private const String URI_FIELD = "_requestUrl";
 
         private HttpCalloutExecutor _httpCalloutExecutor = new HttpCalloutExecutor();
 
@@ -47,42 +49,28 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         }
 
         [TestMethod]
-        public void ExecuteCalloutDoesPostOnUriWithCalloutDataAsBody()
+        public void ExecuteCalloutCallsRestCallExecutorsInvokeWithMethodPostUriAndCalloutDataAsBody()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedHttpClient.PostAsync(new Uri(SAMPLE_REQUEST_URL), Arg.IsAny<HttpContent>()).Result)
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(HttpMethod.Post, SAMPLE_REQUEST_URL, null, Arg.AnyString))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
+                .OccursOnce();
 
             _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, new CalloutData());
 
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(mockedRestCallExecutor);
         }
 
         [TestMethod]
-        public void ExecuteCalloutWithInvalidUrlThrowsArgumentException()
+        public void ExecuteCalloutWithInvalidUrlThrowsUriFormatException()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.PostAsync(new Uri(SAMPLE_REQUEST_URL), Arg.IsAny<HttpContent>()).Result)
-                .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
-
-            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, new CalloutData()));
-
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            ThrowsAssert.Throws<UriFormatException>(() => _httpCalloutExecutor.ExecuteCallout(INVALID_DEFINITION, new CalloutData()));
         }
 
         [TestMethod]
-        public void ExecuteCalloutWithNullThrowsArgumentException()
+        public void ExecuteCalloutWithNullThrowsArgumentNullException()
         {
-            ThrowsAssert.Throws<ArgumentException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, null), "Callout data should not be null");
+            ThrowsAssert.Throws<ArgumentNullException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, null));
         }
     }
 }

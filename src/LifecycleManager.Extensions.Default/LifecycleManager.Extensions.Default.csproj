@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="biz.dfch.CS.Utilities">
+      <HintPath>..\packages\biz.dfch.CS.System.Utilities.1.0.3\SystemUtilities\bin\Release\biz.dfch.CS.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>

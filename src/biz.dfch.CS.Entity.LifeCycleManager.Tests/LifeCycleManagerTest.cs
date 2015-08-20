@@ -64,7 +64,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private CumulusCoreService.Core _coreService;
         private ICalloutExecutor _calloutExecutor;
         private IStateMachineConfigLoader _stateMachineConfigLoader;
-        private ICredentialProvider _credentialProvider;
+        private IAuthenticationProvider _authenticationProvider;
         private EntityController _entityController;
 
         public void FixEfProviderServicesProblem()
@@ -81,7 +81,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void TestInitialize()
         {
             _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
-            _credentialProvider = Mock.Create<ICredentialProvider>();
+            _authenticationProvider = Mock.Create<IAuthenticationProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
             _calloutExecutor = Mock.Create<ICalloutExecutor>();
             _entityController = Mock.Create<EntityController>();
@@ -114,7 +114,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                     .CallOriginal()
                     .MustBeCalled();
 
-                var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+                var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
                 var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
                 var stateMachine =
                     (StateMachine.StateMachine) lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
@@ -130,7 +130,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                     .CallOriginal()
                     .OccursNever();
 
-                var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+                var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
                 var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
                 var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivatAccess.GetField(STATE_MACHINE_FIELD);
 
@@ -150,7 +150,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns((String)null)
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             var lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
             var stateMachine = (StateMachine.StateMachine)lifeCycleManagerWithPrivateAccess.GetField(STATE_MACHINE_FIELD);
 
@@ -167,7 +167,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .MustBeCalled();
 
-            new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
 
             Mock.Assert(_stateMachineConfigLoader);
         }
@@ -181,7 +181,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns(CUSTOM_STATE_MACHINE_CONFIG)
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             PrivateObject lifecycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
             var stateMachine = (StateMachine.StateMachine)lifecycleManagerWithPrivateAccess.GetField(STATE_MACHINE_FIELD);
 
@@ -200,7 +200,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns("Invalid state machine configuration")
                 .MustBeCalled();
             
-            ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(_credentialProvider, ENTITY_TYPE), "Invalid state machine configuration");
+            ThrowsAssert.Throws<ArgumentException>(() => new LifeCycleManager(_authenticationProvider, ENTITY_TYPE), "Invalid state machine configuration");
             Mock.Assert(_stateMachineConfigLoader);
         }
 
@@ -212,7 +212,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns(CUSTOM_STATE_MACHINE_CONFIG)
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             PrivateObject lifeCycleManagerWithPrivateAccess = new PrivateObject(lifeCycleManager);
             var entityController = (EntityController)lifeCycleManagerWithPrivateAccess.GetField(ENTITY_CONTROLLER_FIELD);
             
@@ -221,6 +221,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
+        // DFTODO refactor cred
         public void LifeCycleManagerConstructorSetsCoreServiceCredentialsBasedOnConfigValues()
         {
             Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
@@ -228,7 +229,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns((String)null)
                 .MustBeCalled();
 
-            new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
 
             Type type = typeof(LifeCycleManager);
             FieldInfo fieldInfo = type.GetField(CORE_SERVICE_FIELD, BindingFlags.NonPublic | BindingFlags.Static);
@@ -250,7 +251,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 } ))
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
 
             ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.
                 RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID));
@@ -298,7 +299,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
@@ -351,7 +352,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
@@ -428,7 +429,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.
                 RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID));
@@ -486,7 +487,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             lifeCycleManager.RequestStateChange(SAMPLE_ENTITY_URI, SAMPLE_ENTITY, CONTINUE_CONDITION, TENANT_ID);
 
@@ -549,7 +550,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _calloutExecutor.ExecuteCallout(CALLOUT_DEFINITION, Arg.IsAny<CalloutData>()))
                 .MustBeCalled();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString()));
 
@@ -599,7 +600,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString(), false));
 
             Assert.AreEqual(JobStateEnum.Finished.ToString(), updatedJob.State);
@@ -686,7 +687,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString())));
 
@@ -755,7 +756,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager._calloutExecutor = _calloutExecutor;
             ThrowsAssert.Throws<InvalidOperationException>(() => lifeCycleManager.OnAllowCallback(CreateJob(SAMPLE_ENTITY_URI.ToString())));
 
@@ -797,7 +798,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager.OnDeclineCallback(CreateJob(SAMPLE_ENTITY_URI.ToString()));
 
             Assert.AreEqual(JobStateEnum.Canceled.ToString(), updatedJob.State);
@@ -847,7 +848,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .IgnoreInstance()
                 .OccursOnce();
 
-            var lifeCycleManager = new LifeCycleManager(_credentialProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
             lifeCycleManager.OnDeclineCallback(CreateJob(SAMPLE_ENTITY_URI.ToString(), false));
 
             Assert.AreEqual(JobStateEnum.Canceled.ToString(), updatedJob.State);

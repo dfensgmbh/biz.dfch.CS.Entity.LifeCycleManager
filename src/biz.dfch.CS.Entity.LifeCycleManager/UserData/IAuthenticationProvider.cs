@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-using System.Net;
+using System;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
-    public interface ICredentialProvider
+    public interface IAuthenticationProvider
     {
-        ICredentials GetCredentials();
+        String GetAuthHeaderValue();
+        String GetAuthTypeValue();
     }
 }

@@ -15,149 +15,203 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Controller;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
+using biz.dfch.CS.Utilities.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
+using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 {
     [TestClass]
     public class EntityControllerTest
     {
+        private const String BEARER_AUTH_TYPE = "Bearer";
+        private const String SAMPLE_BEARER_TOKEN = "AbCdEf123456";
+        private const String HEADERS_FIELD = "_headers";
+        private const String AUTH_TYPE_FIELD = "_authType";
+        private const String SAMPLE_ENTITY = "{}";
         private Uri SAMPLE_ENTITY_URI = new Uri("http://test/api/EntityType(1)");
         
-        private ICredentialProvider _credentialProvider;
+        private IAuthenticationProvider _authenticationProvider;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _credentialProvider = Mock.Create<ICredentialProvider>();
+            _authenticationProvider = Mock.Create<IAuthenticationProvider>();
         }
 
         [TestMethod]
-        public void EntityControllerConstructorReadsCredentialsFromCredentialsProviderIfNotNull()
+        public void EntityControllerConstructorReadsOutAuthenticationInformationFromAuthenticationProviderIfNotNull()
         {
-            Mock.Arrange(() => _credentialProvider.GetCredentials())
-                .Returns(CredentialCache.DefaultNetworkCredentials)
-                .MustBeCalled();
-            new EntityController(_credentialProvider);
-            Mock.Assert(_credentialProvider);
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+            
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+            
+            var entityController = new EntityController(_authenticationProvider);
+            var entityControllerWithPrivateAccess = new PrivateObject(entityController);
+            var headersField = (IDictionary<String, String>)entityControllerWithPrivateAccess.GetField(HEADERS_FIELD);
+            
+            Assert.AreEqual(SAMPLE_BEARER_TOKEN, headersField["Authorization"]);
+            Assert.AreEqual(BEARER_AUTH_TYPE, (String)entityControllerWithPrivateAccess.GetField(AUTH_TYPE_FIELD));
+            
+            Mock.Assert(_authenticationProvider);
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void LoadEntityWithNullEntityUriThrowsArgumentNullException()
         {
-            var entityController = new EntityController(_credentialProvider);
+            var entityController = new EntityController(_authenticationProvider);
             ThrowsAssert.Throws<ArgumentNullException>(() => entityController.LoadEntity(null));
         }
 
         [TestMethod]
         [WorkItem(28)]
-        public void LoadEntityExecutesGetWithHttpClientOnEntityUri()
+        public void LoadEntityCallsRestCallExecutorsInvokeMethodWithEntityUriAndAuthHeaders()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", SAMPLE_BEARER_TOKEN);
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(SAMPLE_ENTITY_URI.ToString(), Arg.Is(headers)))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
-            
-            var entityController = new EntityController(_credentialProvider);
+                .OccursOnce();
+
+            var entityController = new EntityController(_authenticationProvider);
             entityController.LoadEntity(SAMPLE_ENTITY_URI);
 
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(_authenticationProvider);
+            Mock.Assert(mockedRestCallExecutor);
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void LoadEntityReturnsEntityAsJsonIfFound()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.Content.ReadAsStringAsync().Result).Returns("test").MustBeCalled();
-            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", SAMPLE_BEARER_TOKEN);
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(SAMPLE_ENTITY_URI.ToString(), Arg.Is(headers)))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
+                .Returns("test")
+                .OccursOnce();
 
-            var entityController = new EntityController(_credentialProvider);
-
+            var entityController = new EntityController(_authenticationProvider);
             Assert.AreEqual("test", entityController.LoadEntity(SAMPLE_ENTITY_URI));
 
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(_authenticationProvider);
+            Mock.Assert(mockedRestCallExecutor);
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void LoadEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode()).Throws<HttpRequestException>().MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.GetAsync(SAMPLE_ENTITY_URI).Result)
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", SAMPLE_BEARER_TOKEN);
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(SAMPLE_ENTITY_URI.ToString(), Arg.Is(headers)))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
+                .Throws<HttpRequestException>()
+                .OccursOnce();
 
-            var entityController = new EntityController(_credentialProvider);
-
+            var entityController = new EntityController(_authenticationProvider);
             ThrowsAssert.Throws<HttpRequestException>(() => entityController.LoadEntity(SAMPLE_ENTITY_URI));
 
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(_authenticationProvider);
+            Mock.Assert(mockedRestCallExecutor);
         }
 
         [TestMethod]
         public void UpdateEntityWithNullEntityUriThrowsArgumentNullException()
         {
-            var entityController = new EntityController(_credentialProvider);
+            var entityController = new EntityController(_authenticationProvider);
             ThrowsAssert.Throws<ArgumentNullException>(() => entityController.UpdateEntity(null, ""));
         }
 
         [TestMethod]
-        public void UpdateEntityExecutesPuthWithHttpClientOnEntityUri()
+        public void UpdateEntityCallsRestCallExecutorsInvokeMethodOnEntityUriWithEntityInBody()
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedHttpClient.PutAsync(SAMPLE_ENTITY_URI, Arg.IsAny<HttpContent>()).Result)
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", SAMPLE_BEARER_TOKEN);
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(HttpMethod.Put, SAMPLE_ENTITY_URI.ToString(), Arg.Is(headers), SAMPLE_ENTITY))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
+                .OccursOnce();
 
-            var entityController = new EntityController(_credentialProvider);
-            entityController.UpdateEntity(SAMPLE_ENTITY_URI, "");
+            var entityController = new EntityController(_authenticationProvider);
+            entityController.UpdateEntity(SAMPLE_ENTITY_URI, SAMPLE_ENTITY);
 
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(_authenticationProvider);
+            Mock.Assert(mockedRestCallExecutor);
         }
 
         [TestMethod]
         public void UpdateEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException() 
         {
-            var mockedHttpClient = Mock.Create<HttpClient>();
-            var mockedResponseMessage = Mock.Create<HttpResponseMessage>();
-            Mock.Arrange(() => mockedResponseMessage.EnsureSuccessStatusCode())
-                .Throws<HttpRequestException>().MustBeCalled();
-            Mock.Arrange(() => mockedHttpClient.PutAsync(SAMPLE_ENTITY_URI, Arg.IsAny<HttpContent>()).Result)
+            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+                .Returns(SAMPLE_BEARER_TOKEN)
+                .OccursOnce();
+
+            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+                .Returns(BEARER_AUTH_TYPE)
+                .OccursOnce();
+
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", SAMPLE_BEARER_TOKEN);
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(HttpMethod.Put, SAMPLE_ENTITY_URI.ToString(), Arg.Is(headers), SAMPLE_ENTITY))
                 .IgnoreInstance()
-                .Returns(mockedResponseMessage)
-                .MustBeCalled();
+                .Throws<HttpRequestException>()
+                .OccursOnce();
 
-            var entityController = new EntityController(_credentialProvider);
+            var entityController = new EntityController(_authenticationProvider);
+            ThrowsAssert.Throws<HttpRequestException>(() => entityController.UpdateEntity(SAMPLE_ENTITY_URI, SAMPLE_ENTITY));
 
-            ThrowsAssert.Throws<HttpRequestException>(() => entityController.UpdateEntity(SAMPLE_ENTITY_URI, ""));
-
-            Mock.Assert(mockedHttpClient);
-            Mock.Assert(mockedResponseMessage);
+            Mock.Assert(_authenticationProvider);
+            Mock.Assert(mockedRestCallExecutor);
         }
     }
 }

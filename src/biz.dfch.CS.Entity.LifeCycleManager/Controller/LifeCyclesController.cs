@@ -144,7 +144,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, tenantId);
@@ -218,7 +218,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, tenantId);
@@ -277,7 +277,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.Next(entityUri, entity, tenantId);
@@ -324,7 +324,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass ICredentialProvider implementation instead of null
+                // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
                 lifeCycleManager.Cancel(entityUri, entity, tenantId);
@@ -377,8 +377,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Pass ICredentialProvider implementation for entity loading instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
+                // DFTODO Pass IAuthenticationProvider implementation for entity loading instead of null
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnAllowCallback(job);
 
@@ -422,8 +422,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.NotFound);
                 }
 
-                // DFTODO Pass ICredentialProvider implementation for entity loading instead of null
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
+                // DFTODO Pass IAuthenticationProvider implementation for entity loading instead of null
                 var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
                 lifeCycleManager.OnDeclineCallback(job);
 
@@ -445,9 +445,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             return String.Format("{0}:{1}{2}", _permissionPrefix, _permissionInfix, permissionSuffix);
         }
 
-        private String LoadEntity(ICredentialProvider credentialProvider, Uri uri)
+        private String LoadEntity(IAuthenticationProvider authenticationProvider, Uri uri)
         {
-            var entityController = new EntityController(credentialProvider);
+            var entityController = new EntityController(authenticationProvider);
             return entityController.LoadEntity(uri);
         }
 
