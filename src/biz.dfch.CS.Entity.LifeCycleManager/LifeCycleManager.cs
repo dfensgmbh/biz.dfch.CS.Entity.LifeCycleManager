@@ -106,6 +106,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             catch (Exception ex)
             {
                 Trace.WriteLine("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message);
+                throw;
             }
 
             var _container = new CompositionContainer(assemblyCatalog);
