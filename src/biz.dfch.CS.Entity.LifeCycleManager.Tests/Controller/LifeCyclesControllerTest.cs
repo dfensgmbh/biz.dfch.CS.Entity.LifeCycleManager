@@ -50,15 +50,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String LIFE_CYCLE_ALLOW_PERMISSION = "LightSwitchApplication:LifeCycleCanAllow";
         private const String LIFE_CYCLE_DECLINE_PERMISSION = "LightSwitchApplication:LifeCycleCanDecline";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-            Mock.SetupStatic(typeof(ODataControllerHelper));
-        }
-
         [TestInitialize]
         public void TestInitialize()
         {
+            Mock.SetupStatic(typeof(ODataControllerHelper));
+
             _lifeCyclesController = new LifeCyclesController();
             _coreService = Mock.Create<CumulusCoreService.Core>();
         }

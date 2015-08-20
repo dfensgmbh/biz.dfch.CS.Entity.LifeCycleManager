@@ -45,16 +45,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String DEFAULT_JOB_TYPE = "Default";
         private const String SAMPLE_PARAMETERS = "{}";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-            Mock.SetupStatic(typeof (ODataControllerHelper));
-            Mock.SetupStatic(typeof (CurrentUserDataProvider));
-        }
-
         [TestInitialize]
         public void TestInitialize()
         {
+            Mock.SetupStatic(typeof(ODataControllerHelper));
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
+
             _jobsController = new JobsController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
         }

@@ -67,11 +67,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private ICredentialProvider _credentialProvider;
         private EntityController _entityController;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-        }
-
         public void FixEfProviderServicesProblem()
         {
             //The Entity Framework provider type 'System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer'

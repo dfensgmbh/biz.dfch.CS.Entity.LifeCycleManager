@@ -41,16 +41,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String STATE_CHANGE_LOCK_DELETE_PERMISSION = "LightSwitchApplication:StateChangeLockCanDelete";
         private const String ENTITY_ID = "http://test/api/ApplicationData.svc/TestEntities(1)";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-            Mock.SetupStatic(typeof(ODataControllerHelper));
-            Mock.SetupStatic(typeof(CurrentUserDataProvider));
-        }
-
         [TestInitialize]
         public void TestInitialize()
         {
+            Mock.SetupStatic(typeof(ODataControllerHelper));
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
+
             _stateChangeLocksController = new StateChangeLocksController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
         }
