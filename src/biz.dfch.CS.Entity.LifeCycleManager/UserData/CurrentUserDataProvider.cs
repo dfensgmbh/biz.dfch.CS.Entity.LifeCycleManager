@@ -79,7 +79,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                // DFTODO join with roleName
                 SqlCommand command =
                     new SqlCommand("SELECT Cumulus.dbo.aspnet_Roles.RoleName FROM Cumulus.dbo.aspnet_UsersInRoles INNER JOIN Cumulus.dbo.aspnet_Roles ON Cumulus.dbo.aspnet_Roles.RoleId = Cumulus.dbo.aspnet_UsersInRoles.RoleId WHERE Cumulus.dbo.aspnet_UsersInRoles.UserId = @userId", connection);
                 command.Parameters.Add(new SqlParameter("userId", userId));
