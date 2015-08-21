@@ -62,7 +62,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand("SELECT dbo.aspnet_Users.UserId FROM dbo.aspnet_Users INNER JOIN dbo.aspnet_Applications ON dbo.aspnet_Applications.ApplicationId = dbo.aspnet_Users.ApplicationId WHERE dbo.aspnet_Users.UserName = @username AND dbo.aspnet_Applications = @applicationName", connection);
+                SqlCommand command = new SqlCommand("SELECT Cumulus.Cumulus.dbo.aspnet_Users.UserId FROM Cumulus.dbo.aspnet_Users INNER JOIN Cumulus.dbo.aspnet_Applications ON Cumulus.dbo.aspnet_Applications.ApplicationId = Cumulus.dbo.aspnet_Users.ApplicationId WHERE Cumulus.dbo.aspnet_Users.UserName = @username AND Cumulus.dbo.aspnet_Applications.ApplicationName = @applicationName", connection);
                 command.Parameters.Add(new SqlParameter("username", username));
                 command.Parameters.Add(new SqlParameter("applicationName", applicationName));
 
@@ -81,7 +81,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
                 connection.Open();
                 // DFTODO join with roleName
                 SqlCommand command =
-                    new SqlCommand("SELECT dbo.aspnet_Roles.RoleName FROM dbo.aspnet_UsersInRoles INNER JOIN dbo.aspnet_Roles ON dbo.aspnet_Roles.RoleId = dbo.aspnet_UserInRoles.RoleId WHERE dbo.aspnet_UserInRoles.UserId = @userId", connection);
+                    new SqlCommand("SELECT Cumulus.dbo.aspnet_Roles.RoleName FROM Cumulus.dbo.aspnet_UsersInRoles INNER JOIN Cumulus.dbo.aspnet_Roles ON Cumulus.dbo.aspnet_Roles.RoleId = Cumulus.dbo.aspnet_UserInRoles.RoleId WHERE Cumulus.dbo.aspnet_UserInRoles.UserId = @userId", connection);
                 command.Parameters.Add(new SqlParameter("userId", userId));
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -104,7 +104,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
                 connection.Open();
                 foreach (var role in roles)
                 {
-                    SqlCommand command = new SqlCommand("Select PermissionId FROM dbo.RolePermissions WHERE RoleName = @roleName", connection);
+                    SqlCommand command = new SqlCommand("SELECT PermissionId FROM dbo.RolePermissions WHERE RoleName = @roleName", connection);
                     command.Parameters.Add(new SqlParameter("roleName", role));
 
                     using (SqlDataReader reader = command.ExecuteReader())
