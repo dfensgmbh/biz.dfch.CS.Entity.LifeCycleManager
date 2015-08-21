@@ -81,7 +81,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
                 connection.Open();
                 // DFTODO join with roleName
                 SqlCommand command =
-                    new SqlCommand("SELECT Cumulus.dbo.aspnet_Roles.RoleName FROM Cumulus.dbo.aspnet_UsersInRoles INNER JOIN Cumulus.dbo.aspnet_Roles ON Cumulus.dbo.aspnet_Roles.RoleId = Cumulus.dbo.aspnet_UserInRoles.RoleId WHERE Cumulus.dbo.aspnet_UserInRoles.UserId = @userId", connection);
+                    new SqlCommand("SELECT Cumulus.dbo.aspnet_Roles.RoleName FROM Cumulus.dbo.aspnet_UsersInRoles INNER JOIN Cumulus.dbo.aspnet_Roles ON Cumulus.dbo.aspnet_Roles.RoleId = Cumulus.dbo.aspnet_UsersInRoles.RoleId WHERE Cumulus.dbo.aspnet_UsersInRoles.UserId = @userId", connection);
                 command.Parameters.Add(new SqlParameter("userId", userId));
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -104,7 +104,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
                 connection.Open();
                 foreach (var role in roles)
                 {
-                    SqlCommand command = new SqlCommand("SELECT PermissionId FROM dbo.RolePermissions WHERE RoleName = @roleName", connection);
+                    SqlCommand command = new SqlCommand("SELECT PermissionId FROM Cumulus.dbo.RolePermissions WHERE RoleName = @roleName", connection);
                     command.Parameters.Add(new SqlParameter("roleName", role));
 
                     using (SqlDataReader reader = command.ExecuteReader())
