@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 ﻿using System;
+﻿using System.Collections.Generic;
+﻿using System.Configuration;
+﻿using System.Data.SqlClient;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
-﻿using biz.dfch.CS.Entity.LifeCycleManager.Model;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
+    // DFTODO Rename to UserDataProvider
     public static class CurrentUserDataProvider
     {
         public static String GetCurrentUserId()
@@ -33,7 +36,100 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 
         public static Boolean IsUserAuthorized(String currentUserId, String tenantId, BaseEntity entity)
         {
+            // DFTODO Check if tenantId matches?
+            // DFTODO check ACL table!?
             return true;
+        }
+
+        public static Identity GetIdentity(String username)
+        {
+            var identity = new Identity();
+            var connectionString = GetConnectionString();
+            String userId = GetUserId(connectionString, username);
+
+            identity.Username = username;
+            identity.Roles = GetRoles(connectionString, userId);
+            identity.Permissions = GetPermissions(connectionString, identity.Roles);
+
+            return identity;
+        }
+
+        private static String GetUserId(String connectionString, String username)
+        {
+            // DFTODO read applicationName from config
+            var applicationName = "Cumulus";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand("SELECT dbo.aspnet_Users.UserId FROM dbo.aspnet_Users INNER JOIN dbo.aspnet_Applications ON dbo.aspnet_Applications.ApplicationId = dbo.aspnet_Users.ApplicationId WHERE dbo.aspnet_Users.UserName = @username AND dbo.aspnet_Applications = @applicationName", connection);
+                command.Parameters.Add(new SqlParameter("username", username));
+                command.Parameters.Add(new SqlParameter("applicationName", applicationName));
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    return reader.GetString(0);
+                }
+            }
+        }
+
+        private static IEnumerable<String> GetRoles(String connectionString, String userId)
+        {
+            var roles = new List<String>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                // DFTODO join with roleName
+                SqlCommand command =
+                    new SqlCommand("SELECT dbo.aspnet_Roles.RoleName FROM dbo.aspnet_UsersInRoles INNER JOIN dbo.aspnet_Roles ON dbo.aspnet_Roles.RoleId = dbo.aspnet_UserInRoles.RoleId WHERE dbo.aspnet_UserInRoles.UserId = @userId", connection);
+                command.Parameters.Add(new SqlParameter("userId", userId));
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        roles.Add(reader.GetString(0));
+                    }
+                    return roles;
+                }
+            }
+        }
+
+        private static IEnumerable<String> GetPermissions(String connectionString, IEnumerable<String> roles)
+        {
+            var permissions = new List<String>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                foreach (var role in roles)
+                {
+                    SqlCommand command = new SqlCommand("Select PermissionId FROM dbo.RolePermissions WHERE RoleName = @roleName", connection);
+                    command.Parameters.Add(new SqlParameter("roleName", role));
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            permissions.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                return permissions;
+            }
+        }
+
+        private static String GetConnectionString()
+        {
+            ConnectionStringSettingsCollection connectionStrings = ConfigurationManager.ConnectionStrings;
+            foreach (ConnectionStringSettings connectionString in connectionStrings)
+            {
+                if (connectionString.Name.Equals("MySqlConnection"))
+                {
+                    return connectionString.ConnectionString;
+                }
+            }
+            return null;
         }
     }
 }
