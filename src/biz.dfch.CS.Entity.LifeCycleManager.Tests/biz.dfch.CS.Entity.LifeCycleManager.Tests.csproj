@@ -35,8 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="biz.dfch.CS.StateMachine">
-      <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.2\biz.dfch.CS.StateMachine\bin\Release\biz.dfch.CS.StateMachine.dll</HintPath>
+    <Reference Include="biz.dfch.CS.StateMachine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.3\lib\biz.dfch.CS.StateMachine.dll</HintPath>
     </Reference>
     <Reference Include="biz.dfch.CS.Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
