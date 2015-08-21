@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // Original file name:
-// Generation date: 18.08.2015 10:06:18
+// Generation date: 21.08.2015 13:41:43
 namespace biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService
 {
     
