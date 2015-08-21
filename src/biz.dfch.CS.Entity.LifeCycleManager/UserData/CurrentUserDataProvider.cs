@@ -62,7 +62,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand("SELECT Cumulus.Cumulus.dbo.aspnet_Users.UserId FROM Cumulus.dbo.aspnet_Users INNER JOIN Cumulus.dbo.aspnet_Applications ON Cumulus.dbo.aspnet_Applications.ApplicationId = Cumulus.dbo.aspnet_Users.ApplicationId WHERE Cumulus.dbo.aspnet_Users.UserName = @username AND Cumulus.dbo.aspnet_Applications.ApplicationName = @applicationName", connection);
+                SqlCommand command = new SqlCommand("SELECT Cumulus.dbo.aspnet_Users.UserId FROM Cumulus.dbo.aspnet_Users INNER JOIN Cumulus.dbo.aspnet_Applications ON Cumulus.dbo.aspnet_Applications.ApplicationId = Cumulus.dbo.aspnet_Users.ApplicationId WHERE Cumulus.dbo.aspnet_Users.UserName = @username AND Cumulus.dbo.aspnet_Applications.ApplicationName = @applicationName", connection);
                 command.Parameters.Add(new SqlParameter("username", username));
                 command.Parameters.Add(new SqlParameter("applicationName", applicationName));
 
