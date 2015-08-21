@@ -103,6 +103,7 @@
       <DependentUpon>Reference.datasvcmap</DependentUpon>
     </Compile>
     <Compile Include="UserData\IAuthenticationProvider.cs" />
+    <Compile Include="UserData\Identity.cs" />
     <Compile Include="UserData\CurrentUserDataProvider.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Controller\EntityController.cs" />
