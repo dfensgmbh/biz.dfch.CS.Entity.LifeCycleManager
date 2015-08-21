@@ -102,7 +102,6 @@
     </Compile>
     <Compile Include="UserData\IAuthenticationProvider.cs" />
     <Compile Include="UserData\CurrentUserDataProvider.cs" />
-    <Compile Include="Util\EnumUtil.cs" />
     <Compile Include="LifeCycleManager.cs" />
     <Compile Include="Controller\EntityController.cs" />
     <Compile Include="Logging\LogBase.cs" />

@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
-using biz.dfch.CS.Entity.LifeCycleManager.Util;
+using biz.dfch.CS.Utilities;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Model
 {
