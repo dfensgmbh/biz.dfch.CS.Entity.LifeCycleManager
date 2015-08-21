@@ -33,8 +33,9 @@
     <Reference Include="biz.dfch.CS.StateMachine">
       <HintPath>..\packages\biz.dfch.CS.StateMachine.1.0.2\biz.dfch.CS.StateMachine\bin\Release\biz.dfch.CS.StateMachine.dll</HintPath>
     </Reference>
-    <Reference Include="biz.dfch.CS.Utilities">
-      <HintPath>..\packages\biz.dfch.CS.System.Utilities.1.0.3\SystemUtilities\bin\Release\biz.dfch.CS.Utilities.dll</HintPath>
+    <Reference Include="biz.dfch.CS.Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\biz.dfch.CS.System.Utilities.1.0.4\lib\biz.dfch.CS.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>

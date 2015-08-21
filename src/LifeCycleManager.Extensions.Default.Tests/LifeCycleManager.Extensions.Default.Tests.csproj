@@ -37,7 +37,7 @@
   <ItemGroup>
     <Reference Include="biz.dfch.CS.Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\biz.dfch.CS.System.Utilities.1.0.3\SystemUtilities\bin\Release\biz.dfch.CS.Utilities.dll</HintPath>
+      <HintPath>..\packages\biz.dfch.CS.System.Utilities.1.0.4\lib\biz.dfch.CS.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="MSTestExtensions">
       <HintPath>..\packages\MSTestExtensions.4.0.0\lib\MSTestExtensions.dll</HintPath>
