@@ -22,6 +22,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
     public class Identity
     {
         public String Username;
+        public String Tid;
         public IEnumerable<String> Roles;
         public IEnumerable<String> Permissions;
     }

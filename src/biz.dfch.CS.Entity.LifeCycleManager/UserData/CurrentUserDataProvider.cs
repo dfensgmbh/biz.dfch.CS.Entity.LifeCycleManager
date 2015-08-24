@@ -18,10 +18,10 @@
 ﻿using System.Configuration;
 ﻿using System.Data.SqlClient;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
+using System.Web;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
-    // DFTODO Rename to UserDataProvider
     public static class CurrentUserDataProvider
     {
         public static String GetCurrentUserId()
@@ -41,13 +41,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             return true;
         }
 
-        public static Identity GetIdentity(String username)
+        public static Identity GetIdentity(String tenantId)
         {
+            var username = HttpContext.Current.User.Identity.Name;
             var identity = new Identity();
             var connectionString = GetConnectionString();
             String userId = GetUserId(connectionString, username);
 
             identity.Username = username;
+            identity.Tid = tenantId;
             identity.Roles = GetRoles(connectionString, userId);
             identity.Permissions = GetPermissions(connectionString, identity.Roles);
 
