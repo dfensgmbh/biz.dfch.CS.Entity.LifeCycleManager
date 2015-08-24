@@ -31,6 +31,7 @@ using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
+using Telerik.JustMock.Expectations.Abstraction;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.StateChangeLock;
@@ -80,6 +81,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
+
             _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
             _authenticationProvider = Mock.Create<IAuthenticationProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
@@ -241,7 +244,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(21)]
-        public void ChangeStateForLockedEntityThrowsInvalidOperationException()
+        public void RequestStateChangeForLockedEntityThrowsInvalidOperationException()
         {
             Mock.Arrange(() => _coreService.StateChangeLocks)
                 .IgnoreInstance()
@@ -260,8 +263,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         [TestMethod]
         [WorkItem(21)]
-        public void ChangeStateForNonLockedEntityLocksEntity()
+        public void RequestStateChangeForNonLockedEntityLocksEntity()
         {
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.StateChangeLocks)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
@@ -305,15 +312,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
         [WorkItem(15)]
         [WorkItem(17)]
         [WorkItem(22)]
-        public void ChangeStateForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
+        public void RequestStateChangeForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
         {
             Job createdJob = null;
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.StateChangeLocks)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
@@ -364,13 +376,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
         [WorkItem(17)]
-        public void ChangeStateForNonLockedEntityRevertsTransactionAndThrowsInvalidOperationExceptionIfPreCalloutFails()
+        public void RequestStateChangeForNonLockedEntityRevertsTransactionAndThrowsInvalidOperationExceptionIfPreCalloutFails()
         {
             Job updatedJob = null;
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.StateChangeLocks)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
@@ -438,13 +455,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
         [WorkItem(13)]
-        public void ChangeStateForNonLockedEntityWithoutPreCalloutDefinitionChangesStateAndExecutesPostCallout()
+        public void RequestStateChangeForNonLockedEntityWithoutPreCalloutDefinitionChangesStateAndExecutesPostCallout()
         {
             Job createdJob = null;
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.StateChangeLocks)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<StateChangeLock>(new List<StateChangeLock>
@@ -500,6 +522,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
@@ -510,6 +533,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             Job updatedJob = null;
             Job createdJob = null;
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.Jobs)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
@@ -565,6 +592,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
@@ -614,6 +642,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             Job createdJob = null;
             Job updatedJob = null;
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+                .Returns("Administrator")
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.Jobs)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<Job>(new List<Job> { CreateJob(SAMPLE_ENTITY_URI.ToString()) }))
@@ -702,6 +734,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
         }
 
         [TestMethod]
@@ -880,11 +913,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
         private CalloutDefinition CreateCalloutDefinition(String entityId, String type)
         {
-            return new CalloutDefinition { EntityId = entityId,
+            return new CalloutDefinition { 
+                EntityId = entityId,
                 TenantId = TENANT_ID,
                 CalloutType = type,
                 Condition = "Continue",
-                Parameters = CALLOUT_DEFINITION };
+                Parameters = CALLOUT_DEFINITION 
+            };
         }
     }
 }

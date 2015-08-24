@@ -26,7 +26,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
     {
         public static String GetCurrentUserId()
         {
-            return "Administrator";
+            return HttpContext.Current.User.Identity.Name;
         }
 
         public static Boolean HasCurrentUserPermission(String permissionId)
@@ -37,13 +37,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
         public static Boolean IsUserAuthorized(String currentUserId, String tenantId, BaseEntity entity)
         {
             // DFTODO Check if tenantId matches?
-            // DFTODO check ACL table!?
+            // DFTODO check ACL table or as well hierarchy!?
             return true;
         }
 
         public static Identity GetIdentity(String tenantId)
         {
-            var username = HttpContext.Current.User.Identity.Name;
+            // DFTODO Check what to do with the tenantId
+            var username = GetCurrentUserId();
             var identity = new Identity();
             var connectionString = GetConnectionString();
             String userId = GetUserId(connectionString, username);
