@@ -30,6 +30,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
         private const String APPLICATION_NAME_KEY = "Application.Name";
         private const String CONNECTION_STRING_NAME = "LcmSecurityData";
 
+        private static String _connectionString = GetConnectionString();
+
         public static String GetCurrentUsername()
         {
             return HttpContext.Current.User.Identity.Name;
@@ -37,28 +39,29 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 
         public static Boolean IsEntityOfUser(String currentUsername, String tenantId, BaseEntity entity)
         {
+            // DFTODO Check ACLs here
             return entity.Tid == tenantId && entity.CreatedBy == currentUsername;
         }
 
         public static IList<T> GetEntitiesForUser<T>(DbSet<T> dbSet, String currentUsername, String tenantId)
             where T : BaseEntity
         {
-            // DFTODO Check ACL table?
+            // DFTODO Check ACLs here
             return dbSet.Where(x => x.Tid == tenantId && x.CreatedBy == currentUsername).ToList();
         }
 
         public static Identity GetIdentity(String tenantId)
         {
-            // DFTODO Check if tenantId has to be used in query
+            // DFTODO Check, if user really belongs to tenant with id tenantId
+            // DFTODO Check, if tenantId is null query home/primary tenant
             var username = GetCurrentUsername();
             var identity = new Identity();
-            var connectionString = GetConnectionString();
-            String userId = GetUserId(connectionString, username);
+            String userId = GetUserId(_connectionString, username);
 
             identity.Username = username;
             identity.Tid = tenantId;
-            identity.Roles = GetRoles(connectionString, userId);
-            identity.Permissions = GetPermissions(connectionString, identity.Roles);
+            identity.Roles = GetRoles(_connectionString, userId);
+            identity.Permissions = GetPermissions(_connectionString, identity.Roles);
 
             return identity;
         }

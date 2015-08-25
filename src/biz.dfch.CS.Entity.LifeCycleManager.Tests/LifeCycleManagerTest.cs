@@ -224,7 +224,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        // DFTODO refactor cred
         public void LifeCycleManagerConstructorSetsCoreServiceCredentialsBasedOnConfigValues()
         {
             Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))

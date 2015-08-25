@@ -23,7 +23,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
@@ -42,7 +41,8 @@ using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.S
 [assembly: InternalsVisibleTo("biz.dfch.CS.Entity.LifeCycleManager.Tests")]
 namespace biz.dfch.CS.Entity.LifeCycleManager
 {
-    // DFTODO implement hierarchy of objects and ACL!
+    // DFTODO implement entity hierarchy
+    // DFTODO implement ACL
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
@@ -178,7 +178,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, calloutData);
-                    // DFTODO pass authorization or api-key in header?
                     _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
                 }
                 catch (Exception e)
@@ -209,7 +208,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, postCalloutData);
-                    // DFTODO pass credentials/authorization header
                     _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
                 }
             }
