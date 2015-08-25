@@ -111,6 +111,7 @@
     <Compile Include="Controller\EntityControllerTest.cs" />
     <Compile Include="Controller\JobsControllerTest.cs" />
     <Compile Include="Controller\StateChangeLocksControllerTest.cs" />
+    <Compile Include="Controller\TenantAwareODataControllerTest.cs" />
     <Compile Include="CoreEndpointTest.cs" />
     <Compile Include="LifeCycleManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

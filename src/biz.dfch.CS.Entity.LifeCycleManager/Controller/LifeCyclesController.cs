@@ -36,7 +36,7 @@ using Newtonsoft.Json;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
-    public class LifeCyclesController : ODataController
+    public class LifeCyclesController : TenantAwareODataController
     {
         private const String _permissionInfix = "LifeCycle";
         private const String _permissionPrefix = "LightSwitchApplication";
@@ -140,9 +140,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -154,7 +152,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, tenantId);
+                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, TenantId);
 
                 return Ok();
             }
@@ -217,9 +215,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -231,7 +227,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, tenantId);
+                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, TenantId);
 
                 return Ok();
             }
@@ -278,9 +274,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanNext");
                 if (!identity.Permissions.Contains(permissionId))
@@ -292,7 +286,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Next(entityUri, entity, tenantId);
+                lifeCycleManager.Next(entityUri, entity, TenantId);
 
                 return Ok();
             }
@@ -327,9 +321,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanCancel");
                 if (!identity.Permissions.Contains(permissionId))
@@ -341,7 +333,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 // DFTODO Pass IAuthenticationProvider implementation instead of null
                 var entity = LoadEntity(null, entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Cancel(entityUri, entity, tenantId);
+                lifeCycleManager.Cancel(entityUri, entity, TenantId);
 
                 return Ok();
             }
@@ -375,9 +367,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             try
             {
                 Debug.WriteLine(fn);
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanAllow");
                 if (!identity.Permissions.Contains(permissionId))
@@ -424,9 +414,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             try
             {
                 Debug.WriteLine(fn);
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanDecline");
                 if (!identity.Permissions.Contains(permissionId))

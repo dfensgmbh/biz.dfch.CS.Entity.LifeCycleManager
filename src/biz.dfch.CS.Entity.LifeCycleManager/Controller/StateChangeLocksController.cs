@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
-    public class StateChangeLocksController : ODataController
+    public class StateChangeLocksController : TenantAwareODataController
     {
         private const String _permissionInfix = "StateChangeLock";
         private const String _permissionPrefix = "LightSwitchApplication";
@@ -78,16 +78,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
                 if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var stateChangeLocks = CurrentUserDataProvider.GetEntitiesForUser(db.StateChangeLocks, identity.Username, tenantId);
+                var stateChangeLocks = CurrentUserDataProvider.GetEntitiesForUser(db.StateChangeLocks, identity.Username, TenantId);
                 
                 return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
             }
@@ -164,9 +162,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanCreate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -186,7 +182,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     CreatedBy = identity.Username,
                     Created = DateTimeOffset.Now,
-                    Tid = tenantId,
+                    Tid = TenantId,
                     EntityId = stateChangeLock.EntityId,
                 };
                 stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
@@ -240,9 +236,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanDelete");
                 if (!identity.Permissions.Contains(permissionId))
@@ -254,7 +248,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, stateChangeLock))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, stateChangeLock))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
