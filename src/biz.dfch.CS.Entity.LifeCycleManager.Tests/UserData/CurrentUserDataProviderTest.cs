@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Web;
@@ -92,6 +94,100 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
                     CreatedBy = USERNAME,
                     Tid = Guid.NewGuid().ToString()
                 }));
+        }
+
+        [TestMethod]
+        public void GetIdentityReturnsIdentityOfCurrentUser()
+        {
+            var sqlConnection = Mock.Create<SqlConnection>();
+            var sqlCommand = Mock.Create<SqlCommand>();
+            var sqlDataReader = Mock.Create<SqlDataReader>();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity.Name)
+                .Returns(USERNAME)
+                .OccursOnce();
+
+            Mock.Arrange(() => ConfigurationManager.AppSettings)
+                .Returns(new NameValueCollection{{ APPLICATION_NAME_KEY, "Test" }})
+                .OccursOnce();
+
+            Mock.Arrange(() => new SqlConnection(CONNECTION_STRING))
+                .DoNothing()
+                .Occurs(3);
+
+            Mock.Arrange(() => sqlConnection.Open())
+                .IgnoreInstance()
+                .Occurs(3);
+
+            Mock.Arrange(() => sqlCommand.ExecuteReader())
+                .IgnoreInstance()
+                .Returns(sqlDataReader);
+
+            Mock.Arrange(() => sqlDataReader.GetString(0))
+                .Returns("123")
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => sqlConnection.Close())
+                .IgnoreInstance()
+                .Occurs(3);
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(true)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(true)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(false)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.GetString(0))
+                .Returns(_roles[0])
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => sqlDataReader.GetString(0))
+                .Returns(_roles[1])
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(true)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(true)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(false)
+                .InSequence();
+
+            Mock.Arrange(() => sqlDataReader.GetString(0))
+                .Returns(_permissions[0])
+                .InSequence()
+                .OccursOnce();
+
+            Mock.Arrange(() => sqlDataReader.GetString(0))
+                .Returns(_permissions[1])
+                .InSequence()
+                .OccursOnce();
+
+            var identity = CurrentUserDataProvider.GetIdentity(TENANT_ID);
+
+            Assert.AreEqual(TENANT_ID, identity.Tid);
+            Assert.AreEqual(USERNAME, identity.Username);
+            CollectionAssert.AreEqual(_permissions, identity.Permissions.ToList());
+            CollectionAssert.AreEqual(_roles, identity.Roles.ToList());
+
+            Mock.Assert(() => HttpContext.Current.User.Identity.Name);
+            Mock.Assert(() => ConfigurationManager.AppSettings);
+            Mock.Assert(sqlConnection);
+            Mock.Assert(sqlCommand);
+            Mock.Assert(sqlDataReader);
         }
 
         [TestMethod]
