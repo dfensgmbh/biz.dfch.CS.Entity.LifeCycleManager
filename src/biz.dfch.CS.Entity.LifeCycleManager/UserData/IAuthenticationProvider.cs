@@ -20,7 +20,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
     public interface IAuthenticationProvider
     {
-        String GetAuthHeaderValue();
-        String GetAuthTypeValue();
+        /// <summary>
+        /// Value according the specified scheme
+        /// (i.e. the bearer token, if AuthScheme is 'Bearer'
+        /// </summary>
+        /// <returns></returns>
+        String GetAuthValue();
+
+        /// <summary>
+        /// Authentication scheme used to create Authorization header
+        /// (i.e. 'Basic', 'Bearer',...)
+        /// </summary>
+        /// <returns></returns>
+        String GetAuthScheme();
     }
 }

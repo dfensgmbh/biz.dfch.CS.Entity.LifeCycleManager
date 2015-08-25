@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-﻿using System;
+ using System;
 ﻿using System.Collections.Generic;
 ﻿using System.Net.Http;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Logging;
@@ -26,6 +26,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class EntityController
     {
+        private const String AUTHORIZATION_HEADER_KEY = "Authorization";
+
         private RestCallExecutor _restCallExecutor;
         private IDictionary<String, String> _headers;
         private String _authType;
@@ -35,8 +37,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             if (null != authenticationProvider)
             {
                 _headers = new Dictionary<String, String>();
-                _headers.Add("Authorization", authenticationProvider.GetAuthHeaderValue());
-                _authType = authenticationProvider.GetAuthTypeValue();
+                _headers.Add(AUTHORIZATION_HEADER_KEY, authenticationProvider.GetAuthValue());
+                _authType = authenticationProvider.GetAuthScheme();
             }
 
             Debug.Write("Initializing RestCallExecutor");

@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
@@ -30,7 +31,10 @@ namespace LifecycleManager.Extensions.Default.Executors
     [Export(typeof(ICalloutExecutor))]
     public class HttpCalloutExecutor : ICalloutExecutor
     {
-        private const String CALLOUT_URL = "callout-url";
+        private const String CALLOUT_URL_JSON_PROPERTY = "callout-url";
+        private const String AUTHENTICATION_Scheme_JSON_PROPERTY = "authentication-scheme";
+        private const String AUTHENTICATION_VALUE_JSON_PROPERTY = "authentication-value";
+        private const String AUTHORIZATION_HEADER_KEY = "Authorization";
 
         private RestCallExecutor _restCallExecutor;
 
@@ -42,6 +46,7 @@ namespace LifecycleManager.Extensions.Default.Executors
         public void ExecuteCallout(String definitionParameters, CalloutData data)
         {
             var requestUrl = ExtractUrlFromDefinition(definitionParameters);
+            var headers = ExtractAuthorizationHeadersFromDefinition(definitionParameters);
 
             if (null == data)
             {
@@ -53,7 +58,7 @@ namespace LifecycleManager.Extensions.Default.Executors
 
             try
             {
-                _restCallExecutor.Invoke(HttpMethod.Post, requestUrl.ToString(), null, JsonConvert.SerializeObject(data));
+                _restCallExecutor.Invoke(HttpMethod.Post, requestUrl.ToString(), headers, JsonConvert.SerializeObject(data));
             }
             catch (HttpRequestException e)
             {
@@ -62,10 +67,28 @@ namespace LifecycleManager.Extensions.Default.Executors
             }
         }
 
+        private IDictionary<String, String> ExtractAuthorizationHeadersFromDefinition(String definitionParameters)
+        {
+            var obj = JObject.Parse(definitionParameters);
+
+            var authScheme = (String)obj[AUTHENTICATION_Scheme_JSON_PROPERTY];
+            var authValue = (String) obj[AUTHENTICATION_VALUE_JSON_PROPERTY];
+
+            if (null == authScheme || null == authValue)
+            {
+                _restCallExecutor.AuthScheme = null;
+                return null;
+            }
+            _restCallExecutor.AuthScheme = authScheme;
+            var headers = new Dictionary<String, String>();
+            headers.Add(AUTHORIZATION_HEADER_KEY, authValue);
+            return headers;
+        }
+
         private Uri ExtractUrlFromDefinition(String definitionParameters)
         {
             var obj = JObject.Parse(definitionParameters);
-            return new Uri((String)obj[CALLOUT_URL]);
+            return new Uri((String)obj[CALLOUT_URL_JSON_PROPERTY]);
         }
     }
 }

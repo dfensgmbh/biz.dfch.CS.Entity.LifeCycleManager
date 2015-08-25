@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Utilities.Rest;
 using LifecycleManager.Extensions.Default.Executors;
@@ -31,6 +32,12 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         private const String SAMPLE_REQUEST_URL = "http://test/api/callout";
         private const String VALID_DEFINITION = "{\"callout-url\":\"" + SAMPLE_REQUEST_URL + "\"}";
         private const String INVALID_DEFINITION = "{\"callout-url\":\"test/test\"}";
+        private const String AUTHENTICATION_SCHEME = "Bearer";
+        private const String AUTHENTICATION_VALUE = "AbCdEf123456";
+        private const String VALID_DEFINITION_WITH_AUTH_INFO =
+            "{\"callout-url\":\"" + SAMPLE_REQUEST_URL + "\", " +
+            "\"authentication-scheme\":\"" + AUTHENTICATION_SCHEME + "\", " +
+            "\"authentication-value\":\"" + AUTHENTICATION_VALUE + "\"}";
 
         private HttpCalloutExecutor _httpCalloutExecutor = new HttpCalloutExecutor();
 
@@ -47,7 +54,7 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         }
 
         [TestMethod]
-        public void ExecuteCalloutCallsRestCallExecutorsInvokeWithMethodPostUriAndCalloutDataAsBody()
+        public void ExecuteCalloutCallsRestCallExecutorWithMethodPostUriAndCalloutDataAsBody()
         {
             var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
             Mock.Arrange(() => mockedRestCallExecutor.Invoke(HttpMethod.Post, SAMPLE_REQUEST_URL, null, Arg.AnyString))
@@ -60,15 +67,30 @@ namespace LifeCycleManager.Extensions.Default.Tests.Executors
         }
 
         [TestMethod]
-        public void ExecuteCalloutWithInvalidUrlThrowsUriFormatException()
-        {
-            ThrowsAssert.Throws<UriFormatException>(() => _httpCalloutExecutor.ExecuteCallout(INVALID_DEFINITION, new CalloutData()));
-        }
-
-        [TestMethod]
         public void ExecuteCalloutWithNullThrowsArgumentNullException()
         {
             ThrowsAssert.Throws<ArgumentNullException>(() => _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION, null));
+        }
+
+        [TestMethod]
+        public void ExecuteCalloutWithAuthentitcationInformationInCalloutDefinitionSetsAuthorizationHeader()
+        {
+            var mockedRestCallExecutor = Mock.Create<RestCallExecutor>();
+
+            Mock.Arrange(() => mockedRestCallExecutor.Invoke(HttpMethod.Post, SAMPLE_REQUEST_URL, Arg.Is(CreateExpectedAuthorizationHeaders()), Arg.AnyString))
+                .IgnoreInstance()
+                .OccursOnce();
+
+            _httpCalloutExecutor.ExecuteCallout(VALID_DEFINITION_WITH_AUTH_INFO, new CalloutData());
+
+            Mock.Assert(mockedRestCallExecutor);
+        }
+
+        private IDictionary<String, String> CreateExpectedAuthorizationHeaders()
+        {
+            var headers = new Dictionary<String, String>();
+            headers.Add("Authorization", AUTHENTICATION_VALUE);
+            return headers;
         }
     }
 }

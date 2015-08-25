@@ -49,11 +49,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void EntityControllerConstructorReadsOutAuthenticationInformationFromAuthenticationProviderIfNotNull()
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
             
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
             
@@ -79,11 +79,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(28)]
         public void LoadEntityCallsRestCallExecutorsInvokeMethodWithEntityUriAndAuthHeaders()
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
 
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
 
@@ -105,11 +105,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(28)]
         public void LoadEntityReturnsEntityAsJsonIfFound()
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
 
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
 
@@ -132,11 +132,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(28)]
         public void LoadEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException()
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
 
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
 
@@ -165,11 +165,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void UpdateEntityCallsRestCallExecutorsInvokeMethodOnEntityUriWithEntityInBody()
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
 
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
 
@@ -191,11 +191,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void UpdateEntityWithUriPointingToNonExistingEntityThrowsHttpRequestException() 
         {
-            Mock.Arrange(() => _authenticationProvider.GetAuthHeaderValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthValue())
                 .Returns(SAMPLE_BEARER_TOKEN)
                 .OccursOnce();
 
-            Mock.Arrange(() => _authenticationProvider.GetAuthTypeValue())
+            Mock.Arrange(() => _authenticationProvider.GetAuthScheme())
                 .Returns(BEARER_AUTH_TYPE)
                 .OccursOnce();
 
