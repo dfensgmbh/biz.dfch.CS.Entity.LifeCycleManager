@@ -26,8 +26,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public TenantAwareODataController()
         {
-            // DFTODO Check, if user really belongs to tenant with id tenantId
-            // DFTODO Check, if tenantId is null query home/primary tenant
             TenantId = HttpContext.Current.Request.Headers.Get("Tenant-Id");
         }
     }
