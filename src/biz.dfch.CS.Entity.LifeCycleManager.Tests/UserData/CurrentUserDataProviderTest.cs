@@ -15,16 +15,16 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
-using System.Data.Entity;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Web;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.UserData;
+using MSTestExtensions;
 using Telerik.JustMock;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
 {
@@ -34,13 +34,24 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
         private const String USERNAME = "User";
         private const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
         private const String CONNECTION_STRING_NAME = "LcmSecurityData";
+        private const String APPLICATION_NAME_KEY = "Application.Name";
         private const String CONNECTION_STRING = "Server=.\\SQLEXPRESS;User ID=sa;Password=password;Database=Test;";
 
+        private List<String> _permissions = new List<String>{ "XCanRead", "XCanCreate" };
+        private List<String> _roles = new List<String>{ "RoleX", "RoleY" };
+        
         [TestInitialize]
         public void TestInitialize()
         {
             Mock.SetupStatic(typeof(HttpContext));
             Mock.SetupStatic(typeof(ConfigurationManager));
+
+            var connectionStrings = new ConnectionStringSettingsCollection();
+            connectionStrings.Add(new ConnectionStringSettings(CONNECTION_STRING_NAME, CONNECTION_STRING));
+
+            Mock.Arrange(() => ConfigurationManager.ConnectionStrings)
+                .Returns(connectionStrings)
+                .MustBeCalled();
         }
 
         [TestMethod]
@@ -84,37 +95,25 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
         }
 
         [TestMethod]
-        public void GetEntitiesForUserReturnsEntitiesMatchingTidAndCreatedBy()
+        public void GetIdentityThrowsArgumentNullExceptionIfApplicationNameNotDefined()
         {
-            var dbSet = Mock.Create<DbSet<BaseEntity>>();
+            Mock.Arrange(() => HttpContext.Current.User.Identity.Name)
+                .Returns(USERNAME)
+                .OccursOnce();
 
-            IList<BaseEntity> result = CurrentUserDataProvider.GetEntitiesForUser(dbSet, USERNAME, TENANT_ID);
+            Mock.Arrange(() => ConfigurationManager.AppSettings)
+                .Returns(new NameValueCollection())
+                .OccursOnce();
 
-            Assert.AreEqual(2, result.Count);
+            ThrowsAssert.Throws<ArgumentNullException>(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+
+            Mock.Assert(() => HttpContext.Current.User.Identity.Name);
+            Mock.Assert(() => ConfigurationManager.AppSettings);
         }
-
-        [TestMethod]
-        public void GetEntitiesForUserReturnsEmptyList()
-        {
-            //IList<BaseEntity> dbSet = new List<BaseEntity> { new BaseEntity {Tid = TENANT_ID, CreatedBy = "Another" }};
-
-            //IList<BaseEntity> result = CurrentUserDataProvider.GetEntitiesForUser(dbSet, USERNAME, TENANT_ID);
-
-            Assert.AreEqual(0, result.Count);
-        }
-
-        // DFTODO test identity fetching
 
         [TestMethod]
         public void GetConnectionStringForExistingConnectionStringReturnsConnectionStringFromConfiguration()
-        {
-            var connectionStrings = new ConnectionStringSettingsCollection();
-            connectionStrings.Add(new ConnectionStringSettings(CONNECTION_STRING_NAME, CONNECTION_STRING));
-
-            Mock.Arrange(() => ConfigurationManager.ConnectionStrings)
-                .Returns(connectionStrings)
-                .MustBeCalled();
-            
+        {           
             MethodInfo method = typeof(CurrentUserDataProvider)
                 .GetMethod("GetConnectionString", BindingFlags.Static | BindingFlags.NonPublic);
             String connectionString = (String)method.Invoke(null, new object[] { });
