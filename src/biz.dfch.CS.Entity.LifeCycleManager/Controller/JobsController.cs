@@ -33,7 +33,7 @@ using Microsoft.Data.OData;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
-    public class JobsController : ODataController
+    public class JobsController : TenantAwareODataController
     {
         private const String _permissionInfix = "Job";
         private const String _permissionPrefix = "LightSwitchApplication";
@@ -83,9 +83,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
                 if (!identity.Permissions.Contains(permissionId))
@@ -93,7 +91,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var jobs = CurrentUserDataProvider.GetEntitiesForUser(db.Jobs, identity.Username, tenantId);
+                var jobs = CurrentUserDataProvider.GetEntitiesForUser(db.Jobs, identity.Username, TenantId);
                     
                 return Ok<IEnumerable<Job>>(jobs);
             }
@@ -126,9 +124,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
                 if (!identity.Permissions.Contains(permissionId))
@@ -140,7 +136,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -176,9 +172,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -190,7 +184,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, original))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, original))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -229,9 +223,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanCreate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -250,7 +242,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     Created = DateTimeOffset.Now,
                     CreatedBy = identity.Username,
-                    Tid = tenantId,
+                    Tid = TenantId,
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
@@ -289,9 +281,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
                 if (!identity.Permissions.Contains(permissionId))
@@ -303,7 +293,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -344,9 +334,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             {
                 Debug.WriteLine(fn);
 
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanDelete");
                 if (!identity.Permissions.Contains(permissionId))
@@ -358,7 +346,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -384,9 +372,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanRun");
                 if (!identity.Permissions.Contains(permissionId))
@@ -399,7 +385,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -431,9 +417,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             try
             {
-                // DFTODO assign tenantId from headers
-                var tenantId = "";
-                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
+                var identity = CurrentUserDataProvider.GetIdentity(TenantId);
 
                 var permissionId = CreatePermissionId("CanRun");
                 if (!identity.Permissions.Contains(permissionId))
@@ -446,7 +430,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

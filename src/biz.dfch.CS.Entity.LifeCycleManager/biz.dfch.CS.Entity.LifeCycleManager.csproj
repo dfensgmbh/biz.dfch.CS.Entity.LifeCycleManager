@@ -96,6 +96,7 @@
     <Compile Include="Controller\CalloutDefinitionsController.cs" />
     <Compile Include="Controller\JobsController.cs" />
     <Compile Include="Controller\StateChangeLocksController.cs" />
+    <Compile Include="Controller\TenantAwareODataController.cs" />
     <Compile Include="CoreEndpoint.cs" />
     <Compile Include="Model\LifeCycle.cs" />
     <Compile Include="Service References\CumulusCoreService\Reference.cs">

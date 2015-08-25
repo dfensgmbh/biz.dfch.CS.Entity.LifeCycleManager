@@ -32,8 +32,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         protected const String CURRENT_USER_ID = "currentUser";
         protected const String ANOTHER_USER_ID = "anotherUser";
+        protected const String TENANT_ID_HEADER_KEY = "Tenant-Id";
         protected const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
-        protected const String EMPTY_TENANT_ID = "";
+        protected const String EMPTY_TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
         protected const String ANOTHER_TENANT_ID = "2e44d024-21c9-46ba-aceb-953a15f9f70a";
         protected const String SAMPLE_TOKEN = "5H7l7uZ61JTRS716D498WZ6RYa53p9QA";
 

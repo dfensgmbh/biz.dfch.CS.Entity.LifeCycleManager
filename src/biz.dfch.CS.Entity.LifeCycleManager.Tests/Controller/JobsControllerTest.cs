@@ -21,6 +21,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http.OData;
 using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
@@ -51,6 +52,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         {
             Mock.SetupStatic(typeof(ODataControllerHelper));
             Mock.SetupStatic(typeof(CurrentUserDataProvider));
+            Mock.SetupStatic(typeof(HttpContext));
+
+            Mock.Arrange(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY))
+                .Returns(TENANT_ID)
+                .OccursOnce();
 
             _jobsController = new JobsController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
@@ -113,7 +119,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
         [TestMethod]
         [WorkItem(16)]
-        public void GetJobsForUserNotAuthorizedForAnyJobReturnsEmptyList()
+        public void GetJobsForUserWithoutAnyJobReturnsEmptyList()
         {
             Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
                 .Returns(new Identity
@@ -122,8 +128,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                     Username = CURRENT_USER_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, "", Arg.IsAny<Job>()))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<Job>>(), CURRENT_USER_ID, EMPTY_TENANT_ID))
+                .ReturnsCollection(new List<Job>())
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.Jobs)
                 .IgnoreInstance()
@@ -141,6 +147,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(0, response.Content.Count());
 
             Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<Job>>(), CURRENT_USER_ID, EMPTY_TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 

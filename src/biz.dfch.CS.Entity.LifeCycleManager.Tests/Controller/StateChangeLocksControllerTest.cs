@@ -20,6 +20,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http.OData;
 using System.Web.Http.Results;
 using biz.dfch.CS.Entity.LifeCycleManager.Context;
@@ -47,9 +48,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         {
             Mock.SetupStatic(typeof(ODataControllerHelper));
             Mock.SetupStatic(typeof(CurrentUserDataProvider));
+            Mock.SetupStatic(typeof(HttpContext));
+
+            Mock.Arrange(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY))
+                .Returns(TENANT_ID)
+                .OccursOnce();
 
             _stateChangeLocksController = new StateChangeLocksController();
             _lifeCycleContext = Mock.Create<LifeCycleContext>();
+
+            Mock.Assert(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY));
         }
 
         [TestMethod]
