@@ -44,7 +44,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
             var assemblyCatalog = new AggregateCatalog();
 
             // Adds all the parts found in the given directory
-            var folder = ConfigurationManager.AppSettings["Core.ExtensionsFolder"];
+            var folder = ConfigurationManager.AppSettings["LifeCycleManager.TestServer.ExtensionsFolder"];
             try
             {
                 if (!Path.IsPathRooted(folder))

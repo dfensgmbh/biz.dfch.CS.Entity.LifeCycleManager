@@ -112,6 +112,7 @@
     <Compile Include="CoreEndpointTest.cs" />
     <Compile Include="LifeCycleManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserData\CurrentUserDataProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

@@ -15,14 +15,12 @@
  */
 
 using System;
-using System.Net.Http;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Utilities.Rest;
 using LifecycleManager.Extensions.Default.Executors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
-using Telerik.JustMock.Helpers;
 using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace LifeCycleManager.Extensions.Default.Tests.Executors

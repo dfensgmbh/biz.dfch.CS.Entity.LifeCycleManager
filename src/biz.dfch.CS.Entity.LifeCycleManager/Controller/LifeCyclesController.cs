@@ -15,12 +15,14 @@
  */
 
 using System;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data.Entity.Infrastructure.Pluralization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Builder;
@@ -43,13 +45,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
         private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
+            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
 
         public LifeCyclesController()
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             Debug.WriteLine(fn);
         }
 
@@ -69,9 +72,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Utilities.svc/LifeCycle
         public async Task<IHttpActionResult> GetLifeCycles(ODataQueryOptions<LifeCycle> queryOptions)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -92,9 +96,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Utilities.svc/LifeCycles(5)
         public async Task<IHttpActionResult> GetLifeCycle([FromODataUri] String key, ODataQueryOptions<LifeCycle> queryOptions)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -115,9 +120,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // PUT: api/Utilities.svc/LifeCycles(5)
         public async Task<IHttpActionResult> Put([FromODataUri] String key, LifeCycle lifeCycle)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -125,7 +131,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 return BadRequest(ModelState);
             }
 
-            if (!key.Equals(lifeCycle.Id))
+            if (key != lifeCycle.Id)
             {
                 return BadRequest();
             }
@@ -136,9 +142,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -173,9 +180,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // POST: api/Utilities.svc/LifeCycles
         public async Task<IHttpActionResult> Post(LifeCycle lifeCycle)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -194,9 +202,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] String key, Delta<LifeCycle> delta)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -210,9 +219,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -247,21 +257,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // DELETE: api/Utilities.svc/LifeCycles(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] String key)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             
             Debug.WriteLine(fn);
-            // return StatusCode(HttpStatusCode.NoContent);
             return StatusCode(HttpStatusCode.NotImplemented);
         }
 
         [HttpPost]
         public async Task<IHttpActionResult> Next([FromODataUri] String key, ODataActionParameters parameters)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -269,9 +280,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanNext");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -306,9 +318,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Cancel([FromODataUri] String key, ODataActionParameters parameters)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -316,9 +329,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanCancel");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -353,23 +367,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Allow([FromODataUri] String token, ODataActionParameters parameters)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
                 Debug.WriteLine(fn);
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanAllow");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => token.Equals(j.Token) &&
-                    CALLOUT_JOB_TYPE.Equals(j.Type) &&
-                    j.State.Equals(JobStateEnum.Running.ToString()))
+                var job = _coreService.Jobs.Where(j => token == j.Token &&
+                    CALLOUT_JOB_TYPE == j.Type &&
+                    j.State == JobStateEnum.Running.ToString())
                     .SingleOrDefault();
 
                 if (null == job)
@@ -398,23 +416,27 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Decline([FromODataUri] String token, ODataActionParameters parameters)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
                 Debug.WriteLine(fn);
+                // DFTODO assign tenantId from headers
+                var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanDecline");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var job = _coreService.Jobs.Where(j => token.Equals(j.Token) && 
-                    CALLOUT_JOB_TYPE.Equals(j.Type) &&
-                    j.State.Equals(JobStateEnum.Running.ToString()))
+                var job = _coreService.Jobs.Where(j => token == j.Token && 
+                    CALLOUT_JOB_TYPE == j.Type &&
+                    j.State == JobStateEnum.Running.ToString())
                     .SingleOrDefault();
 
                 if (null == job)

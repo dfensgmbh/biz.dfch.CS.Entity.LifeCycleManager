@@ -54,6 +54,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         public void TestInitialize()
         {
             Mock.SetupStatic(typeof(ODataControllerHelper));
+            Mock.SetupStatic(typeof(CurrentUserDataProvider));
 
             _lifeCyclesController = new LifeCyclesController();
             _coreService = Mock.Create<CumulusCoreService.Core>();
@@ -92,8 +93,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PutWithoutUpdatePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Put(ENTITY_ID,
@@ -101,14 +106,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void PutWithInvalidUriReturnsBadRequest()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
             
             var actionResult = _lifeCyclesController.Put(INVALID_ENTITY_ID,
@@ -116,14 +125,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void PutReturnsBadRequestIfEntityCouldNotBeLoaded()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -136,15 +149,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void PutWithValidKeyLoadsEntity()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -168,7 +185,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -176,8 +193,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PutWithValidKeyCreatesLifecycleManagerAndExecutesStateChange()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -197,7 +218,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -205,8 +226,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PutReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -227,7 +252,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -244,8 +269,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PatchWithoutUpdatePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var delta = new Delta<LifeCycle>(typeof(LifeCycle));
@@ -254,14 +283,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void PatchWithInvalidUriReturnsBadRequest()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var delta = new Delta<LifeCycle>(typeof(LifeCycle));
@@ -270,14 +303,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void PatchReturnsBadRequestIfEntityCouldNotBeLoaded()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -292,15 +329,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void PatchWithValidKeyLoadsEntity()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -321,7 +362,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -329,8 +370,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PatchWithValidKeyCreatesLifecycleManagerAndExecutesStateChange()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -351,7 +396,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -359,8 +404,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PatchReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_UPDATE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -382,7 +431,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_UPDATE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -399,36 +448,48 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void NextWithoutNextPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Next(ENTITY_ID, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void NextWithInvalidUriReturnsBadRequest()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_NEXT_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Next(INVALID_ENTITY_ID, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void NextReturnsBadRequestIfEntityCouldNotBeLoaded()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_NEXT_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -441,15 +502,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void NextWithValidKeyLoadsEntity()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_NEXT_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -468,7 +533,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -476,8 +541,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void NextWithValidKeyCreatesLifecycleManagerAndExecutesNextMethod()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_NEXT_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -496,7 +565,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -504,8 +573,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void NextReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_NEXT_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -525,7 +598,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_NEXT_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -533,36 +606,48 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void CancelWithoutCancelPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Cancel(ENTITY_ID, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void CancelWithInvalidUriReturnsBadRequest()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_CANCEL_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Cancel(INVALID_ENTITY_ID, null)
                 .Result;
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         public void CancelReturnsBadRequestIfEntityCouldNotBeLoaded()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_CANCEL_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -575,15 +660,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
         [WorkItem(28)]
         public void CancelWithValidKeyLoadsEntity()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_CANCEL_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -602,7 +691,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -610,8 +699,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void CancelWithValidKeyCreatesLifecycleManagerAndExecutesCancelMethod()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_CANCEL_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -630,7 +723,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -638,8 +731,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void CancelReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_CANCEL_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var mockedEntityController = Mock.Create<EntityController>();
@@ -659,7 +756,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_CANCEL_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedEntityController);
             Mock.Assert(mockedLifeCycleManager);
         }
@@ -669,15 +766,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void AllowWithoutAllowPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Allow(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
@@ -686,8 +787,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(30)]
         public void AllowWithTokenOfNonExistingJobReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_ALLOW_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -699,7 +804,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(_coreService);
         }
 
@@ -708,8 +813,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void AllowWithValidTokenCreatesLifecycleManagerAndExecutesOnAllowCallbackMethod()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_ALLOW_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -727,7 +836,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedLifeCycleManager);
             Mock.Assert(_coreService);
         }
@@ -738,8 +847,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void AllowReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_ALLOW_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -758,7 +871,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_ALLOW_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedLifeCycleManager);
             Mock.Assert(_coreService);
         }
@@ -768,15 +881,19 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void DeclineWithoutCancelPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
-                .Returns(false)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String>(),
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             var actionResult = _lifeCyclesController.Decline(SAMPLE_TOKEN, null)
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
         }
 
         [TestMethod]
@@ -784,8 +901,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void DeclineWithTokenOfNonExistingJobReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_DECLINE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -797,7 +918,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Result;
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(_coreService);
         }
 
@@ -806,8 +927,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void DeclinewWithValidTokenCreatesLifecycleManagerAndExecutesOnDeclineCallbackMethod()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_DECLINE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -825,7 +950,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof (OkResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedLifeCycleManager);
             Mock.Assert(_coreService);
         }
@@ -836,8 +961,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [WorkItem(20)]
         public void DeclineReturnsBadReuqestForFailingLifecycleManagerOperation()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION))
-                .Returns(true)
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+                .Returns(new Identity
+                {
+                    Permissions = new List<String> { LIFE_CYCLE_DECLINE_PERMISSION },
+                    Username = CURRENT_USER_ID
+                })
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.Jobs)
@@ -856,7 +985,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             Assert.IsTrue(actionResult.GetType() == typeof(BadRequestErrorMessageResult));
 
-            Mock.Assert(() => CurrentUserDataProvider.HasCurrentUserPermission(LIFE_CYCLE_DECLINE_PERMISSION));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
             Mock.Assert(mockedLifeCycleManager);
             Mock.Assert(_coreService);
         }

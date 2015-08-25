@@ -13,7 +13,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
     public static class WebApiConfig
     {
         private static String _apiBase = "api";
-        private static List<String> _serverRoles = ConfigurationManager.AppSettings["ServerRoles"].Split(',').ToList<String>();
+        private static List<String> _serverRoles = ConfigurationManager.AppSettings["LifeCycleManager.Server.ServerRoles"].Split(',').ToList<String>();
 
         private static IEnumerable<Lazy<IODataEndpoint, IODataEndpointData>> endpoints;
 
@@ -51,7 +51,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 
         private static Boolean IsContainerNameNotUnique(Lazy<IODataEndpoint, IODataEndpointData> endpoint)
         {
-            return "Administration".Equals(endpoint.Value.GetContainerName()) || 1 < endpoints
+            return "Administration" == endpoint.Value.GetContainerName() || 1 < endpoints
                 .Where(v => v.Value.GetContainerName().Equals(endpoint.Value.GetContainerName(), StringComparison.InvariantCultureIgnoreCase))
                 .Count();
         }

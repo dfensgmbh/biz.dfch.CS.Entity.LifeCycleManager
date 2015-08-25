@@ -15,8 +15,10 @@
  */
 
 using System;
+using System.Configuration;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Telerik.JustMock;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 {
@@ -25,11 +27,31 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     {
         private const String CONTAINER_NAME = "Core";
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Mock.SetupStatic(typeof(ConfigurationManager));
+        }
+
         [TestMethod]
-        public void GetContainerNameReturnsNameOfTheContainer()
+        public void GetContainerNameReturnsNameProvidedByConfiguration()
         {
             var utilitiesEndpoint = new CoreEndpoint();
             Assert.AreEqual(CONTAINER_NAME, utilitiesEndpoint.GetContainerName());
+        }
+
+        [TestMethod]
+        public void GetContainerNameReturnsDefaultNameIfNoNameProvidedByConfiguration()
+        {
+            Mock.Arrange(() => ConfigurationManager.AppSettings["Container.Core.Name"])
+                .Returns((String)null)
+                .OccursOnce();
+
+            var utilitiesEndpoint = new CoreEndpoint();
+            
+            Assert.AreEqual(CONTAINER_NAME, utilitiesEndpoint.GetContainerName());
+
+            Mock.Assert(() => ConfigurationManager.AppSettings["Container.Core.Name"]);
         }
 
         [TestMethod]
@@ -38,7 +60,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
-            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("Job")).Count());
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name == "Job").Count());
         }
 
         [TestMethod]
@@ -47,7 +69,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
-            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("LifeCycle")).Count());
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name == "LifeCycle").Count());
         }
 
         [TestMethod]
@@ -56,7 +78,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
-            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("StateChangeLock")).Count());
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name == "StateChangeLock").Count());
         }
 
         [TestMethod]
@@ -65,7 +87,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             var utilitiesEndpoint = new CoreEndpoint();
             var model = utilitiesEndpoint.GetModel();
 
-            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name.Equals("CalloutDefinition")).Count());
+            Assert.AreEqual(1, model.SchemaElements.Where(v => v.Name == "CalloutDefinition").Count());
         }
     }
 }

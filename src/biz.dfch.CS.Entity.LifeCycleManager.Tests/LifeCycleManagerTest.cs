@@ -265,7 +265,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [WorkItem(21)]
         public void RequestStateChangeForNonLockedEntityLocksEntity()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -312,7 +312,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]
@@ -322,7 +322,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void RequestStateChangeForExistingPreCalloutDefinitionCreatesJobForCalloutWithCalloutDataInParameters()
         {
             Job createdJob = null;
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -376,7 +376,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]
@@ -384,7 +384,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void RequestStateChangeForNonLockedEntityRevertsTransactionAndThrowsInvalidOperationExceptionIfPreCalloutFails()
         {
             Job updatedJob = null;
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -455,7 +455,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
 
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]
@@ -463,7 +463,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void RequestStateChangeForNonLockedEntityWithoutPreCalloutDefinitionChangesStateAndExecutesPostCallout()
         {
             Job createdJob = null;
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -522,7 +522,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]
@@ -533,7 +533,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             Job updatedJob = null;
             Job createdJob = null;
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -592,7 +592,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]
@@ -642,7 +642,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         {
             Job createdJob = null;
             Job updatedJob = null;
-            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUserId())
+            Mock.Arrange(() => CurrentUserDataProvider.GetCurrentUsername())
                 .Returns("Administrator")
                 .MustBeCalled();
 
@@ -734,7 +734,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
-            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUserId());
+            Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
         }
 
         [TestMethod]

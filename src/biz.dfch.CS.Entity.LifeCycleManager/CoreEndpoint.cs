@@ -15,6 +15,7 @@
  */
 
 
+using System;
 using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Web.Http.OData.Builder;
@@ -28,6 +29,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     [ExportMetadata("ServerRole", ServerRole.HOST)]
     public class CoreEndpoint : IODataEndpoint
     {
+        private const String DEFAULT_CONTAINER_NAME = "Core";
+
         public IEdmModel GetModel()
         {
             Debug.WriteLine("Start building core endpoint...");
@@ -44,9 +47,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             return builder.GetEdmModel();
         }
 
-        public string GetContainerName()
+        public String GetContainerName()
         {
-            return ConfigurationManager.AppSettings["Core.Container.Name"];
+            var containerName = ConfigurationManager.AppSettings["Container.Core.Name"];
+            if (String.IsNullOrWhiteSpace(containerName))
+            {
+                containerName = DEFAULT_CONTAINER_NAME;
+            }
+            return containerName;
         }
     }
 }

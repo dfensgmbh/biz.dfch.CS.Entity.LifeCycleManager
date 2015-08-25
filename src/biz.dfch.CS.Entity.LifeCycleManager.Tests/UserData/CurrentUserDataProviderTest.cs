@@ -15,23 +15,27 @@
  */
 
 ﻿using System;
-﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
+namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
 {
-    public class BaseEntity
+    [TestClass]
+    public class CurrentUserDataProviderTest
     {
-        [Key]
-        public int Id { get; set; }
-        private Guid _Tid { get; set; }
-        public String Tid
+        [TestInitialize]
+        public void TestInitialize()
         {
-            get { return _Tid.ToString(); }
-            set { _Tid = Guid.Parse(value); }
+            
         }
-        public String CreatedBy { get; set; }
-        public String ModifiedBy { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
+
+        [TestMethod]
+        public void GetCurrentUsernameGetsUsernameFromHttpContext()
+        {
+            
+        }
     }
 }

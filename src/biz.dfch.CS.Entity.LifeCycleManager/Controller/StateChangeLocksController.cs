@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-﻿using System;
+ using System;
 ﻿using System.Collections.Generic;
 ﻿using System.Linq;
 ﻿using System.Net;
@@ -42,9 +42,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public StateChangeLocksController()
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             Debug.WriteLine(fn);
         }
 
@@ -58,9 +59,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Utilities.svc/StateChangeLocks
         public async Task<IHttpActionResult> GetStateChangeLocks(ODataQueryOptions<StateChangeLock> queryOptions)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -78,16 +80,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                // DFTODO check if from memory point of view this could be a problem (where Tid = tenantId ?)
-                var stateChangeLocks = db.StateChangeLocks.ToList()
-                        .Where(s => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, s));
+                var stateChangeLocks = CurrentUserDataProvider.GetEntitiesForUser(db.StateChangeLocks, identity.Username, tenantId);
                 
                 return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
             }
@@ -101,9 +101,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Utilities.svc/StateChangeLocks(5)
         public async Task<IHttpActionResult> GetStateChangeLock([FromODataUri] int key, ODataQueryOptions<StateChangeLock> queryOptions)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             try
             {
                 queryOptions.Validate(_validationSettings);
@@ -122,9 +123,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // PUT: api/Utilities.svc/StateChangeLocks(5)
         public async Task<IHttpActionResult> Put([FromODataUri] int key, StateChangeLock stateChangeLock)
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -148,9 +150,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // POST: api/Utilities.svc/StateChangeLocks
         public async Task<IHttpActionResult> Post(StateChangeLock stateChangeLock)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -163,9 +166,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanCreate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -178,11 +182,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 Debug.WriteLine("Saving new StateChangeLock for entity with id '{0}'...", 
                     stateChangeLock.EntityId);
 
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var stateChangeLockEntity = new StateChangeLock()
                 {
-                    ParentId = stateChangeLock.ParentId,
-                    CreatedBy = currentUserId,
+                    CreatedBy = identity.Username,
                     Created = DateTimeOffset.Now,
                     Tid = tenantId,
                     EntityId = stateChangeLock.EntityId,
@@ -204,9 +206,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<StateChangeLock> delta)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -228,9 +231,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // DELETE: api/Utilities.svc/StateChangeLocks(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -238,9 +242,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanDelete");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -249,8 +254,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, stateChangeLock))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, stateChangeLock))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

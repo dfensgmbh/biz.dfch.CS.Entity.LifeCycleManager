@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 ﻿using System;
 ﻿using System.Collections.Generic;
 ﻿using System.Configuration;
+﻿using System.Data.Entity;
 ﻿using System.Data.SqlClient;
+﻿using System.Linq;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using System.Web;
 
@@ -24,27 +27,30 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 {
     public static class CurrentUserDataProvider
     {
-        public static String GetCurrentUserId()
+        private const String APPLICATION_NAME_KEY = "Application.Name";
+        private const String CONNECTION_STRING_NAME = "LcmSecurityData";
+
+        public static String GetCurrentUsername()
         {
             return HttpContext.Current.User.Identity.Name;
         }
 
-        public static Boolean HasCurrentUserPermission(String permissionId)
+        public static Boolean IsEntityOfUser(String currentUsername, String tenantId, BaseEntity entity)
         {
-            return true;
+            return entity.Tid == tenantId && entity.CreatedBy == currentUsername;
         }
 
-        public static Boolean IsUserAuthorized(String currentUserId, String tenantId, BaseEntity entity)
+        public static IList<T> GetEntitiesForUser<T>(DbSet<T> dbSet, String currentUsername, String tenantId)
+            where T : BaseEntity
         {
-            // DFTODO Check if tenantId matches?
-            // DFTODO check ACL table or as well hierarchy!?
-            return true;
+            // DFTODO Check ACL table?
+            return dbSet.Where(x => x.Tid == tenantId && x.CreatedBy == currentUsername).ToList();
         }
 
         public static Identity GetIdentity(String tenantId)
         {
-            // DFTODO Check what to do with the tenantId
-            var username = GetCurrentUserId();
+            // DFTODO Check if tenantId has to be used in query
+            var username = GetCurrentUsername();
             var identity = new Identity();
             var connectionString = GetConnectionString();
             String userId = GetUserId(connectionString, username);
@@ -59,8 +65,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 
         private static String GetUserId(String connectionString, String username)
         {
-            // DFTODO read applicationName from config
-            var applicationName = "Cumulus";
+            var applicationName = ConfigurationManager.AppSettings[APPLICATION_NAME_KEY];
+            if (null == applicationName)
+            {
+                throw new ArgumentNullException(String.Format("'{0}' not defined in configuration file", APPLICATION_NAME_KEY));
+            }
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -124,14 +133,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
         private static String GetConnectionString()
         {
             ConnectionStringSettingsCollection connectionStrings = ConfigurationManager.ConnectionStrings;
+
             foreach (ConnectionStringSettings connectionString in connectionStrings)
             {
-                if (connectionString.Name.Equals("MySqlConnection"))
+                if (connectionString.Name == CONNECTION_STRING_NAME)
                 {
                     return connectionString.ConnectionString;
                 }
             }
-            return null;
+            throw new ArgumentException(String.Format("No connection string with name '{0}' found", CONNECTION_STRING_NAME));
         }
     }
 }

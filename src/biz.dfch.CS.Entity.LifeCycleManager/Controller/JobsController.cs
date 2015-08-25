@@ -43,9 +43,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public JobsController()
         {
-            String fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             Debug.WriteLine(fn);
         }
 
@@ -63,9 +64,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [EnableQuery(PageSize = 45)]
         public async Task<IHttpActionResult> GetJobs(ODataQueryOptions<Job> queryOptions)
         {
-            String fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -83,16 +85,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                // DFTODO check if from memory point of view this could be a problem (where Tid = tenantId ?)
-                var jobs = db.Jobs.ToList()
-                    .Where(j => CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, j));
+
+                var jobs = CurrentUserDataProvider.GetEntitiesForUser(db.Jobs, identity.Username, tenantId);
                     
                 return Ok<IEnumerable<Job>>(jobs);
             }
@@ -106,9 +107,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // GET: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> GetJob([FromODataUri] int key, ODataQueryOptions<Job> queryOptions)
         {
-            var fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -126,9 +128,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanRead");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -137,8 +140,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -154,9 +156,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // PUT: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> Put([FromODataUri] int key, Job job)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -175,9 +178,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -186,15 +190,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, original))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, original))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 job.Created = original.Created;
                 job.CreatedBy = original.CreatedBy;
                 job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.ModifiedBy = identity.Username;
                 job.Tid = original.Tid;
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
@@ -212,9 +215,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // POST: api/Core.svc/Jobs
         public async Task<IHttpActionResult> Post(Job job)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -227,9 +231,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "aa506000-025b-474d-b747-53b67f50d46d";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanCreate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -241,12 +246,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
                 Debug.WriteLine("Saving new job...");
 
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
                 var jobEntity = new Job()
                 {
-                    ParentId = job.ParentId,
                     Created = DateTimeOffset.Now,
-                    CreatedBy = currentUserId,
+                    CreatedBy = identity.Username,
                     Tid = tenantId,
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
@@ -271,9 +274,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<Job> delta)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
 
             if (!ModelState.IsValid)
             {
@@ -287,9 +291,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanUpdate");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -298,8 +303,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -313,7 +317,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 job.Created = created;
                 job.CreatedBy = createdBy;
                 job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.ModifiedBy = identity.Username;
                 job.Tid = tId;
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
@@ -331,9 +335,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         // DELETE: api/Core.svc/Jobs(5)
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {
-            var fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
 
             try
             {
@@ -341,9 +346,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanDelete");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -352,8 +358,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -371,18 +376,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Run([FromODataUri] int key, ODataActionParameters parameters)
         {
-            var fn = String.Format("{0}:{1}", 
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            var fn = String.Format("{0}:{1}",
+                declaringType.Namespace,
+                declaringType.Name);
             Debug.WriteLine(fn);
 
             try
             {
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanRun");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -392,14 +399,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 Debug.WriteLine("Run job with id '{0}'", key);
                 job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.ModifiedBy = identity.Username;
                 job.State = JobStateEnum.Running.ToString();
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
@@ -417,18 +423,20 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         [HttpPost]
         public async Task<IHttpActionResult> Finish([FromODataUri] int key, ODataActionParameters parameters)
         {
+            var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Namespace,
-                System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+                declaringType.Namespace,
+                declaringType.Name);
             Debug.WriteLine(fn);
 
             try
             {
                 // DFTODO assign tenantId from headers
                 var tenantId = "";
+                var identity = CurrentUserDataProvider.GetIdentity(tenantId);
 
                 var permissionId = CreatePermissionId("CanRun");
-                if (!CurrentUserDataProvider.HasCurrentUserPermission(permissionId))
+                if (!identity.Permissions.Contains(permissionId))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -438,14 +446,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                var currentUserId = CurrentUserDataProvider.GetCurrentUserId();
-                if (!CurrentUserDataProvider.IsUserAuthorized(currentUserId, tenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, tenantId, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
                 Debug.WriteLine("Finish job with id '{0}'", key);
                 job.Modified = DateTimeOffset.Now;
-                job.ModifiedBy = CurrentUserDataProvider.GetCurrentUserId();
+                job.ModifiedBy = identity.Username;
                 job.State = JobStateEnum.Finished.ToString();
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;

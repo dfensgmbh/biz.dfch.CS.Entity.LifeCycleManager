@@ -26,7 +26,7 @@ namespace LifeCycleManager.Extensions.Default.Loaders
         // DFTODO load configuration from db over service reference of StateMachineConfigurationsController
         public String LoadConfiguration(String entityType)
         {
-            if (entityType.Equals("EntityType"))
+            if (entityType == "EntityType")
             {
                 return "{\"Created-Continue\":\"Running\",\"Created-Cancel\":\"InternalErrorState\",\"Running-Continue\":\"Completed\"}";    
             }

@@ -23,6 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
@@ -50,7 +51,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
         private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["Core.Endpoint"]));
+            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
 
         [Import(typeof(IStateMachineConfigLoader))]
         internal IStateMachineConfigLoader _stateMachineConfigLoader;
@@ -106,6 +107,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             {
                 Trace.WriteLine("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message);
             }
+            finally
+            {
+                assemblyCatalog.Catalogs.Add(new AssemblyCatalog(typeof(LifeCycleManager).Assembly));
+            }
 
             var _container = new CompositionContainer(assemblyCatalog);
 
@@ -123,8 +128,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void SetCoreServiceCredentialsBasedOnConfigValues()
         {
-            var username = ConfigurationManager.AppSettings["Core.Service.User"];
-            var password = ConfigurationManager.AppSettings["Core.Service.Password"];
+            var username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
+            var password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
             _coreService.Credentials = new NetworkCredential(username, password);
         }
 
@@ -229,7 +234,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private void CheckForExistingStateChangeLock(Uri entityUri)
         {
             var scl = _coreService.StateChangeLocks
-               .Where(l => l.EntityId.Equals(entityUri.ToString()))
+               .Where(l => l.EntityId == entityUri.ToString())
                .FirstOrDefault();
 
             if (null != scl)
@@ -244,8 +249,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             _coreService.AddToStateChangeLocks(
                 new StateChangeLock
                 {
-                    // DFTODO Adjust parentId data assignment
-                    ParentId = 0,
                     EntityId = entityUri.ToString()
                 }
             );
@@ -280,12 +283,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             var entityUri = new Uri(job.ReferencedItemId);
 
             ChangeJobState(job.Token, JobStateEnum.Finished);
-            if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString()))
+            if (parameters.Type == Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString())
             {
                 Debug.WriteLine("Process allow POST action callback for job with id '{0}'", job.Id);
                 DoPostCallout(entityUri, LoadEntity(entityUri), parameters.Action, job.TenantId);
             }
-            else if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Post.ToString()))
+            else if (parameters.Type == Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
             {
                 Debug.WriteLine("Process allow PRE action callback for job with id '{0}'", job.Id);
                 DeleteStateChangeLockOfEntity(entityUri);
@@ -298,12 +301,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
             var entityUri = new Uri(job.ReferencedItemId);
 
-            if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString()))
+            if (parameters.Type == Model.CalloutDefinition.CalloutDefinitionType.Pre.ToString())
             {
                 Debug.WriteLine("Process deny POST action callback for job with id '{0}' - finish job and unlock entity",
                     job.Id);
             }
-            else if (parameters.Type.Equals(Model.CalloutDefinition.CalloutDefinitionType.Post.ToString()))
+            else if (parameters.Type == Model.CalloutDefinition.CalloutDefinitionType.Post.ToString())
             {
                 Debug.WriteLine("Process deny PRE action callback for job with id '{0}' - Reset state, finish job and unlock entity",
                     job.Id);
@@ -323,7 +326,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             var entityUriAsString = entityUri.ToString();
             Debug.WriteLine("Deleting StateChangeLock for entity '{0}'", entityUriAsString);
             var scl = _coreService.StateChangeLocks
-                .Where(l => l.EntityId.Equals(entityUriAsString)).Single();
+                .Where(l => l.EntityId == entityUriAsString).Single();
             _coreService.DeleteObject(scl);
             _coreService.SaveChanges();
             Debug.WriteLine("StateChangeLock for entity with id '{0}' deleted", entityUriAsString);
@@ -340,11 +343,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             
             return _coreService.CalloutDefinitions.Where(
                 c =>
-                    (c.CalloutType.Equals(calloutType)
-                    || c.CalloutType.Equals(Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString()))
-                    && tenantId.Equals(c.TenantId)
-                    && (entityUri.ToString().Equals(c.EntityId)
-                    || _entityType.Equals(c.EntityType))
+                    (c.CalloutType == calloutType
+                    || c.CalloutType == Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString())
+                    && tenantId == c.TenantId
+                    && (entityUri.ToString() == c.EntityId
+                    || _entityType == c.EntityType)
                     && new Regex(c.Condition).IsMatch(condition)).FirstOrDefault();
         }
 
@@ -374,7 +377,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 Action = condition,
                 EntityId = entityUri.ToString(),
                 OriginalState = originalState,
-                UserId = CurrentUserDataProvider.GetCurrentUserId(),
+                UserId = CurrentUserDataProvider.GetCurrentUsername(),
                 CallbackUrl = CreateCallbackUrl(entityUri.ToString())
             };
         }
@@ -394,7 +397,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
             var token = sb.ToString();
 
-            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["Core.Endpoint"], token);
+            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"], token);
         }
 
         private void ChangeEntityState(Uri entityUri, String entity, String condition)
@@ -411,8 +414,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             var token = calloutData.CallbackUrl.Split('(', ')')[1];
             _coreService.AddToJobs(new Job
             {
-                // DFTODO Adjust parentId assignment
-                ParentId = 0,
                 State = JobStateEnum.Running.ToString(),
                 Type = CALLOUT_JOB_TYPE,
                 Parameters = JsonConvert.SerializeObject(calloutData),
@@ -438,9 +439,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         {
             return _coreService.Jobs.Where(
                     j =>
-                        token.Equals(j.Token)
-                        && CALLOUT_JOB_TYPE.Equals(j.Type)
-                        && JobStateEnum.Running.ToString().Equals(j.State)).Single();
+                        token == j.Token
+                        && CALLOUT_JOB_TYPE == j.Type
+                        && JobStateEnum.Running.ToString() == j.State).Single();
         }
     }
 }

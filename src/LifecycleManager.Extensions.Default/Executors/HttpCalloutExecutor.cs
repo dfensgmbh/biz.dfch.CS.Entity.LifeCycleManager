@@ -53,7 +53,7 @@ namespace LifecycleManager.Extensions.Default.Executors
 
             try
             {
-                // DFTODO Set Authorization-header or api-key!?
+                // DFTODO Do callout with auth information provided in parameters
                 _restCallExecutor.Invoke(HttpMethod.Post, requestUrl.ToString(), null, JsonConvert.SerializeObject(data));
             }
             catch (HttpRequestException e)
