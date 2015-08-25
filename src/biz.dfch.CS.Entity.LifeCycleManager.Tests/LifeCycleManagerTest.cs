@@ -31,7 +31,6 @@ using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
-using Telerik.JustMock.Expectations.Abstraction;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.StateChangeLock;
