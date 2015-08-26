@@ -49,7 +49,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public String GetContainerName()
         {
-            var containerName = ConfigurationManager.AppSettings["Container.Core.Name"];
+            var containerName = ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core.Container.Name"];
             if (String.IsNullOrWhiteSpace(containerName))
             {
                 containerName = DEFAULT_CONTAINER_NAME;

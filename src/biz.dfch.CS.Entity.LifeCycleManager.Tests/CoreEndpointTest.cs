@@ -43,7 +43,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void GetContainerNameReturnsDefaultNameIfNoNameProvidedByConfiguration()
         {
-            Mock.Arrange(() => ConfigurationManager.AppSettings["Container.Core.Name"])
+            Mock.Arrange(() => ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core.Container.Name"])
                 .Returns((String)null)
                 .OccursOnce();
 
@@ -51,7 +51,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             
             Assert.AreEqual(CONTAINER_NAME, utilitiesEndpoint.GetContainerName());
 
-            Mock.Assert(() => ConfigurationManager.AppSettings["Container.Core.Name"]);
+            Mock.Assert(() => ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core.Container.Name"]);
         }
 
         [TestMethod]
