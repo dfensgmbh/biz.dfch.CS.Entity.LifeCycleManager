@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.OData.Batch;
 using System.Web.Http.OData.Extensions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
+using biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 {

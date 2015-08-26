@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
+using biz.dfch.CS.Entity.LifeCycleManager.Logging;
 
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 {
     public class WebApiApplication : System.Web.HttpApplication
@@ -24,11 +25,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 
         protected void Application_Start()
         {
-            //AreaRegistration.RegisterAllAreas();
-            //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
-
             LoadAndComposeParts();
 
             WebApiConfig.InitEndpoints(endpoints);
@@ -36,6 +32,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
             GlobalConfiguration.Configuration.Services.Replace(typeof(IAssembliesResolver), new DefaultAssembliesResolver());
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
             Debug.WriteLine("Global.Application_Start() END.");
         }
 
@@ -51,7 +48,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
                 {
                     folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
                 }
-                Debug.WriteLine("Tralala folder = " + folder);
+                Debug.WriteLine("Plugin folder = " + folder);
                 assemblyCatalog.Catalogs.Add(new DirectoryCatalog(folder));
             }
             catch (Exception ex)
