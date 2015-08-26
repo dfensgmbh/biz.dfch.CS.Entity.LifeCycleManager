@@ -44,8 +44,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
-        private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
+        private CumulusCoreService.Core _coreService;
 
         public LifeCyclesController()
         {
@@ -53,6 +52,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var fn = String.Format("{0}:{1}",
                 declaringType.Namespace,
                 declaringType.Name);
+
+            _coreService = new CumulusCoreService.Core(
+            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
+
             Debug.WriteLine(fn);
         }
 
