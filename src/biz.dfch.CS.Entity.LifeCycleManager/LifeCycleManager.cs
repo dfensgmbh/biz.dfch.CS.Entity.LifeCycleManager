@@ -43,6 +43,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 {
     // DFTODO implement entity hierarchy
     // DFTODO implement ACL
+    // DFTODO Modify plugin interface to provide a factory
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
@@ -178,7 +179,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     var calloutData = CreatePreCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, calloutData);
-                    _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
+                    lock (_lock)
+                    {
+                        _calloutExecutor.ExecuteCallout(preCalloutDefinition.Parameters, calloutData);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -208,7 +212,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 {
                     postCalloutData = CreatePostCalloutData(entityUri, entity, condition);
                     token = CreateJob(entityUri, tenantId, postCalloutData);
-                    _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
+                    lock (_lock)
+                    {
+                        _calloutExecutor.ExecuteCallout(postCalloutDefinition.Parameters, postCalloutData);
+                    }
                 }
             }
             catch (Exception e)
