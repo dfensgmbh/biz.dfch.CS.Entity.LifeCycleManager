@@ -41,6 +41,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private const String _permissionInfix = "LifeCycle";
         private const String _permissionPrefix = "LightSwitchApplication";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
+        private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
@@ -54,7 +55,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 declaringType.Name);
 
             _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
+            new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
 
             Debug.WriteLine(fn);
         }

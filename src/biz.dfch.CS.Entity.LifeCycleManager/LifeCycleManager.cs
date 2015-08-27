@@ -47,7 +47,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
-        private const String CORE_ENDPOINT_URL = "LifeCycleManager.Endpoint.Core";
+        private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
         private static Object _lock = new Object();
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
@@ -82,7 +82,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     _calloutExecutor = _staticCalloutExecutor;
                 }
             }
-            _coreService = new CumulusCoreService.Core(new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL]));
+            _coreService = new CumulusCoreService.Core(new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
             SetCoreServiceCredentialsBasedOnConfigValues();
 
             _entityController = new EntityController(authenticationProvider);
@@ -403,7 +403,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
             var token = sb.ToString();
 
-            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"], token);
+            return String.Format("{0}/Jobs({1})", ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY], token);
         }
 
         private void ChangeEntityState(Uri entityUri, String entity, String condition)
