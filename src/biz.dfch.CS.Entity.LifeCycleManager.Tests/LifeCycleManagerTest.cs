@@ -229,11 +229,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns((String)null)
                 .MustBeCalled();
 
-            new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
+            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
 
-            Type type = typeof(LifeCycleManager);
-            FieldInfo fieldInfo = type.GetField(CORE_SERVICE_FIELD, BindingFlags.NonPublic | BindingFlags.Static);
-            CumulusCoreService.Core coreService = (CumulusCoreService.Core)fieldInfo.GetValue(null);
+            var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
+            var coreService =
+                (CumulusCoreService.Core)lifeCycleManagerWithPrivatAccess.GetField(CORE_SERVICE_FIELD);
 
             Assert.IsNotNull(coreService.Credentials);
             Mock.Assert(_stateMachineConfigLoader);

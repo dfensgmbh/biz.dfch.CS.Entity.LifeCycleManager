@@ -47,12 +47,10 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     public class LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
+        private const String CORE_ENDPOINT_URL = "LifeCycleManager.Endpoint.Core";
         private static Object _lock = new Object();
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
-
-        private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
 
         [Import(typeof(IStateMachineConfigLoader))]
         internal IStateMachineConfigLoader _stateMachineConfigLoader;
@@ -60,6 +58,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         [Import(typeof (ICalloutExecutor))]
         internal ICalloutExecutor _calloutExecutor;
 
+        private CumulusCoreService.Core _coreService;
         private StateMachine.StateMachine _stateMachine;
         private EntityController _entityController;
         private String _entityType;
@@ -76,7 +75,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     LoadAndComposeParts();
                     _staticStateMachineConfigLoader = _stateMachineConfigLoader;
                     _staticCalloutExecutor = _calloutExecutor;
-                    SetCoreServiceCredentialsBasedOnConfigValues();
                 }
                 else
                 {
@@ -84,6 +82,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                     _calloutExecutor = _staticCalloutExecutor;
                 }
             }
+            _coreService = new CumulusCoreService.Core(new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL]));
+            SetCoreServiceCredentialsBasedOnConfigValues();
+
             _entityController = new EntityController(authenticationProvider);
             _stateMachine = new StateMachine.StateMachine();
             ConfigureStateMachine(entityType);
