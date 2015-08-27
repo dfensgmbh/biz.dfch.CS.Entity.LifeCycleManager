@@ -12,8 +12,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 {
     public static class WebApiConfig
     {
+        private const String SERVER_ROLES_KEY = "LifeCycleManager.Server.ServerRoles";
         private static String _apiBase = "api";
-        private static List<String> _serverRoles = ConfigurationManager.AppSettings["LifeCycleManager.Server.ServerRoles"].Split(',').ToList<String>();
+        private static List<String> _serverRoles;
 
         private static IEnumerable<Lazy<IODataEndpoint, IODataEndpointData>> endpoints;
 
@@ -24,24 +25,46 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 
         public static void Register(HttpConfiguration config)
         {
-            foreach (var endpoint in endpoints)
+            Debug.Write("WebApiConfig::Register() START");
+
+            ResolveServerRoles();
+
+            if (null != endpoints)
             {
-
-                if (NotMatchingRoleOfServer(endpoint))
+                foreach (var endpoint in endpoints)
                 {
-                    continue;
-                }
 
-                if (IsContainerNameNotUnique(endpoint))
-                {
-                    Debug.WriteLine(String.Format("ContainerName '{0}' not unique", endpoint.Value.GetContainerName()));
-                    continue;
-                }
+                    if (NotMatchingRoleOfServer(endpoint))
+                    {
+                        continue;
+                    }
 
-                RegisterMefEndpoint(config, endpoint);
+                    if (IsContainerNameNotUnique(endpoint))
+                    {
+                        Debug.WriteLine(String.Format("ContainerName '{0}' not unique",
+                            endpoint.Value.GetContainerName()));
+                        continue;
+                    }
+
+                    RegisterMefEndpoint(config, endpoint);
+                }
             }
             config.MapHttpAttributeRoutes();
             Debug.Write("WebApiConfig::Register() END");
+        }
+
+        private static void ResolveServerRoles()
+        {
+            var serverRoles = ConfigurationManager.AppSettings[SERVER_ROLES_KEY];
+            if (null == serverRoles)
+            {
+                Debug.WriteLine("WARNING: '{0}' not set in .config file", SERVER_ROLES_KEY);
+                _serverRoles = new List<String>();
+            }
+            else
+            {
+                _serverRoles = serverRoles.Split(',').ToList<String>();
+            }
         }
 
         private static Boolean NotMatchingRoleOfServer(Lazy<IODataEndpoint, IODataEndpointData> endpoint)

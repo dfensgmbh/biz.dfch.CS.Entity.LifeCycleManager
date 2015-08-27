@@ -53,7 +53,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message));
+                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}",
+                    folder, ex.Message));
+            }
+            finally
+            {
+                // Adds all the parts found in the same assembly as the actual class
+                assemblyCatalog.Catalogs.Add(new AssemblyCatalog(typeof(WebApiApplication).Assembly));
             }
 
             _container = new CompositionContainer(assemblyCatalog);
