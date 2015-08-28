@@ -102,6 +102,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
             var sqlConnection = Mock.Create<SqlConnection>();
             var sqlCommand = Mock.Create<SqlCommand>();
             var sqlDataReader = Mock.Create<SqlDataReader>();
+            var userId = Guid.NewGuid();
 
             Mock.Arrange(() => HttpContext.Current.User.Identity.Name)
                 .Returns(USERNAME)
@@ -123,14 +124,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
                 .IgnoreInstance()
                 .Returns(sqlDataReader);
 
-            Mock.Arrange(() => sqlDataReader.GetString(0))
-                .Returns("123")
+            Mock.Arrange(() => sqlDataReader.GetGuid(0))
+                .Returns(userId)
                 .InSequence()
                 .OccursOnce();
 
             Mock.Arrange(() => sqlConnection.Close())
                 .IgnoreInstance()
                 .Occurs(3);
+
+            Mock.Arrange(() => sqlDataReader.Read())
+                .Returns(true)
+                .InSequence();
 
             Mock.Arrange(() => sqlDataReader.Read())
                 .Returns(true)
