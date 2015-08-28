@@ -7,6 +7,7 @@ Allows managing the lifecycle of entities. Supports pre- and post-callouts/hooks
 
 The following snippet shows the entity framework configuration on a standalone IIS
 
+```
   <entityFramework>
     <defaultConnectionFactory type="System.Data.Entity.Infrastructure.SqlConnectionFactory, EntityFramework">
       <parameters>
@@ -17,7 +18,7 @@ The following snippet shows the entity framework configuration on a standalone I
       <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
     </providers>
   </entityFramework>
-  
+```
 
 ## License Information
 
