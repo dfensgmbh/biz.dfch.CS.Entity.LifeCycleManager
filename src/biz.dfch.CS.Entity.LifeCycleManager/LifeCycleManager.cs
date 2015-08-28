@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
+using System.Data.Services.Client;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,6 +38,7 @@ using Newtonsoft.Json.Linq;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.StateChangeLock;
+using System.Web;
 
 [assembly: InternalsVisibleTo("biz.dfch.CS.Entity.LifeCycleManager.Tests")]
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -48,6 +50,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
+        private const String TENANT_ID_HEADER_KEY = "Tenant-Id";
         private static Object _lock = new Object();
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
@@ -83,11 +86,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 }
             }
             _coreService = new CumulusCoreService.Core(new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
+            _coreService.BuildingRequest += CoreServiceOnBuildingRequest;
             SetCoreServiceCredentialsBasedOnConfigValues();
 
             _entityController = new EntityController(authenticationProvider);
             _stateMachine = new StateMachine.StateMachine();
             ConfigureStateMachine(entityType);
+        }
+
+        private void CoreServiceOnBuildingRequest(object sender, BuildingRequestEventArgs buildingRequestEventArgs)
+        {
+            var tenantId = HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY);
+            buildingRequestEventArgs.Headers.Add(TENANT_ID_HEADER_KEY, tenantId);
         }
 
         private void LoadAndComposeParts()

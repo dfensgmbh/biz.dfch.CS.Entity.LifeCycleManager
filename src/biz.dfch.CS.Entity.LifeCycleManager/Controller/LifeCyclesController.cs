@@ -15,9 +15,9 @@
  */
 
 using System;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Data.Entity.Infrastructure.Pluralization;
+using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -56,6 +56,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             _coreService = new CumulusCoreService.Core(
             new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
+            _coreService.BuildingRequest += CoreServiceOnBuildingRequest;
 
             Debug.WriteLine(fn);
         }
@@ -470,6 +471,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var begin = key.LastIndexOf("/");
             var end = key.IndexOf("(");
             return _pluralizationService.Singularize(key.Substring(begin + 1, end - begin - 1));
+        }
+
+        private void CoreServiceOnBuildingRequest(object sender, BuildingRequestEventArgs buildingRequestEventArgs)
+        {
+            buildingRequestEventArgs.Headers.Add(TENANT_ID_HEADER_KEY, TenantId);
         }
     }
 }
