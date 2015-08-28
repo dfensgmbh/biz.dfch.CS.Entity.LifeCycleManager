@@ -23,7 +23,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
     public class TenantAwareODataController : ODataController
     {
         protected const String TENANT_ID_HEADER_KEY = "Tenant-Id";
-        protected String TenantId { get; private set; }
+        public String TenantId { get; private set; }
 
         public TenantAwareODataController()
         {
