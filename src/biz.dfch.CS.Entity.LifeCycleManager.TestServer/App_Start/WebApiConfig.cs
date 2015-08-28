@@ -87,9 +87,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
         private static void RegisterEndpoint(HttpConfiguration config, string containerName, Microsoft.Data.Edm.IEdmModel edmModel)
         {
             config.Routes.MapODataServiceRoute(
-                routeName: String.Format("{0}/{1}.svc", _apiBase, containerName)
+                routeName: String.Format("{0}/{1}", _apiBase, containerName)
                 ,
-                routePrefix: String.Format("{0}/{1}.svc", _apiBase, containerName)
+                routePrefix: String.Format("{0}/{1}", _apiBase, containerName)
                 ,
                 model: edmModel
                 ,

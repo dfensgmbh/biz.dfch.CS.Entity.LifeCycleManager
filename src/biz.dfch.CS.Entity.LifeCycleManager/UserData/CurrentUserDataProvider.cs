@@ -18,7 +18,9 @@
 ﻿using System.Collections.Generic;
 ﻿using System.Configuration;
 ﻿using System.Data.Entity;
+﻿using System.Data.Entity.Core;
 ﻿using System.Data.SqlClient;
+﻿using System.Diagnostics;
 ﻿using System.Linq;
 ﻿using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using System.Web;
@@ -83,7 +85,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    return reader.GetString(0);
+                    if (reader.Read())
+                    {
+                        return reader.GetGuid(0).ToString();
+                    }
+                    Debug.WriteLine("UserId for user with username '{0}' not available in database", username);
+                    throw new ObjectNotFoundException();
                 }
             }
         }
