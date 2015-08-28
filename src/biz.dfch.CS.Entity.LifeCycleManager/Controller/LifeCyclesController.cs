@@ -43,6 +43,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
 
+        private static String _username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
+        private static String _password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
+
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
         private CumulusCoreService.Core _coreService;
@@ -56,6 +59,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
             _coreService = new CumulusCoreService.Core(
             new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
+            _coreService.Credentials = new NetworkCredential(_username, _password);
             _coreService.BuildingRequest += CoreServiceOnBuildingRequest;
 
             Debug.WriteLine(fn);

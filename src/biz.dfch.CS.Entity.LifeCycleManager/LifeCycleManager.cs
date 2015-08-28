@@ -52,6 +52,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
         private const String TENANT_ID_HEADER_KEY = "Tenant-Id";
         private static Object _lock = new Object();
+        private static String _username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
+        private static String _password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
+        
         private static IStateMachineConfigLoader _staticStateMachineConfigLoader = null;
         private static ICalloutExecutor _staticCalloutExecutor = null;
 
@@ -87,7 +90,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             }
             _coreService = new CumulusCoreService.Core(new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
             _coreService.BuildingRequest += CoreServiceOnBuildingRequest;
-            SetCoreServiceCredentialsBasedOnConfigValues();
 
             _entityController = new EntityController(authenticationProvider);
             _stateMachine = new StateMachine.StateMachine();
@@ -136,13 +138,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
             {
                 Trace.WriteLine(compositionException.ToString());
             }
-        }
-
-        private void SetCoreServiceCredentialsBasedOnConfigValues()
-        {
-            var username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
-            var password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
-            _coreService.Credentials = new NetworkCredential(username, password);
         }
 
         private void ConfigureStateMachine(String entityType)
@@ -249,6 +244,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void CheckForExistingStateChangeLock(Uri entityUri)
         {
+            SetCoreServiceCredentialsBasedOnConfigValues();
             var scl = _coreService.StateChangeLocks
                .Where(l => l.EntityId == entityUri.ToString())
                .FirstOrDefault();
@@ -262,6 +258,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void CreateStateChangeLockForEntity(Uri entityUri)
         {
+            SetCoreServiceCredentialsBasedOnConfigValues();
             _coreService.AddToStateChangeLocks(
                 new StateChangeLock
                 {
@@ -341,6 +338,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         {
             var entityUriAsString = entityUri.ToString();
             Debug.WriteLine("Deleting StateChangeLock for entity '{0}'", entityUriAsString);
+            SetCoreServiceCredentialsBasedOnConfigValues();
             var scl = _coreService.StateChangeLocks
                 .Where(l => l.EntityId == entityUriAsString).Single();
             _coreService.DeleteObject(scl);
@@ -357,6 +355,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 _entityType,
                 entityUri.ToString());
             
+            // DFTODO Impersonate call to service reference
+
             return _coreService.CalloutDefinitions.Where(
                 c =>
                     (c.CalloutType == calloutType
@@ -428,6 +428,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
         private String CreateJob(Uri entityUri, String tenantId, CalloutData calloutData)
         {
             var token = calloutData.CallbackUrl.Split('(', ')')[1];
+            SetCoreServiceCredentialsBasedOnConfigValues();
             _coreService.AddToJobs(new Job
             {
                 State = JobStateEnum.Running.ToString(),
@@ -443,6 +444,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void ChangeJobState(String token, JobStateEnum newJobState)
         {
+            SetCoreServiceCredentialsBasedOnConfigValues();
             var job = GetRunningJob(token);
 
             job.State = newJobState.ToString();
@@ -453,11 +455,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private Job GetRunningJob(String token)
         {
+            SetCoreServiceCredentialsBasedOnConfigValues();
             return _coreService.Jobs.Where(
                     j =>
                         token == j.Token
                         && CALLOUT_JOB_TYPE == j.Type
                         && JobStateEnum.Running.ToString() == j.State).Single();
+        }
+
+        private void SetCoreServiceCredentialsBasedOnConfigValues()
+        {
+            _coreService.Credentials = new NetworkCredential(_username, _password);
         }
     }
 }

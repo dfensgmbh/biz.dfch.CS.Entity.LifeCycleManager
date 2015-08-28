@@ -222,24 +222,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        public void LifeCycleManagerConstructorSetsCoreServiceCredentialsBasedOnConfigValues()
-        {
-            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
-                .IgnoreInstance()
-                .Returns((String)null)
-                .MustBeCalled();
-
-            var lifeCycleManager = new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
-
-            var lifeCycleManagerWithPrivatAccess = new PrivateObject(lifeCycleManager);
-            var coreService =
-                (CumulusCoreService.Core)lifeCycleManagerWithPrivatAccess.GetField(CORE_SERVICE_FIELD);
-
-            Assert.IsNotNull(coreService.Credentials);
-            Mock.Assert(_stateMachineConfigLoader);
-        }
-
-        [TestMethod]
         [WorkItem(21)]
         public void RequestStateChangeForLockedEntityThrowsInvalidOperationException()
         {
