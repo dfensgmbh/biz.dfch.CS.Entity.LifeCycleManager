@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
@@ -354,17 +355,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
                 condition,
                 _entityType,
                 entityUri.ToString());
-            
-            // DFTODO Impersonate call to service reference
 
-            return _coreService.CalloutDefinitions.Where(
-                c =>
-                    (c.CalloutType == calloutType
-                    || c.CalloutType == Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString())
-                    && tenantId == c.TenantId
-                    && (entityUri.ToString() == c.EntityId
-                    || _entityType == c.EntityType)
-                    && new Regex(c.Condition).IsMatch(condition)).FirstOrDefault();
+            var identity = (WindowsIdentity) HttpContext.Current.User.Identity;
+            _coreService.Credentials = CredentialCache.DefaultCredentials;
+
+            using (var impersonationContext = identity.Impersonate())
+            {
+                return _coreService.CalloutDefinitions.Where(
+                    c =>
+                        (c.CalloutType == calloutType
+                         || c.CalloutType == Model.CalloutDefinition.CalloutDefinitionType.PreAndPost.ToString())
+                        && tenantId == c.TenantId
+                        && (entityUri.ToString() == c.EntityId
+                            || _entityType == c.EntityType)
+                        && new Regex(c.Condition).IsMatch(condition)).FirstOrDefault();
+            }
         }
 
         private CalloutData CreatePreCalloutData(Uri entityUri, String entity, String condition)
