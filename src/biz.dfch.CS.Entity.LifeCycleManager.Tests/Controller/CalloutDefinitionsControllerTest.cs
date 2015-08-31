@@ -64,14 +64,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void GetCalloutDefinitionsForUserWithReadPermissionReturnsCalloutDefinitionsTheUserIsAuthorizedFor()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> {CALLOUT_DEFINITION_READ_PERMISSION},
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, TENANT_ID))
                 .ReturnsCollection(CreateSampleCalloutDefinitionDbSet().ToList())
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions)
@@ -89,15 +90,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Content.Count());
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetCalloutDefinitionsForUserWithoutReadPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -111,20 +112,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void GetCalloutDefinitionsWithNonExistingCalloutDefinitionsForCurrentUserReturnsEmptyList()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_READ_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, TENANT_ID))
                 .ReturnsCollection(new List<CalloutDefinition>())
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions)
@@ -142,22 +144,23 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.IsNotNull(response);
             Assert.AreEqual(0, response.Content.Count());
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<CalloutDefinition>>(), CURRENT_USER_ID, TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetCalloutDefinitionByIdForAuthorizedUserWithReadPermissionReturnsRequestedCalloutDefinition()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_READ_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -176,22 +179,23 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(1, calloutDefinition.Id);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.CreatedBy);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetCalloutDefinitionByIdForUnAuthorizedUserReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_READ_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -205,15 +209,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetCalloutDefinitionByIdForNonExistingCalloutDefinitionIdReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_READ_PERMISSION },
@@ -231,14 +235,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetCalloutDefinitionByIdForUserWithoutReadPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -252,20 +256,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void PutCalloutDefinitionForAuthorizedUserWithUpdatePermissionUpdatesCalloutDefinition()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -313,15 +318,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(TENANT_ID, calloutDefinition.TenantId);
             Assert.AreEqual("testparameters", calloutDefinition.Parameters);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void PutCalloutDefinitionForUserWithoutUpdatePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -335,20 +340,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void PutCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -372,22 +378,23 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void PutCalloutDefinitionForAuthorizedUserSetsUpdatedDate()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -427,15 +434,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual(ENTITY_ID_1, calloutDefinition.EntityId);
             Assert.AreEqual(TENANT_ID, calloutDefinition.TenantId);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void PutCalloutDefinitionForNonExistingCalloutDefinitionIdReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
@@ -459,7 +466,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -517,7 +524,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_CREATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Add(Arg.IsAny<CalloutDefinition>()))
@@ -563,14 +571,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void PatchCalloutDefinitionForAuthorizedUserWithUpdatePermissionUpdatesDeliveredFields()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -610,15 +619,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.AreEqual("testparameters", calloutDefinition.Parameters);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, calloutDefinition.EntityType);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void PatchCalloutDefinitionForUserWithoutUpdatePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -630,20 +639,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void PatchCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -654,15 +664,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void PatchForNonExistingCalloutDefinitionIdReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_UPDATE_PERMISSION },
@@ -677,21 +687,22 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void DeleteCalloutDefinitionForAuthorizedUserWithDeletePermissionDeletesCalloutDefinition()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_DELETE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -705,15 +716,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NoContent);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void DeleteCalloutDefinitionForUserWithoutDeletePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -725,20 +736,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void DeleteCalloutDefinitionForUnauthorizedUserReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_DELETE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()))
                 .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.CalloutDefinitions.Find(1))
@@ -749,15 +761,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<CalloutDefinition>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<CalloutDefinition>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void DeleteForNonExistingCalloutDefinitionIdReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { CALLOUT_DEFINITION_DELETE_PERMISSION },
@@ -772,7 +784,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 

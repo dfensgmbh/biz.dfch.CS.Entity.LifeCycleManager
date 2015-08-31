@@ -158,10 +158,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, identity.Tid);
 
                 return Ok();
             }
@@ -233,10 +232,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, identity.Tid);
 
                 return Ok();
             }
@@ -292,10 +290,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Next(entityUri, entity, TenantId);
+                lifeCycleManager.Next(entityUri, entity, identity.Tid);
 
                 return Ok();
             }
@@ -339,10 +336,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Cancel(entityUri, entity, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.Cancel(entityUri, entity, identity.Tid);
 
                 return Ok();
             }
@@ -395,8 +391,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), calloutDefinition.EntityType);
                 lifeCycleManager.OnAllowCallback(job);
 
                 return Ok();
@@ -442,8 +437,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), calloutDefinition.EntityType);
                 lifeCycleManager.OnDeclineCallback(job);
 
                 return Ok();

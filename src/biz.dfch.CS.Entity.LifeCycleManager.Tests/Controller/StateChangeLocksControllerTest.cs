@@ -63,14 +63,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void GetStateChangeLocksForAuthorizedUserWithReadPermissionReturnsStateChangeLocksTheUserIsAuthorizedFor()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_READ_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, TENANT_ID))
                 .ReturnsCollection(CreateSampleStateChangeLockDbSet().ToList())
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.StateChangeLocks)
@@ -88,15 +89,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Content.Count());
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void GetStateChangeLocksForUserWithoutReadPermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> (),
@@ -110,20 +111,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void GetStateChangeLocksForUserWithoutStateChangeLocksReturnsEmptyList()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_READ_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, TENANT_ID))
                 .ReturnsCollection(new List<StateChangeLock>())
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.StateChangeLocks)
@@ -141,8 +143,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             Assert.IsNotNull(response);
             Assert.AreEqual(0, response.Content.Count());
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetEntitiesForUser(Arg.IsAny<DbSet<StateChangeLock>>(), CURRENT_USER_ID, TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 
@@ -184,7 +186,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_CREATE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.StateChangeLocks.Add(Arg.IsAny<StateChangeLock>()))
@@ -225,14 +228,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         [TestMethod]
         public void DeleteStateChangeLockForAuthorizedUserWithDeletePermissionDeletesStateChangeLock()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_DELETE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<StateChangeLock>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<StateChangeLock>()))
                 .Returns(true)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.StateChangeLocks.Find(1))
@@ -246,15 +250,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NoContent);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<StateChangeLock>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<StateChangeLock>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void DeleteStateChangeLockForUserWithoutDeletePermissionReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String>(),
@@ -266,20 +270,21 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
         }
 
         [TestMethod]
         public void DeleteStateChangeLockForUnauthorizedUserReturnsForbidden()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_DELETE_PERMISSION },
-                    Username = CURRENT_USER_ID
+                    Username = CURRENT_USER_ID,
+                    Tid = TENANT_ID
                 })
                 .MustBeCalled();
-            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<StateChangeLock>()))
+            Mock.Arrange(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<StateChangeLock>()))
                 .Returns(false)
                 .MustBeCalled();
             Mock.Arrange(() => _lifeCycleContext.StateChangeLocks.Find(1))
@@ -290,15 +295,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.Forbidden);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
-            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, EMPTY_TENANT_ID, Arg.IsAny<StateChangeLock>()));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.IsEntityOfUser(CURRENT_USER_ID, TENANT_ID, Arg.IsAny<StateChangeLock>()));
             Mock.Assert(_lifeCycleContext);
         }
 
         [TestMethod]
         public void DeleteForNonExistingStateChangeLockIdReturnsNotFound()
         {
-            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID))
+            Mock.Arrange(() => CurrentUserDataProvider.GetIdentity(TENANT_ID))
                 .Returns(new Identity
                 {
                     Permissions = new List<String> { STATE_CHANGE_LOCK_DELETE_PERMISSION },
@@ -313,7 +318,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
 
             AssertStatusCodeResult(actionResult, HttpStatusCode.NotFound);
 
-            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(EMPTY_TENANT_ID));
+            Mock.Assert(() => CurrentUserDataProvider.GetIdentity(TENANT_ID));
             Mock.Assert(_lifeCycleContext);
         }
 

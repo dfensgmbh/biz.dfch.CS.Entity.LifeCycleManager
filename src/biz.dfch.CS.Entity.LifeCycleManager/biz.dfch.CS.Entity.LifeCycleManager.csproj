@@ -104,6 +104,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.datasvcmap</DependentUpon>
     </Compile>
+    <Compile Include="UserData\DefaultAuthenticationProvider.cs" />
     <Compile Include="UserData\IAuthenticationProvider.cs" />
     <Compile Include="UserData\Identity.cs" />
     <Compile Include="UserData\CurrentUserDataProvider.cs" />

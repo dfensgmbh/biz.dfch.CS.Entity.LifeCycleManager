@@ -91,7 +91,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
 
-                var jobs = CurrentUserDataProvider.GetEntitiesForUser(db.Jobs, identity.Username, TenantId);
+                var jobs = CurrentUserDataProvider.GetEntitiesForUser(db.Jobs, identity.Username, identity.Tid);
                     
                 return Ok<IEnumerable<Job>>(jobs);
             }
@@ -136,7 +136,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -184,7 +184,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, original))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, original))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -242,7 +242,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     Created = DateTimeOffset.Now,
                     CreatedBy = identity.Username,
-                    Tid = TenantId,
+                    Tid = identity.Tid,
                     Type = null == job.Type ? "Default" : job.Type,
                     State = job.State,
                     Parameters = job.Parameters,
@@ -293,7 +293,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -346,7 +346,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -385,7 +385,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -430,7 +430,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, job))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, job))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

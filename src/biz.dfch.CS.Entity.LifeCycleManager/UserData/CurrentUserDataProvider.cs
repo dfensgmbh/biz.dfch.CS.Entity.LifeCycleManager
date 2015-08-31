@@ -55,13 +55,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
         public static Identity GetIdentity(String tenantId)
         {
             // DFTODO Check, if user really belongs to tenant with id tenantId
-            // DFTODO Check, if tenantId is null query home/primary tenant
             var username = GetCurrentUsername();
             var identity = new Identity();
             String userId = GetUserId(_connectionString, username);
 
             identity.Username = username;
-            identity.Tid = tenantId;
+            identity.Tid = tenantId ?? "f61907fc-75a0-4303-8ad2-b8079fa2bb89";
             identity.Roles = GetRoles(_connectionString, userId);
             identity.Permissions = GetPermissions(_connectionString, identity.Roles);
 
