@@ -30,9 +30,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
     public static class CurrentUserDataProvider
     {
         private const String APPLICATION_NAME_KEY = "Application.Name";
+        private const String DEFAULT_TENANT_ID_KEY = "Default.Tenant.Id";
+        private const String USER_DATA_DB_TABLE_PREFIX_KEY = "UserData.Database.Table.Prefix";
         private const String CONNECTION_STRING_NAME = "LcmSecurityData";
-
-        private static String _connectionString = GetConnectionString();
+        private static readonly String DEFAULT_TENANT_ID = ConfigurationManager.AppSettings[DEFAULT_TENANT_ID_KEY];
+        
+        private static readonly String _connectionString = GetConnectionString();
+        private static readonly String _dbTablePrefix = ConfigurationManager.AppSettings[USER_DATA_DB_TABLE_PREFIX_KEY] ?? "";
 
         public static String GetCurrentUsername()
         {
@@ -60,7 +64,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             String userId = GetUserId(_connectionString, username);
 
             identity.Username = username;
-            identity.Tid = tenantId ?? "f61907fc-75a0-4303-8ad2-b8079fa2bb89";
+            identity.Tid = tenantId ?? DEFAULT_TENANT_ID;
             identity.Roles = GetRoles(_connectionString, userId);
             identity.Permissions = GetPermissions(_connectionString, identity.Roles);
 
@@ -78,7 +82,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand("SELECT Cumulus.dbo.aspnet_Users.UserId FROM Cumulus.dbo.aspnet_Users INNER JOIN Cumulus.dbo.aspnet_Applications ON Cumulus.dbo.aspnet_Applications.ApplicationId = Cumulus.dbo.aspnet_Users.ApplicationId WHERE Cumulus.dbo.aspnet_Users.UserName = @username AND Cumulus.dbo.aspnet_Applications.ApplicationName = @applicationName", connection);
+                SqlCommand command = new SqlCommand("SELECT " + _dbTablePrefix + "aspnet_Users.UserId FROM " + _dbTablePrefix + "aspnet_Users INNER JOIN " + _dbTablePrefix + "aspnet_Applications ON " + _dbTablePrefix + "aspnet_Applications.ApplicationId = " + _dbTablePrefix + "aspnet_Users.ApplicationId WHERE " + _dbTablePrefix + "aspnet_Users.UserName = @username AND " + _dbTablePrefix + "aspnet_Applications.ApplicationName = @applicationName", connection);
                 command.Parameters.Add(new SqlParameter("username", username));
                 command.Parameters.Add(new SqlParameter("applicationName", applicationName));
 
@@ -101,7 +105,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
             {
                 connection.Open();
                 SqlCommand command =
-                    new SqlCommand("SELECT Cumulus.dbo.aspnet_Roles.RoleName FROM Cumulus.dbo.aspnet_UsersInRoles INNER JOIN Cumulus.dbo.aspnet_Roles ON Cumulus.dbo.aspnet_Roles.RoleId = Cumulus.dbo.aspnet_UsersInRoles.RoleId WHERE Cumulus.dbo.aspnet_UsersInRoles.UserId = @userId", connection);
+                    new SqlCommand("SELECT " + _dbTablePrefix + "aspnet_Roles.RoleName FROM " + _dbTablePrefix + "aspnet_UsersInRoles INNER JOIN " + _dbTablePrefix + "aspnet_Roles ON " + _dbTablePrefix + "aspnet_Roles.RoleId = " + _dbTablePrefix + "aspnet_UsersInRoles.RoleId WHERE " + _dbTablePrefix + "aspnet_UsersInRoles.UserId = @userId", connection);
                 command.Parameters.Add(new SqlParameter("userId", userId));
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -124,7 +128,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
                 connection.Open();
                 foreach (var role in roles)
                 {
-                    SqlCommand command = new SqlCommand("SELECT PermissionId FROM Cumulus.dbo.RolePermissions WHERE RoleName = @roleName", connection);
+                    SqlCommand command = new SqlCommand("SELECT PermissionId FROM " + _dbTablePrefix + "RolePermissions WHERE RoleName = @roleName", connection);
                     command.Parameters.Add(new SqlParameter("roleName", role));
 
                     using (SqlDataReader reader = command.ExecuteReader())
