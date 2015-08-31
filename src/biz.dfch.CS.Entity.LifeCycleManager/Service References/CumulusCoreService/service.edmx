@@ -1,0 +1,85 @@
+﻿<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <edmx:DataServices m:DataServiceVersion="3.0" m:MaxDataServiceVersion="3.0" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+    <Schema Namespace="biz.dfch.CS.Entity.LifeCycleManager.Model" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <EntityType Name="Job">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="State" Type="Edm.String" Nullable="false" />
+        <Property Name="Type" Type="Edm.String" Nullable="false" />
+        <Property Name="ReferencedItemId" Type="Edm.String" />
+        <Property Name="Token" Type="Edm.String" />
+        <Property Name="TenantId" Type="Edm.String" />
+        <Property Name="Parameters" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
+        <Property Name="CreatedBy" Type="Edm.String" />
+        <Property Name="ModifiedBy" Type="Edm.String" />
+        <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
+      </EntityType>
+      <EntityType Name="LifeCycle">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.String" Nullable="false" />
+        <Property Name="Condition" Type="Edm.String" Nullable="false" />
+      </EntityType>
+      <EntityType Name="StateChangeLock">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="EntityId" Type="Edm.String" Nullable="false" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
+        <Property Name="CreatedBy" Type="Edm.String" />
+        <Property Name="ModifiedBy" Type="Edm.String" />
+        <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
+      </EntityType>
+      <EntityType Name="CalloutDefinition">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="CalloutType" Type="Edm.String" Nullable="false" />
+        <Property Name="TenantId" Type="Edm.String" Nullable="false" />
+        <Property Name="EntityId" Type="Edm.String" />
+        <Property Name="EntityType" Type="Edm.String" />
+        <Property Name="Condition" Type="Edm.String" Nullable="false" />
+        <Property Name="Parameters" Type="Edm.String" />
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Tid" Type="Edm.String" />
+        <Property Name="CreatedBy" Type="Edm.String" />
+        <Property Name="ModifiedBy" Type="Edm.String" />
+        <Property Name="Created" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="Modified" Type="Edm.DateTimeOffset" Nullable="false" />
+      </EntityType>
+    </Schema>
+    <Schema Namespace="Default" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <EntityContainer Name="Core" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Jobs" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
+        <EntitySet Name="LifeCycles" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
+        <EntitySet Name="StateChangeLocks" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.StateChangeLock" />
+        <EntitySet Name="CalloutDefinitions" EntityType="biz.dfch.CS.Entity.LifeCycleManager.Model.CalloutDefinition" />
+        <FunctionImport Name="Run" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
+        </FunctionImport>
+        <FunctionImport Name="Finish" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.Job" />
+        </FunctionImport>
+        <FunctionImport Name="Next" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
+        </FunctionImport>
+        <FunctionImport Name="Cancel" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
+        </FunctionImport>
+        <FunctionImport Name="Allow" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
+        </FunctionImport>
+        <FunctionImport Name="Decline" ReturnType="Edm.String" IsBindable="true" m:IsAlwaysBindable="true">
+          <Parameter Name="bindingParameter" Type="biz.dfch.CS.Entity.LifeCycleManager.Model.LifeCycle" />
+        </FunctionImport>
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

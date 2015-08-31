@@ -15,16 +15,12 @@
  */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
+namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors
 {
-    [TestClass]
-    public class UnitTest1
+    public interface ICalloutExecutor
     {
-        [TestMethod]
-        public void Test()
-        {
-        }
+        void ExecuteCallout(String definitionParameters, CalloutData data);
     }
 }
