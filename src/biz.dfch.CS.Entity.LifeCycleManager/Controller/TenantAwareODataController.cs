@@ -22,11 +22,13 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class TenantAwareODataController : ODataController
     {
+        protected const String TENANT_ID_HEADER_KEY = "Tenant-Id";
+
         public String TenantId { get; private set; }
 
         public TenantAwareODataController()
         {
-            TenantId = HttpContext.Current.Request.Headers.Get("Tenant-Id");
+            TenantId = HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY);
         }
     }
 }

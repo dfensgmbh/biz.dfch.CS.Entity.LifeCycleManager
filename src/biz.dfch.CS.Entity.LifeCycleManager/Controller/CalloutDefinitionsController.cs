@@ -93,7 +93,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var calloutDefinitions = CurrentUserDataProvider.
-                    GetEntitiesForUser(db.CalloutDefinitions, identity.Username, TenantId);
+                    GetEntitiesForUser(db.CalloutDefinitions, identity.Username, identity.Tid);
 
                 return Ok<IEnumerable<CalloutDefinition>>(calloutDefinitions);
             }
@@ -138,7 +138,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, calloutDefinition))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -186,7 +186,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, calloutDefinition))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -245,7 +245,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                     Created = DateTimeOffset.Now,
                     CreatedBy = identity.Username,
                     CalloutType = calloutDefinition.CalloutType,
-                    Tid = TenantId,
+                    Tid = identity.Tid,
                     TenantId = calloutDefinition.TenantId,
                     EntityType = calloutDefinition.EntityType,
                     EntityId = calloutDefinition.EntityId,
@@ -295,7 +295,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, calloutDefinition))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
@@ -348,7 +348,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, calloutDefinition))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, calloutDefinition))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

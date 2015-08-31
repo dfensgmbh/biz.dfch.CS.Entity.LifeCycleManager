@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- using System;
+using System;
 ﻿using System.Collections.Generic;
 ﻿using System.Linq;
 ﻿using System.Net;
@@ -85,7 +85,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }
-                var stateChangeLocks = CurrentUserDataProvider.GetEntitiesForUser(db.StateChangeLocks, identity.Username, TenantId);
+                var stateChangeLocks = CurrentUserDataProvider.GetEntitiesForUser(db.StateChangeLocks, identity.Username, identity.Tid);
                 
                 return Ok<IEnumerable<StateChangeLock>>(stateChangeLocks);
             }
@@ -182,7 +182,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     CreatedBy = identity.Username,
                     Created = DateTimeOffset.Now,
-                    Tid = TenantId,
+                    Tid = identity.Tid,
                     EntityId = stateChangeLock.EntityId,
                 };
                 stateChangeLockEntity = db.StateChangeLocks.Add(stateChangeLockEntity);
@@ -248,7 +248,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 {
                     return StatusCode(HttpStatusCode.NotFound);
                 }
-                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, TenantId, stateChangeLock))
+                if (!CurrentUserDataProvider.IsEntityOfUser(identity.Username, identity.Tid, stateChangeLock))
                 {
                     return StatusCode(HttpStatusCode.Forbidden);
                 }

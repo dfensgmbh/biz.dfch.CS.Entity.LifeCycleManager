@@ -1,14 +1,31 @@
-﻿using System;
+﻿/**
+ * Copyright 2015 Marc Rufer, d-fens GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
+using biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging;
+using biz.dfch.CS.Utilities.Contracts.Endpoint;
 
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 {
     public class WebApiApplication : System.Web.HttpApplication
@@ -24,11 +41,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 
         protected void Application_Start()
         {
-            //AreaRegistration.RegisterAllAreas();
-            //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
-
             LoadAndComposeParts();
 
             WebApiConfig.InitEndpoints(endpoints);
@@ -36,6 +48,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
             GlobalConfiguration.Configuration.Services.Replace(typeof(IAssembliesResolver), new DefaultAssembliesResolver());
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
             Debug.WriteLine("Global.Application_Start() END.");
         }
 
@@ -51,12 +64,18 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
                 {
                     folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
                 }
-                Debug.WriteLine("Tralala folder = " + folder);
+                Debug.WriteLine("Plugin folder = " + folder);
                 assemblyCatalog.Catalogs.Add(new DirectoryCatalog(folder));
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}", folder, ex.Message));
+                System.Diagnostics.Trace.WriteLine(String.Format("WARNING: Loading extensions from '{0}' FAILED.\n{1}",
+                    folder, ex.Message));
+            }
+            finally
+            {
+                // Adds all the parts found in the same assembly as the actual class
+                assemblyCatalog.Catalogs.Add(new AssemblyCatalog(typeof(WebApiApplication).Assembly));
             }
 
             _container = new CompositionContainer(assemblyCatalog);

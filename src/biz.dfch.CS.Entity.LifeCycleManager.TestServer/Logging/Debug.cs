@@ -16,7 +16,7 @@
 
 ﻿using System;
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Logging
+namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging
 {
     public class Debug : LogBase
     {

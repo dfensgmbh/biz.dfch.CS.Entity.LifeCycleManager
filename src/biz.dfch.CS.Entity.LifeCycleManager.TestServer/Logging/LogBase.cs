@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2015 Marc Rufer, d-fens GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint
+﻿using System;
+
+namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging
 {
-    public interface IODataEndpointData
+    public class LogBase
     {
-        ServerRole ServerRole { get; }
+        protected static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static void WriteException(string message, Exception ex)
+        {
+            if (log.IsErrorEnabled) log.ErrorFormat("{0}@{1}: {2}\r\n{3}", ex.GetType().Name, ex.Source, ex.Message, ex.StackTrace);
+        }
     }
 }

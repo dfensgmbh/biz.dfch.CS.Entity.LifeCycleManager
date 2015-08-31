@@ -15,9 +15,9 @@
  */
 
 using System;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Data.Entity.Infrastructure.Pluralization;
+using System.Data.Services.Client;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -41,11 +41,14 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
         private const String _permissionInfix = "LifeCycle";
         private const String _permissionPrefix = "LightSwitchApplication";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
+        private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
+
+        private static String _username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
+        private static String _password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
 
         private static ODataValidationSettings _validationSettings = new ODataValidationSettings();
         private static EnglishPluralizationService _pluralizationService = new EnglishPluralizationService();
-        private static CumulusCoreService.Core _coreService = new CumulusCoreService.Core(
-            new Uri(ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core"]));
+        private CumulusCoreService.Core _coreService;
 
         public LifeCyclesController()
         {
@@ -53,6 +56,12 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var fn = String.Format("{0}:{1}",
                 declaringType.Namespace,
                 declaringType.Name);
+
+            _coreService = new CumulusCoreService.Core(
+            new Uri(ConfigurationManager.AppSettings[CORE_ENDPOINT_URL_KEY]));
+            _coreService.Credentials = new NetworkCredential(_username, _password);
+            _coreService.BuildingRequest += CoreServiceOnBuildingRequest;
+
             Debug.WriteLine(fn);
         }
 
@@ -149,10 +158,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.RequestStateChange(entityUri, entity, lifeCycle.Condition, identity.Tid);
 
                 return Ok();
             }
@@ -224,10 +232,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.RequestStateChange(entityUri, entity, delta.GetEntity().Condition, identity.Tid);
 
                 return Ok();
             }
@@ -283,10 +290,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
                 var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Next(entityUri, entity, TenantId);
+                lifeCycleManager.Next(entityUri, entity, identity.Tid);
 
                 return Ok();
             }
@@ -330,10 +336,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var entityUri = new Uri(key);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var entity = LoadEntity(null, entityUri);
-                var lifeCycleManager = new LifeCycleManager(null, ExtractTypeFromUriString(key));
-                lifeCycleManager.Cancel(entityUri, entity, TenantId);
+                var entity = LoadEntity(new DefaultAuthenticationProvider(), entityUri);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), ExtractTypeFromUriString(key));
+                lifeCycleManager.Cancel(entityUri, entity, identity.Tid);
 
                 return Ok();
             }
@@ -386,8 +391,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), calloutDefinition.EntityType);
                 lifeCycleManager.OnAllowCallback(job);
 
                 return Ok();
@@ -433,8 +437,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
                 }
 
                 var calloutDefinition = JsonConvert.DeserializeObject<CalloutData>(job.Parameters);
-                // DFTODO Pass IAuthenticationProvider implementation instead of null
-                var lifeCycleManager = new LifeCycleManager(null, calloutDefinition.EntityType);
+                var lifeCycleManager = new LifeCycleManager(new DefaultAuthenticationProvider(), calloutDefinition.EntityType);
                 lifeCycleManager.OnDeclineCallback(job);
 
                 return Ok();
@@ -466,6 +469,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             var begin = key.LastIndexOf("/");
             var end = key.IndexOf("(");
             return _pluralizationService.Singularize(key.Substring(begin + 1, end - begin - 1));
+        }
+
+        private void CoreServiceOnBuildingRequest(object sender, BuildingRequestEventArgs buildingRequestEventArgs)
+        {
+            buildingRequestEventArgs.Headers.Add(TENANT_ID_HEADER_KEY, TenantId);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
     public class CoreEndpointTest
     {
         private const String CONTAINER_NAME = "Core";
+        private const String CONTAINER_NAME_CONFIG_KEY = "LifeCycleManager.Endpoint.Core.Container.Name";
 
         [TestInitialize]
         public void TestInitialize()
@@ -43,7 +44,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         [TestMethod]
         public void GetContainerNameReturnsDefaultNameIfNoNameProvidedByConfiguration()
         {
-            Mock.Arrange(() => ConfigurationManager.AppSettings["Container.Core.Name"])
+            Mock.Arrange(() => ConfigurationManager.AppSettings[CONTAINER_NAME_CONFIG_KEY])
                 .Returns((String)null)
                 .OccursOnce();
 
@@ -51,7 +52,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             
             Assert.AreEqual(CONTAINER_NAME, utilitiesEndpoint.GetContainerName());
 
-            Mock.Assert(() => ConfigurationManager.AppSettings["Container.Core.Name"]);
+            Mock.Assert(() => ConfigurationManager.AppSettings[CONTAINER_NAME_CONFIG_KEY]);
         }
 
         [TestMethod]

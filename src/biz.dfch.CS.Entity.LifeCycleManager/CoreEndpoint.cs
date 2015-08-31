@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-
 using System;
 using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Web.Http.OData.Builder;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
+using biz.dfch.CS.Utilities.Contracts.Endpoint;
 using Microsoft.Data.Edm;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager
@@ -49,7 +48,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         public String GetContainerName()
         {
-            var containerName = ConfigurationManager.AppSettings["Container.Core.Name"];
+            var containerName = ConfigurationManager.AppSettings["LifeCycleManager.Endpoint.Core.Container.Name"];
             if (String.IsNullOrWhiteSpace(containerName))
             {
                 containerName = DEFAULT_CONTAINER_NAME;

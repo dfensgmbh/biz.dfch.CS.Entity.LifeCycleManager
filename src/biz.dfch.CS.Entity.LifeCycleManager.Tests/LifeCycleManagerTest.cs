@@ -18,10 +18,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Configuration;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Web;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Executors;
 using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Loaders;
@@ -31,7 +33,6 @@ using biz.dfch.CS.Entity.LifeCycleManager.UserData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 using Telerik.JustMock;
-using Telerik.JustMock.Expectations.Abstraction;
 using CalloutDefinition = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.CalloutDefinition;
 using Job = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.Job;
 using StateChangeLock = biz.dfch.CS.Entity.LifeCycleManager.CumulusCoreService.StateChangeLock;
@@ -67,6 +68,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         private IStateMachineConfigLoader _stateMachineConfigLoader;
         private IAuthenticationProvider _authenticationProvider;
         private EntityController _entityController;
+        private WindowsIdentity _windowsIdentity;
 
         public void FixEfProviderServicesProblem()
         {
@@ -82,12 +84,15 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         public void TestInitialize()
         {
             Mock.SetupStatic(typeof(CurrentUserDataProvider));
+            Mock.SetupStatic(typeof(HttpContext));
+            Mock.SetupStatic(typeof(CredentialCache));
 
             _stateMachineConfigLoader = Mock.Create<IStateMachineConfigLoader>();
             _authenticationProvider = Mock.Create<IAuthenticationProvider>();
             _coreService = Mock.Create<CumulusCoreService.Core>();
             _calloutExecutor = Mock.Create<ICalloutExecutor>();
             _entityController = Mock.Create<EntityController>();
+            _windowsIdentity = Mock.Create<WindowsIdentity>();
 
             var hashGenerator = Mock.Create<SHA256>();
             Mock.Arrange(() => hashGenerator.ComputeHash(Arg.IsAny<byte[]>()))
@@ -224,24 +229,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
         }
 
         [TestMethod]
-        public void LifeCycleManagerConstructorSetsCoreServiceCredentialsBasedOnConfigValues()
-        {
-            Mock.Arrange(() => _stateMachineConfigLoader.LoadConfiguration(ENTITY_TYPE))
-                .IgnoreInstance()
-                .Returns((String)null)
-                .MustBeCalled();
-
-            new LifeCycleManager(_authenticationProvider, ENTITY_TYPE);
-
-            Type type = typeof(LifeCycleManager);
-            FieldInfo fieldInfo = type.GetField(CORE_SERVICE_FIELD, BindingFlags.NonPublic | BindingFlags.Static);
-            CumulusCoreService.Core coreService = (CumulusCoreService.Core)fieldInfo.GetValue(null);
-
-            Assert.IsNotNull(coreService.Credentials);
-            Mock.Assert(_stateMachineConfigLoader);
-        }
-
-        [TestMethod]
         [WorkItem(21)]
         public void RequestStateChangeForLockedEntityThrowsInvalidOperationException()
         {
@@ -274,6 +261,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 {
                     CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
                 }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.CalloutDefinitions)
@@ -312,6 +309,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
+            Mock.Assert(() => HttpContext.Current.User.Identity);
+            Mock.Assert(CredentialCache.DefaultCredentials);
+            Mock.Assert(_windowsIdentity);
         }
 
         [TestMethod]
@@ -331,6 +331,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 {
                     CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
                 }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.CalloutDefinitions)
@@ -376,6 +386,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
+            Mock.Assert(() => HttpContext.Current.User.Identity);
+            Mock.Assert(CredentialCache.DefaultCredentials);
+            Mock.Assert(_windowsIdentity);
         }
 
         [TestMethod]
@@ -394,6 +407,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                     CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
                 }))
                 .InSequence()
+                .MustBeCalled();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.CalloutDefinitions)
@@ -455,6 +478,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_coreService);
             Mock.Assert(_calloutExecutor);
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
+            Mock.Assert(() => HttpContext.Current.User.Identity);
+            Mock.Assert(CredentialCache.DefaultCredentials);
+            Mock.Assert(_windowsIdentity);
         }
 
         [TestMethod]
@@ -472,6 +498,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 {
                     CreateStateChangeLock(SAMPLE_ENTITY_URI_2)
                 }))
+                .MustBeCalled();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.CalloutDefinitions)
@@ -551,6 +587,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
                 .Returns(SAMPLE_ENTITY)
                 .MustBeCalled();
 
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
+                .MustBeCalled();
+
             Mock.Arrange(() => _coreService.CalloutDefinitions)
                 .IgnoreInstance()
                 .ReturnsCollection(new List<CalloutDefinition>(new List<CalloutDefinition>
@@ -592,6 +638,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
+            Mock.Assert(() => HttpContext.Current.User.Identity);
+            Mock.Assert(CredentialCache.DefaultCredentials);
+            Mock.Assert(_windowsIdentity);
         }
 
         [TestMethod]
@@ -659,6 +708,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Arrange(() => _entityController.LoadEntity(SAMPLE_ENTITY_URI))
                 .IgnoreInstance()
                 .Returns(SAMPLE_ENTITY)
+                .MustBeCalled();
+
+            Mock.Arrange(() => HttpContext.Current.User.Identity)
+                .Returns(_windowsIdentity)
+                .MustBeCalled();
+
+            Mock.Arrange(() => CredentialCache.DefaultCredentials)
+                .MustBeCalled();
+
+            Mock.Arrange(() => _windowsIdentity.Impersonate())
                 .MustBeCalled();
 
             Mock.Arrange(() => _coreService.CalloutDefinitions)
@@ -734,6 +793,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests
             Mock.Assert(_calloutExecutor);
             Mock.Assert(_entityController);
             Mock.Assert(() => CurrentUserDataProvider.GetCurrentUsername());
+            Mock.Assert(() => HttpContext.Current.User.Identity);
+            Mock.Assert(CredentialCache.DefaultCredentials);
+            Mock.Assert(_windowsIdentity);
         }
 
         [TestMethod]
