@@ -211,10 +211,9 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
 
             Mock.Arrange(() => ConfigurationManager.AppSettings)
                 .Returns(new NameValueCollection { 
-                    { APPLICATION_NAME_KEY, "Test" }, 
-                    { DEFAULT_TENANT_ID_KEY, DEFAULT_TENANT_ID } 
+                    { APPLICATION_NAME_KEY, "Test" }
                 })
-                .Occurs(3);
+                .OccursOnce();
 
             Mock.Arrange(() => new SqlConnection(CONNECTION_STRING))
                 .DoNothing()
