@@ -18,8 +18,8 @@ using System;
 using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Web.Http.OData.Builder;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
 using biz.dfch.CS.Entity.LifeCycleManager.Logging;
+using biz.dfch.CS.Utilities.Contracts.Endpoint;
 using Microsoft.Data.Edm;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager

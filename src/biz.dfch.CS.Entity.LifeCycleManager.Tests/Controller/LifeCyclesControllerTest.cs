@@ -42,7 +42,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         private const String ENTITY_ID = "http://test/api/ApplicationData.svc/Users(1)";
         private const String INVALID_ENTITY_ID = "test";
         private const String ENTITY = "{}";
-        private const String TENANT_ID_STUB = "";
         private const String CONTINUE_CONDITION = "Continue";
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String LIFE_CYCLE_UPDATE_PERMISSION = "LightSwitchApplication:LifeCycleCanUpdate";

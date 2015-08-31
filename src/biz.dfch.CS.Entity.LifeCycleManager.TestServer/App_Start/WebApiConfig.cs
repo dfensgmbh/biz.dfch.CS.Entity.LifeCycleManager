@@ -21,8 +21,8 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.OData.Batch;
 using System.Web.Http.OData.Extensions;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
 using biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging;
+using biz.dfch.CS.Utilities.Contracts.Endpoint;
 
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
 {

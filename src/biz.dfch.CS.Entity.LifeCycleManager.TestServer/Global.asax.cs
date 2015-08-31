@@ -22,8 +22,8 @@ using System.Configuration;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using biz.dfch.CS.Entity.LifeCycleManager.Contracts.Endpoint;
 using biz.dfch.CS.Entity.LifeCycleManager.TestServer.Logging;
+using biz.dfch.CS.Utilities.Contracts.Endpoint;
 
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace biz.dfch.CS.Entity.LifeCycleManager.TestServer
