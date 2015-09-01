@@ -25,7 +25,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     [TestClass]
     public class TenantAwareODataControllerTest
     {
-        private const String TENANT_ID_HEADER_KEY = "Tenant-Id";
+        private const String TENANT_ID_HEADER_KEY = "Biz-Dfch-Tenant-Id";
         private const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
 
         [TestInitialize]
@@ -48,16 +48,39 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
         }
 
         [TestMethod]
-        public void ConstructorSetsTenantIdPropertyToNullIfNoTenantIdPresentInHeader()
+        public void ConstructorSetsTenantIdPropertyToCookieValueIfTenantIdHeaderNotPresent()
         {
             Mock.Arrange(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY))
                 .Returns((String)null)
+                .OccursOnce();
+
+            Mock.Arrange(() => HttpContext.Current.Request.Cookies.Get(TENANT_ID_HEADER_KEY))
+                .Returns(new HttpCookie(TENANT_ID_HEADER_KEY, TENANT_ID))
+                .OccursOnce();
+
+            var controller = new TenantAwareODataController();
+            Assert.AreEqual(TENANT_ID, controller.TenantId);
+
+            Mock.Assert(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY));
+            Mock.Assert(() => HttpContext.Current.Request.Cookies.Get(TENANT_ID_HEADER_KEY));
+        }
+
+        [TestMethod]
+        public void ConstructorSetsTenantIdPropertyToNullIfNoTenantIdPresentInHeaderAndCookie()
+        {
+            Mock.Arrange(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY))
+                .Returns((String)null)
+                .OccursOnce();
+
+            Mock.Arrange(() => HttpContext.Current.Request.Cookies.Get(TENANT_ID_HEADER_KEY))
+                .Returns((HttpCookie)null)
                 .OccursOnce();
 
             var controller = new TenantAwareODataController();
             Assert.AreEqual(null, controller.TenantId);
 
             Mock.Assert(() => HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY));
+            Mock.Assert(() => HttpContext.Current.Request.Cookies.Get(TENANT_ID_HEADER_KEY));
         }
     }
 }

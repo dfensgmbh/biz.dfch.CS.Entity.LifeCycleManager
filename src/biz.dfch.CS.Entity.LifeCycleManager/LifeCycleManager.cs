@@ -51,7 +51,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
     {
         private const String CALLOUT_JOB_TYPE = "CalloutData";
         private const String CORE_ENDPOINT_URL_KEY = "LifeCycleManager.Endpoint.Core";
-        private const String TENANT_ID_HEADER_KEY = "Tenant-Id";
+        private static String _tenantIdHeaderKey = ConfigurationManager.AppSettings["TenantId.Header.Key"];
         private static Object _lock = new Object();
         private static String _username = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.User"];
         private static String _password = ConfigurationManager.AppSettings["LifeCycleManager.Service.Core.Password"];
@@ -99,8 +99,8 @@ namespace biz.dfch.CS.Entity.LifeCycleManager
 
         private void CoreServiceOnBuildingRequest(object sender, BuildingRequestEventArgs buildingRequestEventArgs)
         {
-            var tenantId = HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY);
-            buildingRequestEventArgs.Headers.Add(TENANT_ID_HEADER_KEY, tenantId);
+            var tenantId = HttpContext.Current.Request.Headers.Get(_tenantIdHeaderKey);
+            buildingRequestEventArgs.Headers.Add(_tenantIdHeaderKey, tenantId);
         }
 
         private void LoadAndComposeParts()

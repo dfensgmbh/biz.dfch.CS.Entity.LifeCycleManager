@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>biz.dfch.CS.Entity.LifeCycleManager.Extensions.Default</id>
+        <version>1.0.0</version>
+        <title>biz.dfch.CS.Entity.LifeCycleManager.Extensions.Default</title>
+        <authors>d-fens GmbH</authors>
+        <owners>d-fens GmbH</owners>
+		<licenseUrl>https://github.com/dfensgmbh/biz.dfch.CS.Entity.LifeCycleManager/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/dfensgmbh/biz.dfch.CS.Entity.LifeCycleManager</projectUrl>
+        <iconUrl>https://avatars1.githubusercontent.com/u/8310404?v=3&amp;s=200</iconUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>biz.dfch.CS.Entity.LifeCycleManager.Extensions.Default
+		==============================
+
+		Default MEF extensions for biz.dfch.CS.Entity.LifeCycleManager
+		</description>
+        <summary>Default MEF extensions for LifeCycleManager</summary>
+        <releaseNotes>20150901
+* Initial release</releaseNotes>
+        <copyright>Copyright © 2015 d-fens GmbH</copyright>
+        <tags>dfch lifecycle entity C#</tags>
+        <dependencies>
+			<dependency id="biz.dfch.CS.System.Utilities" version="1.1.0" />
+			<dependency id="log4net" version="2.0.3" targetFramework="net45" />
+			<dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
+			<dependency id="Microsoft.Data.Edm" version="5.6.4" />
+			<dependency id="Newtonsoft.Json" version="6.0.8" />
+        </dependencies>
+    </metadata>
+	<files>
+		<file src="bin\Release\LifecycleManager.Extensions.Default.dll" target="lib\" />
+	</files>
+</package>
