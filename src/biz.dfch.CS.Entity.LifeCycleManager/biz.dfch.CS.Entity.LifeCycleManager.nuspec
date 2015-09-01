@@ -20,7 +20,7 @@ Allows managing the lifecycle of entities. Supports pre- and post-callouts/hooks
 Telerik JustMock has to be licensed separately. Only the code samples (source code files) are licensed under the Apache 2.0 license. The Telerik JustMock software has to be licensed separately. See the NOTICE file for more information about this.
 		</description>
         <summary>Entity Lifecycle Manager with HTTP callout functionality</summary>
-        <releaseNotes>20150831
+        <releaseNotes>20150901
 * Initial release</releaseNotes>
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
         <tags>dfch lifecycle entity C#</tags>
@@ -42,7 +42,6 @@ Telerik JustMock has to be licensed separately. Only the code samples (source co
         </dependencies>
     </metadata>
 	<files>
-		<file src="src\biz.dfch.CS.Entity.LifeCycleManager\bin\Release\biz.dfch.CS.Entity.LifeCycleManager.dll" target="lib\" />
-		<file src="src\biz.dfch.CS.Entity.LifeCycleManager.Contracts\bin\Release\biz.dfch.CS.Entity.LifeCycleManager.Contracts.dll" target="lib\" />
+		<file src="bin\Release\biz.dfch.CS.Entity.LifeCycleManager.dll" target="lib\" />
 	</files>
 </package>
