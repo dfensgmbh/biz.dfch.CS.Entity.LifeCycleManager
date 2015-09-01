@@ -15,6 +15,7 @@
  */
 
 ﻿using System;
+﻿using System.Configuration;
 ﻿using System.Web;
 ﻿using System.Web.Http.OData;
 
@@ -22,14 +23,17 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 {
     public class TenantAwareODataController : ODataController
     {
-        protected const String TENANT_ID_HEADER_KEY = "Tenant-Id";
+        protected static String TenantIdHeaderKey = ConfigurationManager.AppSettings["TenantId.Header.Key"];
 
         public String TenantId { get; private set; }
 
         public TenantAwareODataController()
         {
-            // DFTODO Implement fallback to Cookie-Header (Biz-Dfch-Tenant-Id)
-            TenantId = HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY);
+            TenantId = HttpContext.Current.Request.Headers.Get(TenantIdHeaderKey);
+            if (null == TenantId)
+            {
+                // DFTODO Implement fallback to Cookie-Header (Biz-Dfch-Tenant-Id)
+            }
         }
     }
 }

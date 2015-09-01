@@ -30,7 +30,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.UserData
     public static class CurrentUserDataProvider
     {
         private const String APPLICATION_NAME_KEY = "Application.Name";
-        private const String DEFAULT_TENANT_ID_KEY = "Default.Tenant.Id";
+        private const String DEFAULT_TENANT_ID_KEY = "TenantId.Default";
         private const String USER_DATA_DB_TABLE_PREFIX_KEY = "UserData.Database.Table.Prefix";
         private const String CONNECTION_STRING_NAME = "LcmSecurityData";
         private static readonly String DEFAULT_TENANT_ID = ConfigurationManager.AppSettings[DEFAULT_TENANT_ID_KEY];

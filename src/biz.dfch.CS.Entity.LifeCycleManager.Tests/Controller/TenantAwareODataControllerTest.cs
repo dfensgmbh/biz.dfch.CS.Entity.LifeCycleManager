@@ -25,7 +25,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
     [TestClass]
     public class TenantAwareODataControllerTest
     {
-        private const String TENANT_ID_HEADER_KEY = "Tenant-Id";
+        private const String TENANT_ID_HEADER_KEY = "Biz-Dfch-Tenant-Id";
         private const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
 
         [TestInitialize]

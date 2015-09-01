@@ -37,7 +37,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.UserData
         private const String TENANT_ID = "aa506000-025b-474d-b747-53b67f50d46d";
         private const String CONNECTION_STRING_NAME = "LcmSecurityData";
         private const String APPLICATION_NAME_KEY = "Application.Name";
-        private const String DEFAULT_TENANT_ID_KEY = "Default.Tenant.Id";
+        private const String DEFAULT_TENANT_ID_KEY = "TenantId.Default";
         private const String CONNECTION_STRING = "Server=.\\SQLEXPRESS;User ID=sa;Password=password;Database=Test;";
         private const String DEFAULT_TENANT_ID = "f61907fc-75a0-4303-8ad2-b8079fa2bb89";
 

@@ -473,7 +473,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         private void CoreServiceOnBuildingRequest(object sender, BuildingRequestEventArgs buildingRequestEventArgs)
         {
-            buildingRequestEventArgs.Headers.Add(TENANT_ID_HEADER_KEY, TenantId);
+            buildingRequestEventArgs.Headers.Add(TenantIdHeaderKey, TenantId);
         }
     }
 }
