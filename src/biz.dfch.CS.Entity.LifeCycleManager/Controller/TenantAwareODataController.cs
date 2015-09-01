@@ -28,6 +28,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public TenantAwareODataController()
         {
+            // DFTODO Implement fallback to Cookie-Header (Biz-Dfch-Tenant-Id)
             TenantId = HttpContext.Current.Request.Headers.Get(TENANT_ID_HEADER_KEY);
         }
     }
