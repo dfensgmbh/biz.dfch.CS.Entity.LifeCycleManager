@@ -44,9 +44,6 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
 
         public CalloutDefinitionsController()
         {
-            var x = HttpContext.Current.User;
-            var y = HttpContext.Current.Request;
-
             var declaringType = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
             var fn = String.Format("{0}:{1}",
                 declaringType.Namespace,

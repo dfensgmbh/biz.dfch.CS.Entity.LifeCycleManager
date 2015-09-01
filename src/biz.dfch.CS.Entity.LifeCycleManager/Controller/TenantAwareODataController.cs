@@ -32,7 +32,11 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Controller
             TenantId = HttpContext.Current.Request.Headers.Get(TenantIdHeaderKey);
             if (null == TenantId)
             {
-                // DFTODO Implement fallback to Cookie-Header (Biz-Dfch-Tenant-Id)
+                var cookie = HttpContext.Current.Request.Cookies.Get(TenantIdHeaderKey);
+                if (null != cookie)
+                {
+                    TenantId = cookie.Value;
+                }
             }
         }
     }

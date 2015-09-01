@@ -13,7 +13,7 @@
         <description>biz.dfch.CS.Entity.LifeCycleManager.Extensions.Default
 		==============================
 
-		Default MEF extensions for LifeCycleManager
+		Default MEF extensions for biz.dfch.CS.Entity.LifeCycleManager
 		</description>
         <summary>Default MEF extensions for LifeCycleManager</summary>
         <releaseNotes>20150901
@@ -21,6 +21,14 @@
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
         <tags>dfch lifecycle entity C#</tags>
         <dependencies>
+			<dependency id="biz.dfch.CS.System.Utilities" version="1.1.0" />
+			<dependency id="log4net" version="2.0.3" targetFramework="net45" />
+			<dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
+			<dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
+			<dependency id="Microsoft.Data.Edm" version="5.6.4" />
+			<dependency id="Newtonsoft.Json" version="6.0.8" />
         </dependencies>
     </metadata>
 	<files>

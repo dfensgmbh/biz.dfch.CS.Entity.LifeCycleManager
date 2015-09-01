@@ -13,7 +13,7 @@
         <description>biz.dfch.CS.Entity.LifeCycleManager.Contracts
 		==============================
 
-		Intefaces of LifeCycle Manager
+		Intefaces and base classes of biz.dfch.CS.Entity.LifeCycleManager
 		</description>
         <summary>Intefaces of LifeCycle Manager</summary>
         <releaseNotes>20150901
