@@ -16,10 +16,10 @@
 		Default MEF extensions for biz.dfch.CS.Entity.LifeCycleManager
 		</description>
         <summary>Default MEF extensions for LifeCycleManager</summary>
-        <releaseNotes>20150901
+        <releaseNotes>20150902
 * Initial release</releaseNotes>
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
-        <tags>dfch lifecycle entity C#</tags>
+        <tags>dfch lifecycle extensions C#</tags>
         <dependencies>
 			<dependency id="biz.dfch.CS.System.Utilities" version="1.1.0" />
 			<dependency id="log4net" version="2.0.3" />

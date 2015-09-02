@@ -16,10 +16,10 @@
 		Intefaces and base classes of biz.dfch.CS.Entity.LifeCycleManager
 		</description>
         <summary>Intefaces of LifeCycle Manager</summary>
-        <releaseNotes>20150901
+        <releaseNotes>20150902
 * Initial release</releaseNotes>
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
-        <tags>dfch lifecycle entity C#</tags>
+        <tags>dfch lifecycle entity contracts C#</tags>
         <dependencies>
         </dependencies>
     </metadata>
