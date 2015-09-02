@@ -22,7 +22,7 @@
         <tags>dfch lifecycle entity C#</tags>
         <dependencies>
 			<dependency id="biz.dfch.CS.System.Utilities" version="1.1.0" />
-			<dependency id="log4net" version="2.0.3" targetFramework="net45" />
+			<dependency id="log4net" version="2.0.3" />
 			<dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
 			<dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
 			<dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
