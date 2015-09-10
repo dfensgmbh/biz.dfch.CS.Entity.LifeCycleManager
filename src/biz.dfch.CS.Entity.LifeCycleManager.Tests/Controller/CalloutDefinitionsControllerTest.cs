@@ -428,7 +428,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var calloutDefinition = response.Content;
             Assert.AreEqual(1, calloutDefinition.Id);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.CreatedBy);
-            Assert.AreEqual(DateTimeOffset.Now.Date, calloutDefinition.Modified.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, calloutDefinition.Modified.Value.Date);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.ModifiedBy);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, calloutDefinition.EntityType);
             Assert.AreEqual(ENTITY_ID_1, calloutDefinition.EntityId);
@@ -552,7 +552,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdCalloutDefinition.CreatedBy);
-            Assert.AreEqual(DateTimeOffset.Now.Date, createdCalloutDefinition.Created.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, createdCalloutDefinition.Created.Value.Date);
             Assert.IsNull(createdCalloutDefinition.ModifiedBy);
             Assert.AreEqual(TENANT_ID, createdCalloutDefinition.Tid);
             Assert.AreEqual(SAMPLE_ENTITY_TYPE, createdCalloutDefinition.EntityType);
@@ -612,7 +612,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var response = actionResult as OkNegotiatedContentResult<CalloutDefinition>;
             var calloutDefinition = response.Content;
             Assert.AreEqual(1, calloutDefinition.Id);
-            Assert.AreEqual(DateTimeOffset.Now.Date, calloutDefinition.Modified.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, calloutDefinition.Modified.Value.Date);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, calloutDefinition.ModifiedBy);
             Assert.AreEqual(TENANT_ID, calloutDefinition.Tid);

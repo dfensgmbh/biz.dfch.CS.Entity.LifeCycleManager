@@ -23,15 +23,16 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Contracts.Entity
     {
         [Key]
         public int Id { get; set; }
-        private Guid _Tid { get; set; }
-        public String Tid
-        {
-            get { return _Tid.ToString(); }
-            set { _Tid = Guid.Parse(value); }
-        }
+
+        [Required]
+        [MaxLength(36)]
+        [StringLength(36)]
+        public String Tid { get; set; }    
+        
+        [Required]
         public String CreatedBy { get; set; }
         public String ModifiedBy { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset Modified { get; set; }
+        public DateTimeOffset? Created { get; set; }
+        public DateTimeOffset? Modified { get; set; }
     }
 }

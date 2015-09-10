@@ -440,7 +440,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var job = response.Content;
             Assert.AreEqual(1, job.Id);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
-            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Value.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
             Assert.AreEqual(JobStateEnum.Canceled.ToString(), job.State);
             Assert.AreEqual("Test", job.Type);
@@ -566,7 +566,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdJob.CreatedBy);
-            Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Value.Date);
             Assert.IsNull(createdJob.ModifiedBy);
             Assert.AreEqual(TENANT_ID, createdJob.Tid);
             Assert.AreEqual(JobStateEnum.Running.ToString(), createdJob.State);
@@ -620,7 +620,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
                 }).Result;
 
             Assert.AreEqual(CURRENT_USER_ID, createdJob.CreatedBy);
-            Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, createdJob.Created.Value.Date);
             Assert.IsNull(createdJob.ModifiedBy);
             Assert.AreEqual(JobStateEnum.Configuring.ToString(), createdJob.State);
             Assert.AreEqual(DEFAULT_JOB_TYPE, createdJob.Type);
@@ -681,7 +681,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var response = actionResult as OkNegotiatedContentResult<Job>;
             var job = response.Content;
             Assert.AreEqual(1, job.Id);
-            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Value.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
             Assert.AreEqual(TENANT_ID, job.Tid);
@@ -737,7 +737,7 @@ namespace biz.dfch.CS.Entity.LifeCycleManager.Tests.Controller
             var response = actionResult as OkNegotiatedContentResult<Job>;
             var job = response.Content;
             Assert.AreEqual(1, job.Id);
-            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Date);
+            Assert.AreEqual(DateTimeOffset.Now.Date, job.Modified.Value.Date);
             Assert.AreEqual(CURRENT_USER_ID, job.CreatedBy);
             Assert.AreEqual(CURRENT_USER_ID, job.ModifiedBy);
             Assert.AreEqual(SAMPLE_PARAMETERS, job.Parameters);
